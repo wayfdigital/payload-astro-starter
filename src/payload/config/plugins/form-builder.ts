@@ -1,0 +1,70 @@
+import { PayloadRequest, Plugin } from 'payload'
+import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
+import { revalidateTag } from 'next/cache'
+import { verifyRecaptcha } from '@/schemas/forms'
+
+export const formBuilderPluginConfig: Plugin = formBuilderPlugin({
+  fields: {
+    payment: false,
+  },
+  formOverrides: {
+    fields: ({ defaultFields }) => [
+      ...defaultFields,
+      {
+        name: 'customID',
+        type: 'text',
+        admin: {
+          description: 'Attached to submission button to track clicks',
+          position: 'sidebar',
+        },
+        label: 'Custom ID',
+      },
+      {
+        name: 'requireRecaptcha',
+        type: 'checkbox',
+        defaultValue: true,
+        admin: { position: 'sidebar' },
+        label: 'Require reCAPTCHA',
+      },
+    ],
+    hooks: {
+      afterChange: [
+        ({ doc }) => {
+          revalidateTag(`form-${doc.title}`)
+        },
+      ],
+    },
+  },
+  formSubmissionOverrides: {
+    fields: ({ defaultFields }) => [
+      ...defaultFields,
+      {
+        name: 'recaptcha',
+        type: 'text',
+        validate: async (
+          value: unknown,
+          {
+            req,
+            siblingData,
+          }: { req: PayloadRequest; siblingData: Record<string, unknown> }
+        ) => {
+          const form = (await req.payload.findByID({
+            id: siblingData?.form as string,
+            collection: 'forms' as 'media',
+          })) as { requireRecaptcha?: boolean } | null
+
+          if (!form?.requireRecaptcha) return true
+          if (!value || typeof value !== 'string')
+            return 'Please complete the reCAPTCHA'
+
+          try {
+            const isValid = await verifyRecaptcha(value)
+            return isValid || 'Invalid captcha'
+          } catch {
+            return 'Captcha verification failed'
+          }
+        },
+      },
+    ],
+  },
+})

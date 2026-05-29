@@ -1,0 +1,158 @@
+/* ──────────────────────────────────────────────
+   ui-template — Base Theme Stylesheet
+   ────────────────────────────────────────────── */
+
+[data-theme="ui-template"] {
+  /* ── Palette ── */
+  --template-color-primary: #6366f1;
+  --template-color-primary-hover: #4f46e5;
+  --template-color-primary-foreground: #ffffff;
+  --template-color-secondary: #8b5cf6;
+  --template-color-secondary-hover: #7c3aed;
+  --template-color-secondary-foreground: #ffffff;
+  --template-color-background: #fafafa;
+  --template-color-surface: #ffffff;
+  --template-color-foreground: #18181b;
+  --template-color-muted: #f4f4f5;
+  --template-color-muted-foreground: #71717a;
+  --template-color-border: #e4e4e7;
+  --template-color-accent: #ede9fe;
+  --template-color-accent-foreground: #4f46e5;
+  --template-color-destructive: #ef4444;
+  --template-color-destructive-hover: #dc2626;
+  --template-color-destructive-foreground: #ffffff;
+  --template-color-success: #22c55e;
+  --template-color-warning: #f59e0b;
+
+  /* ── Gradients ── */
+  --template-gradient-hero: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a78bfa 100%);
+  --template-gradient-surface: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+  --template-gradient-subtle: linear-gradient(135deg, #ede9fe 0%, #e0e7ff 100%);
+
+  /* ── Typography ── */
+  --template-font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --template-font-heading: "Inter", system-ui, -apple-system, sans-serif;
+  --template-font-mono: "JetBrains Mono", ui-monospace, "Cascadia Code", monospace;
+  --template-font-weight-normal: 400;
+  --template-font-weight-medium: 500;
+  --template-font-weight-semibold: 600;
+  --template-font-weight-bold: 700;
+  --template-line-height: 1.6;
+  --template-letter-spacing-tight: -0.025em;
+
+  /* ── Spacing ── */
+  --template-radius-sm: 0.375rem;
+  --template-radius: 0.5rem;
+  --template-radius-lg: 0.75rem;
+  --template-radius-xl: 1rem;
+  --template-radius-full: 9999px;
+  --template-spacing-xs: 0.25rem;
+  --template-spacing-sm: 0.5rem;
+  --template-spacing-md: 1rem;
+  --template-spacing-lg: 1.5rem;
+  --template-spacing-xl: 2rem;
+  --template-spacing-2xl: 3rem;
+  --template-spacing-3xl: 4rem;
+
+  /* ── Shadows ── */
+  --template-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --template-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  --template-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --template-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --template-shadow-glow: 0 0 20px rgba(99, 102, 241, 0.15);
+
+  /* ── Layout ── */
+  --template-max-width: 1200px;
+  --template-header-height: 4rem;
+
+  /* ── Apply base styles ── */
+  font-family: var(--template-font-sans);
+  line-height: var(--template-line-height);
+  color: var(--template-color-foreground);
+  background-color: var(--template-color-background);
+}
+
+/* ── Dark mode ── */
+[data-theme="ui-template"].dark,
+.dark [data-theme="ui-template"] {
+  --template-color-primary: #818cf8;
+  --template-color-primary-hover: #6366f1;
+  --template-color-primary-foreground: #ffffff;
+  --template-color-secondary: #a78bfa;
+  --template-color-secondary-hover: #8b5cf6;
+  --template-color-secondary-foreground: #ffffff;
+  --template-color-background: #09090b;
+  --template-color-surface: #18181b;
+  --template-color-foreground: #fafafa;
+  --template-color-muted: #27272a;
+  --template-color-muted-foreground: #a1a1aa;
+  --template-color-border: #3f3f46;
+  --template-color-accent: #1e1b4b;
+  --template-color-accent-foreground: #c4b5fd;
+  --template-color-destructive: #f87171;
+  --template-color-destructive-hover: #ef4444;
+  --template-color-destructive-foreground: #ffffff;
+
+  --template-gradient-hero: linear-gradient(135deg, #312e81 0%, #4c1d95 50%, #6d28d9 100%);
+  --template-gradient-surface: linear-gradient(180deg, #18181b 0%, #09090b 100%);
+  --template-gradient-subtle: linear-gradient(135deg, #1e1b4b 0%, #172554 100%);
+
+  --template-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --template-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px -1px rgba(0, 0, 0, 0.4);
+  --template-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
+  --template-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
+  --template-shadow-glow: 0 0 20px rgba(129, 140, 248, 0.2);
+}
+
+/* ──────────────────────────────────────────────
+   Component-level styles (scoped to data-theme)
+   ────────────────────────────────────────────── */
+
+/* Smooth transitions on interactive elements */
+[data-theme="ui-template"] button,
+[data-theme="ui-template"] a,
+[data-theme="ui-template"] input,
+[data-theme="ui-template"] select,
+[data-theme="ui-template"] textarea {
+  transition: all 0.2s ease;
+}
+
+/* Focus ring style */
+[data-theme="ui-template"] :focus-visible {
+  outline: 2px solid var(--template-color-primary);
+  outline-offset: 2px;
+  border-radius: var(--template-radius-sm);
+}
+
+/* Card utility class */
+[data-theme="ui-template"] .template-card {
+  background: var(--template-color-surface);
+  border: 1px solid var(--template-color-border);
+  border-radius: var(--template-radius-lg);
+  box-shadow: var(--template-shadow);
+  padding: var(--template-spacing-lg);
+}
+
+[data-theme="ui-template"] .template-card:hover {
+  box-shadow: var(--template-shadow-md);
+}
+
+/* Badge utility */
+[data-theme="ui-template"] .template-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: var(--template-font-weight-medium);
+  border-radius: var(--template-radius-full);
+  background: var(--template-color-accent);
+  color: var(--template-color-accent-foreground);
+}
+
+/* Divider utility */
+[data-theme="ui-template"] .template-divider {
+  border: none;
+  height: 1px;
+  background: var(--template-color-border);
+  margin: var(--template-spacing-lg) 0;
+}
