@@ -9,3 +9,15 @@ services:
       - '5432:5432'
     volumes:
       - .volume/data/postgres:/var/lib/postgresql/data
+
+  # Local email catcher — SMTP on 1025, web UI on http://localhost:8025
+  mailpit:
+    image: axllent/mailpit:latest
+    restart: unless-stopped
+    ports:
+      - '1025:1025' # SMTP
+      - '8025:8025' # Web UI
+    environment:
+      MP_MAX_MESSAGES: 500
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1

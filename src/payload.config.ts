@@ -14,6 +14,7 @@ import { pl } from '@payloadcms/translations/languages/pl'
 import { DEFAULT_LANGUAGE } from './i18n/const'
 import { PAYLOAD_LOCALES } from './i18n/payload-locales'
 import { corsOptions } from './payload/config/cors'
+import { mailOptions } from './payload/config/mail'
 import { plugins } from './payload/config/plugins'
 import { seedUsers } from './scripts/seed/users'
 import {
@@ -65,5 +66,6 @@ export default buildConfig({
   }),
   sharp,
   plugins,
+  email: mailOptions,
   cors: corsOptions,
 })

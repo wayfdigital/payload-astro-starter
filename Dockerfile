@@ -1,9 +1,9 @@
-# Dockerfile dla Next.js + Payload CMS (assembled starter)
-# Źródło: tools/ci-templates/ w monorepo Zavcode
+# Dockerfile for Next.js + Payload CMS (assembled starter)
+# Source: tools/ci-templates/ in the monorepo
 #
-# Build-args (przekazywane z GitHub Actions):
+# Build args (passed from GitHub Actions):
 #   NEXT_PUBLIC_SERVER_URL, NEXT_PUBLIC_URL, NEXT_PUBLIC_*_ALLOWED_ORIGINS,
-#   NEXT_PUBLIC_RECAPTCHA_SITE_KEY, NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY, itd.
+#   NEXT_PUBLIC_RECAPTCHA_SITE_KEY, NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY, etc.
 
 FROM node:22-alpine AS base
 RUN apk add --no-cache libc6-compat
@@ -67,5 +67,5 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# Migracje Payload przy starcie, potem Next.js
+# Run Payload migrations on startup, then Next.js
 CMD ["sh", "-c", "pnpm payload migrate && pnpm start"]
