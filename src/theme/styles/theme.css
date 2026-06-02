@@ -1,8 +1,8 @@
 /* ──────────────────────────────────────────────
-   ui-template — Base Theme Stylesheet
+   ui — Base Theme Stylesheet
    ────────────────────────────────────────────── */
 
-[data-theme="ui-template"] {
+[data-theme="ui"] {
   /* ── Palette ── */
   --template-color-primary: #6366f1;
   --template-color-primary-hover: #4f46e5;
@@ -73,8 +73,8 @@
 }
 
 /* ── Dark mode ── */
-[data-theme="ui-template"].dark,
-.dark [data-theme="ui-template"] {
+[data-theme="ui"].dark,
+.dark [data-theme="ui"] {
   --template-color-primary: #818cf8;
   --template-color-primary-hover: #6366f1;
   --template-color-primary-foreground: #ffffff;
@@ -109,23 +109,23 @@
    ────────────────────────────────────────────── */
 
 /* Smooth transitions on interactive elements */
-[data-theme="ui-template"] button,
-[data-theme="ui-template"] a,
-[data-theme="ui-template"] input,
-[data-theme="ui-template"] select,
-[data-theme="ui-template"] textarea {
+[data-theme="ui"] button,
+[data-theme="ui"] a,
+[data-theme="ui"] input,
+[data-theme="ui"] select,
+[data-theme="ui"] textarea {
   transition: all 0.2s ease;
 }
 
 /* Focus ring style */
-[data-theme="ui-template"] :focus-visible {
+[data-theme="ui"] :focus-visible {
   outline: 2px solid var(--template-color-primary);
   outline-offset: 2px;
   border-radius: var(--template-radius-sm);
 }
 
 /* Card utility class */
-[data-theme="ui-template"] .template-card {
+[data-theme="ui"] .template-card {
   background: var(--template-color-surface);
   border: 1px solid var(--template-color-border);
   border-radius: var(--template-radius-lg);
@@ -133,12 +133,12 @@
   padding: var(--template-spacing-lg);
 }
 
-[data-theme="ui-template"] .template-card:hover {
+[data-theme="ui"] .template-card:hover {
   box-shadow: var(--template-shadow-md);
 }
 
 /* Badge utility */
-[data-theme="ui-template"] .template-badge {
+[data-theme="ui"] .template-badge {
   display: inline-flex;
   align-items: center;
   padding: 0.125rem 0.625rem;
@@ -150,7 +150,7 @@
 }
 
 /* Divider utility */
-[data-theme="ui-template"] .template-divider {
+[data-theme="ui"] .template-divider {
   border: none;
   height: 1px;
   background: var(--template-color-border);

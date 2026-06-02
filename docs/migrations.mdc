@@ -1,0 +1,262 @@
+---
+description: Design for the automatic Payload (Postgres/Drizzle) migration system in the Vibe Studio desktop app — how the tool decides WHEN to migrate, HOW to run migrations non-interactively, and how it resolves conflicts (renames, type changes, deletes) with the least possible data loss. Read before touching scaffold/dev/migrate commands, the migration rewriter, or the Payload starter init.mdc files.
+globs: apps/desktop/src-tauri/src/commands/scaffold.rs,apps/desktop/src-tauri/src/commands/dev.rs,apps/desktop/src-tauri/src/commands/migrate.rs,apps/desktop/src-tauri/src/commands/git.rs,apps/desktop/templates/**/init.mdc
+alwaysApply: false
+---
+
+# Auto-migrations for Payload — design
+
+Payload on the **Postgres / Drizzle** adapter (which all three starters use:
+`create-payload-app … --db postgres`) needs schema **migrations**. Vibe Studio is a
+no-code / "vibecoding" tool — **the user is not a developer and must never see the
+word "migration", a CLI prompt, or a schema diff.** So the tool itself has to act as
+the developer: decide **when** to migrate, run it **non-interactively**, and resolve
+**conflicts** (renames, type changes, deletes) **with the least possible data loss**.
+
+**State: 📐 design — not yet implemented.** This is the plan + the research behind it.
+Vocabulary mirrors the History feature (`git-save-history.mdc`): users see **save**,
+**restore point**, **branch**; they never see "migration". Internally a save is a
+consistent triple **{ code + migration files + DB snapshot }**.
+
+> **Why this matters / current gap.** Today nothing in the tool touches migrations
+> (no `payload migrate`/`migrate:create` anywhere), Postgres runs in dev `push` mode
+> (auto-sync — interactive prompts on ambiguous changes), and **Restart does
+> `docker compose down -v` which wipes the DB volume**. So schema changes either hang
+> on a prompt in the PTY or silently lose data. This design closes that gap.
+
+---
+
+## TL;DR — the three decisions
+
+1. **`push: false` from the first second.** Patch the generated Postgres adapter so it
+   never auto-pushes. With push off, the dev server **never** opens an interactive
+   prompt (the killer for an unattended PTY), and the committed migration files become
+   the production deploy artifact (`payload migrate && pnpm build`).
+2. **The tool is the developer.** It runs `migrate:create → migrate → generate:types`
+   on the discrete events it already owns (scaffold, AI edit, dev start, save, restore).
+   It does not guess "when" — it delegates change-detection to Payload (`--skip-empty` /
+   empty-prune) and fires on triggers.
+3. **Least-destructive resolution.** A **migration rewriter** rewrites Drizzle's naive
+   output using the **intent the AI already knows** (rename vs delete) into
+   data-preserving SQL. A **DB snapshot before every risky migration** is the universal
+   undo, tied to the git save like everything else.
+
+---
+
+## How everyone else does this (research)
+
+| Tool | What it does on a field rename | Lesson |
+|---|---|---|
+| **Strapi** | Adds a new (null) column and **drops the old one → data lost** | ❌ The naive baseline we must avoid |
+| **Drizzle** (our adapter), non-interactive | Rename prompt is **hard to bypass**; `--force` doesn't cleanly skip it, and Drizzle **"sometimes treats a rename as drop + add"** → data lost | ⚠️ Never trust Drizzle's *decision* on a rename |
+| **Directus / PocketBase** | Identify fields by a **stable ID**, not by name → a rename is just a label change, **data stays** | ✅ The correct architecture |
+| **pgroll (Xata)** | Automates expand-contract: triggers + batched backfill + versioned views | ✅ Gold-standard *mechanics*, but **incompatible** with Payload (Payload owns the physical schema via Drizzle; pgroll overlays its own views) — inspiration only |
+| **Payload-native** (buildwithmatija) | Additive: add new field → backfill via job → remove old | ✅ Safe path *within* Payload's own migration system |
+
+**Core principle, borrowed from PocketBase:** *diff by identity, not by name.* PocketBase
+compares fields by a stable id (e.g. `text@a1b2c3d4`); its diff engine recognizes a
+rename (same id, new name) instead of treating it as delete + create, so data survives.
+
+**Our unfair advantage:** a generic migration tool must *guess* "rename or drop+add?".
+**Our AI knows** — it made the edit. That known intent is the lever for "resolve as
+best as possible."
+
+---
+
+## WHEN — event-driven (the tool owns every trigger)
+
+| Trigger | What the tool does | Why here |
+|---|---|---|
+| **Scaffold** (once/project) | compose up → baseline `migrate:create initial` → `migrate` → first commit includes migrations → snapshot DB | Fresh DB; baseline builds it |
+| **AI/chat changes schema files** ⭐ | run the migrate cycle as the **last step** of applying the edit, before "done" | The tool *knows* it changed `collections/`, `globals/`, `payload.config.ts` — no file watcher needed |
+| **Dev start** | `docker compose up -d --wait` → `payload migrate` → `pnpm dev` | Idempotent: brings a fresh DB up to schema, leaves a current one alone |
+| **Save** (the `git_commit` checkpoint) | bundle migration files into the commit → DB snapshot tagged with the new SHA | Every save = a consistent { code + migrations + data } triple |
+| **Restore to a save** | existing `git read-tree` → **load the DB snapshot for that SHA** | Payload has no "down to an arbitrary point"; the snapshot sidesteps it |
+| **Restart / Reset** (`compose down -v`) | after wiping the volume → `payload migrate` (+ re-seed) | Otherwise Reset leaves an **empty/broken** DB instead of a clean schema |
+
+> Key insight: the tool does **not** need to be clever about "when". It fires the cycle
+> on these events and lets Payload decide whether there's anything to migrate.
+
+---
+
+## HOW — concrete mechanics
+
+### 1. Patch the generated config at scaffold (once)
+Same technique as the existing `.env` `node -e` patch — inject into the
+`postgresAdapter({ … })` call:
+
+```ts
+postgresAdapter({
+  pool: { connectionString: process.env.DATABASE_URL },
+  push: false,                    // ⬅ the single most important line
+  migrationDir: './src/migrations',
+})
+```
+
+### 2. The migrate cycle (reusable routine, runs in the existing PTY, `cwd = project`)
+
+```bash
+docker compose up -d --wait                                  # DB must be alive
+npx --yes pnpm@10 payload migrate:create <slug> --force-accept-warning
+#   ⬇ rewriter inspects the new file: convert destructive ops, or delete if empty
+npx --yes pnpm@10 payload migrate                            # apply pending
+npx --yes pnpm@10 payload generate:types                     # keep types correct for AI/code
+```
+
+Mirror the existing `run.start` invocation style (`npx --yes pnpm@10 …`).
+
+> **⚠️ Flag gotcha — don't combine them, and don't trust the result on renames.**
+> - `--force-accept-warning` → accepts *every* prompt (guarantees non-blocking) **but
+>   also forces a migration file even with no changes**.
+> - `--skip-empty` → skips the "no changes — create blank?" prompt, **but does not
+>   auto-accept the destructive/rename warning**, so alone it can still hang.
+> - They conflict. **Always use `--force-accept-warning`** (never hang) **+ gate on
+>   "did schema files change" + prune empty files after.** And because Drizzle may turn
+>   a rename into drop+add, the **rewriter (below) overrides destructive ops before
+>   `migrate` runs them.**
+
+### 3. Safety net in the PTY
+Even with the flag, scan stdout for known prompt strings (`"Would you like to create"`,
+`"rename"`, `"[y/N]"`). They shouldn't appear; if they ever do, auto-answer or abort
+cleanly instead of hanging.
+
+---
+
+## CONFLICTS — the "least-destructive ladder"
+
+The tool classifies each change (it can — the AI made it), Drizzle generates raw SQL,
+and the **migration rewriter** rewrites it using the known intent. Payload migrations
+are editable `.ts` files (the docs literally say *"double-check the contents before you
+check in the created migration"*), so post-processing is supported by design.
+
+| Tier | Change | Strategy | Data loss |
+|---|---|---|---|
+| **0** | Add field / collection / index | Fast-path: `migrate:create --force-accept-warning && migrate`. No warning, no snapshot | **None** |
+| **1** | **Rename** field / collection | Rewriter replaces drop+add with `ALTER TABLE … RENAME COLUMN old TO new` (intent known) | **None** |
+| **2** | Type change (e.g. text→number) | Expand-contract w/ cast: new column → `UPDATE new = CAST(old …)` best-effort → rename/drop. Rows that fail the cast → null + a count reported to the user | Minimal, **reported** |
+| **3** | **Delete** field / narrow constraint | **Tombstone instead of DROP**: `RENAME COLUMN x TO __trash_x_<ts>` — data stays, hidden (Payload only renders columns it knows from config). A GC job drops tombstones after N days/restores | **Deferred & reversible** |
+
+### The biggest win: never `DROP` on the first destructive change
+Rewriting `DROP COLUMN` → `RENAME TO __trash_*` converts "data loss" into "data hidden,
+recoverable." Postgres doesn't mind an extra column, and Drizzle never sees it (it's not
+in the config), so it causes **no** conflict with future migrations. The GC job later
+drops `__trash_*` columns with raw SQL, outside Drizzle's view. This is a direct port of
+"stable id → data survives."
+
+### How the tool knows "rename" vs "delete + add" (PocketBase port)
+Two sources, ideally both:
+1. **Stable id in `field.custom`** — Payload allows arbitrary metadata via
+   `custom: { fieldId: 'uuid' }`. The tool injects an id into every field; diffing the
+   config before/after **by id** (like PocketBase's diff engine) unambiguously tells a
+   rename (same id, new name) from a delete+add (id gone). This is the hard fallback.
+2. **Intent from the AI edit** — the AI reports a structured "rename price→cost". Faster,
+   but less reliable than ids if the AI regenerates a field without carrying the id over.
+
+### Why rewriting is safe w.r.t. Drizzle's snapshot
+- **Rename:** after the rewrite the DB has `cost` (with data); Drizzle's snapshot records
+  `cost` as a normal column (config has `cost`). Consistent.
+- **Tombstone:** the DB has `__trash_x`; Drizzle's snapshot has neither `x` nor
+  `__trash_x` (config has neither). Drizzle won't try to manage `__trash_x`; Postgres
+  tolerates the extra column. Consistent until GC drops it.
+
+---
+
+## Snapshots & the git model
+
+- **DB snapshot before every Tier 1–3 migration** → instant undo through the existing
+  `git_restore` path. Tier 0 needs none. Snapshots use `pg_dump` *inside the container*
+  (no host Postgres required):
+
+  ```bash
+  docker compose exec -T db pg_dump -U postgres payload   > .mvp/snapshots/<sha>.sql
+  docker compose exec -T db psql    -U postgres -d payload < .mvp/snapshots/<sha>.sql
+  ```
+
+- **Snapshot-per-commit** (keyed by SHA, in a gitignored `.mvp/snapshots/` or app-data
+  dir) ties DB state to git saves. "Restore to save X" = `git read-tree X` (already
+  done) **+ load snapshot X**. This is what makes **restore and branch switching**
+  DB-consistent despite Payload having no down-to-target — and it pairs with tombstones:
+  even after GC, restoring an older snapshot brings the data back.
+
+---
+
+## Mapping to our code
+
+| File | Change |
+|---|---|
+| `src-tauri/src/commands/scaffold.rs` | Add the `push:false` config patch; baseline migration (needs compose up during scaffold) |
+| `templates/*/init.mdc` | New data-driven `migrate: { create, apply, types }` section (mirrors `run`); `run.start` += `&& payload migrate`; `run.restart` += re-migrate after `down -v` |
+| **new** `src-tauri/src/commands/migrate.rs` | `migrate_checkpoint(project_id)` → the full cycle; returns `{ created?, destructive?, castFailures? }`; exposed to the UI |
+| **new** migration rewriter (Rust or small node script) | Takes Drizzle's raw migration + the field-identity map → emits data-preserving SQL (Tier 1–3). The heart of "resolve as best as possible" |
+| `src-tauri/src/commands/db_snapshot.rs` (or extend `git.rs`) | `snapshot_db(sha)` / `restore_db(sha)`; wired into `git_commit` (snapshot after) and `git_restore_to_commit` (restore) |
+| `src-tauri/src/commands/ai.rs` / chat | After an edit that touches schema files, call `migrate_checkpoint` |
+
+---
+
+## Phasing
+
+- **Iteration 1 (90% of the safety, small cost):** `push:false` patch; baseline at
+  scaffold; `migrate` on dev start; Tier-0 fast-path after AI edits with
+  `--force-accept-warning` + empty-prune; `generate:types`; migration files committed via
+  existing `git_commit`; **DB snapshot before any migration**; **tombstone instead of
+  DROP**; `run.restart` re-migrates after the volume wipe. → the tool "knows how to
+  migrate" and **never hangs or silently loses data**.
+- **Iteration 2 (robustness):** the rename rewriter + field-identity map (`field.custom`);
+  snapshot-per-commit for restore/branch consistency; plain-language warnings for Tier 2/3;
+  stdout prompt-watch safety net.
+- **Iteration 3 (polish):** Tier-2 cast/backfill (expand-contract); idempotent re-seed;
+  tombstone GC job; `migrate:status` surfaced as a "health" indicator; production export
+  (the committed migrations are already the deploy artifact).
+
+---
+
+## Gotchas / tradeoffs
+
+> **⚠️ Rename + type change at once.** Known Drizzle bug (it keeps the rename but drops
+> the type change — issues #5499 / #3826). When both happen, force the Tier-2
+> expand-contract path instead of a plain `RENAME`.
+
+- **Tombstones accumulate** → GC is mandatory; Postgres caps a table at 1600 columns
+  (a non-issue in practice, but GC must exist).
+- **The rewriter parses Drizzle's SQL** — a maintenance surface. Alternative: author
+  Tier 1–3 migrations directly from the AI's structured intent and use Drizzle only for
+  Tier 0.
+- **`push:false` means a schema edit only takes effect after a migrate cycle** — fine,
+  because the tool runs the cycle as part of applying the edit; the user just sees
+  "applying changes…".
+- **User-facing message** for Tier 2/3 (exactly the requested behaviour): *"We're
+  changing X; this can affect data in Y records. We made a backup — you can undo."*
+
+---
+
+## Open decisions (confirm before building)
+
+1. **Must user content survive restore & branch switching?** Assumed **yes** (it's a CMS;
+   the user builds pages/products) → snapshot-per-commit (Iteration 2). If data is
+   disposable → `migrate:fresh` + re-seed is enough and Iteration 2 shrinks.
+2. **Do schema changes come only from the AI/chat?** The codebase suggests yes → trigger =
+   "after an AI edit". If the user can hand-edit files too → add a debounced watcher on
+   `src/collections|globals` + `payload.config.ts`.
+3. **Identity source for renames** — `field.custom` ids (robust) vs AI-reported intent
+   (fast)? Recommendation: both, ids as the hard fallback.
+
+---
+
+## Sources
+
+- [Payload — Migrations docs](https://payloadcms.com/docs/database/migrations)
+- [Payload — Postgres adapter (push mode)](https://payloadcms.com/docs/database/postgres)
+- [Schema evolution without data loss in Payload — buildwithmatija](https://www.buildwithmatija.com/blog/schema-evolution-without-data-loss)
+- [Disable push mode, migration-only in production — buildwithmatija](https://www.buildwithmatija.com/blog/payloadcms-postgres-push-to-migrations)
+- [PocketBase — Auto-migrations architecture (DeepWiki)](https://deepwiki.com/pocketbase/pocketbase/7.2-auto-migrations)
+- [PocketBase — Migration architecture (DeepWiki)](https://deepwiki.com/pocketbase/pocketbase/7.1-migration-architecture)
+- [drizzle-kit: pushSchema requires manual input on rename — issue #4651](https://github.com/drizzle-team/drizzle-orm/issues/4651)
+- [drizzle-kit generate: migration missing renamed column's changes — issue #3826](https://github.com/drizzle-team/drizzle-orm/issues/3826)
+- [drizzle-kit: rename + length change only detects the rename — issue #5499](https://github.com/drizzle-team/drizzle-orm/issues/5499)
+- [Strapi — renaming a field erases existing data — issue #12626](https://github.com/strapi/strapi/issues/12626)
+- [Directus — ability to rename collections/fields — discussion #2711](https://github.com/directus/directus/discussions/2711)
+- [pgroll: zero-downtime, reversible schema migrations for Postgres — Xata](https://xata.io/blog/pgroll-schema-migrations-postgres)
+- [pgroll — GitHub](https://github.com/xataio/pgroll)
+- [Expand and contract pattern — Prisma's Data Guide](https://www.prisma.io/dataguide/types/relational/expand-and-contract-pattern)
+- [Backward compatible database changes — PlanetScale](https://planetscale.com/blog/backward-compatible-databases-changes)
+- [Expand and Contract — Tim Wellhausen](https://www.tim-wellhausen.de/papers/ExpandAndContract/ExpandAndContract.html)

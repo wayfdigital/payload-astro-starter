@@ -1,4 +1,4 @@
-import { Hero, Button } from '@/ui-template'
+import { Hero, Button } from '@/theme'
 import type { BasePageHero } from '../index'
 
 type DefaultHeroProps = Omit<BasePageHero, 'type' | 'eyebrow'>

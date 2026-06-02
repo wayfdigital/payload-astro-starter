@@ -1,4 +1,4 @@
-import { Container, Text } from '@/ui-template'
+import { Container, Text } from '@/theme'
 import type { FormBlockSectionProps } from '../index'
 
 export const DefaultFormBlockVariant = ({ enableIntro, introContent }: FormBlockSectionProps) => {

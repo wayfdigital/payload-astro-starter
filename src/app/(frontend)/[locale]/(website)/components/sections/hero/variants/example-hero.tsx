@@ -1,4 +1,4 @@
-import { Container, Heading, Text, Button } from '@/ui-template'
+import { Container, Heading, Text, Button } from '@/theme'
 import type { ExamplePageHero } from '../index'
 
 type ExampleHeroProps = Omit<ExamplePageHero, 'type'>

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Header, Footer } from '@/ui-template'
+import { Header, Footer } from '@/theme'
 
 interface WebsiteLayoutProps {
   children: React.ReactNode

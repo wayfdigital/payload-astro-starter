@@ -1,4 +1,4 @@
-import { Container, Heading, Text, Button } from '@/ui-template'
+import { Container, Heading, Text, Button } from '@/theme'
 import { Link } from '@/i18n/navigation'
 
 export default function NotFound() {

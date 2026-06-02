@@ -1,4 +1,4 @@
-import { Container, Heading, Text } from '@/ui-template'
+import { Container, Heading, Text } from '@/theme'
 import type { PageContentSectionProps } from '../index'
 
 type PageContent1VariantProps = Extract<PageContentSectionProps, { blockType: 'page-content-1' }>

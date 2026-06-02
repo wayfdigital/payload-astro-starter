@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { Container, Heading, Text, Button } from '@/ui-template'
+import { Container, Heading, Text, Button } from '@/theme'
 
 export default function Error({
   error,
