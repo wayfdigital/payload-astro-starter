@@ -1,11 +1,9 @@
 import { createNavigation } from 'next-intl/navigation'
 import { defineRouting } from 'next-intl/routing'
-import { DEFAULT_LANGUAGE, LANGUAGES } from './const'
-
-const locales = Object.keys(LANGUAGES) as Array<keyof typeof LANGUAGES>
+import { DEFAULT_LANGUAGE, LOCALE_CODES } from './const'
 
 export const routing = defineRouting({
-  locales,
+  locales: [...LOCALE_CODES],
   defaultLocale: DEFAULT_LANGUAGE,
   localePrefix: 'as-needed',
   localeDetection: false,

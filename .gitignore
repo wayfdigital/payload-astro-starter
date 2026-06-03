@@ -54,3 +54,6 @@ Thumbs.db
 
 # claude code — local-only overrides
 .claude/settings.local.json
+
+# dependency-cruiser — generated graph
+/dependency-graph.svg

@@ -26,7 +26,7 @@ const fetchPageBySlug = async (locale: Locale, slug: string): Promise<Page | nul
     depth: 2,
   })
 
-  return (docs[0] as Page | undefined) ?? null
+  return (docs[0]) ?? null
 }
 
 /** Returns a page by slug for `locale`, backed by `unstable_cache` and tag `page:${locale}:${slug}`. */
@@ -52,9 +52,7 @@ const fetchLocalizedSlugsByPageId = async (
     depth: 0,
     locale: 'all',
   })
-  return collectLocalizedSlugValues(doc.slug, LOCALE_CODES) as Partial<
-    Record<Locale, string>
-  >
+  return collectLocalizedSlugValues(doc.slug, LOCALE_CODES)
 }
 
 /** Cached per-locale slugs for a page document (`findByID` + `locale: 'all'`). */
@@ -84,5 +82,5 @@ export const getCachedLocalizedSlugsForPath = async (
   if (page?.id == null) {
     return null
   }
-  return getCachedLocalizedSlugsByPageId(String(page.id))
+  return getCachedLocalizedSlugsByPageId(page.id)
 }

@@ -6,7 +6,7 @@ import { LayoutSections, type PageSection } from './layout-sections'
 
 export type SectionType = PageSection['blockType']
 
-type PageBuilderProps = {
+interface PageBuilderProps {
   sections?: PageSection[] | null
   hero: PageHero
 }

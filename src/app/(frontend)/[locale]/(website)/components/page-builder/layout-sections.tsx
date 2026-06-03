@@ -1,3 +1,4 @@
+import type { ComponentType } from 'react'
 import { createLayoutBuilder } from '@/utils/layout-builder'
 import type { Page } from '@/payload-types'
 import ExampleBlockSection from '../sections/example-block'
@@ -7,7 +8,7 @@ import PageContentSection from '../sections/page-content'
 /** One CMS layout block from `page.layout` */
 type BasePageSection = NonNullable<Page['layout']>[number]
 
-type ExampleBlockSectionType = {
+interface ExampleBlockSectionType {
   id?: string | null
   blockType: 'exampleBlock'
   title: string
@@ -19,11 +20,7 @@ type ExampleBlockSectionType = {
 export type PageSection = BasePageSection | ExampleBlockSectionType
 
 /** Add block components here: `sectionMap['page-content-1'] = PageContent1` */
-const sectionMap: {
-  [K in PageSection['blockType']]: React.ComponentType<
-    Extract<PageSection, { blockType: K }>
-  >
-} = {
+const sectionMap: Record<string, ComponentType<PageSection>> = {
   'page-content-1': PageContentSection,
   'page-content-2': PageContentSection,
   'page-content-3': PageContentSection,

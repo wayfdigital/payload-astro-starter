@@ -13,7 +13,7 @@ export const recaptchaValidationSchema = z.object({
 })
 
 export async function verifyRecaptcha(token: string): Promise<boolean> {
-  const secretKey = process.env.NEXT_PRIVATE_RECAPTCHA_SECRET_KEY || ''
+  const secretKey = process.env.NEXT_PRIVATE_RECAPTCHA_SECRET_KEY ?? ''
 
   if (!secretKey) {
     throw new Error('reCAPTCHA secret key not configured')
@@ -24,7 +24,7 @@ export async function verifyRecaptcha(token: string): Promise<boolean> {
     { method: 'POST' }
   )
 
-  const data = await response.json()
+  const data: unknown = await response.json()
   const parsed = recaptchaResponseSchema.safeParse(data)
 
   return parsed.success && parsed.data.success

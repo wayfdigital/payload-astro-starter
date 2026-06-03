@@ -1,7 +1,7 @@
 import { Link } from '@/i18n/navigation'
 import React from 'react'
 
-type CMSLinkType = {
+interface CMSLinkType {
   children?: React.ReactNode
   className?: string
   label?: string | null
@@ -32,7 +32,7 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
     : {}
 
   return (
-    <Link className={className} href={href || url || ''} {...newTabProps}>
+    <Link className={className} href={href} {...newTabProps}>
       {label && label}
       {children && children}
     </Link>

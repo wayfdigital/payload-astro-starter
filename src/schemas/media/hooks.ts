@@ -1,5 +1,4 @@
 import { z } from 'zod'
-import type { Media as PayloadMedia } from '@/payload-types'
 import {
   PaginatedResponseSchema,
   BaseQueryParamsSchema,
@@ -40,15 +39,15 @@ export const uploadSchemas = {
       .object({
         id: z.number(),
         alt: z.string(),
-        url: z.string().url(),
+        url: z.url(),
         filename: z.string(),
         mimeType: z.string(),
         filesize: z.number(),
         width: z.number().optional(),
         height: z.number().optional(),
-        createdAt: z.string().datetime(),
-        updatedAt: z.string().datetime(),
+        createdAt: z.iso.datetime(),
+        updatedAt: z.iso.datetime(),
       })
-      .passthrough(),
+      .loose(),
   },
 } satisfies Schemas

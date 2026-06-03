@@ -4,7 +4,7 @@ import { DefaultFormBlockVariant } from './variants/default-form-block'
 
 export type FormBlockSectionProps = Extract<PageSection, { blockType: 'formBlock' }>
 
-export const FormBlockSection: FC<FormBlockSectionProps> = (props) => {
+export const FormBlockSection: FC<PageSection> = (props) => {
   if (props.blockType === 'formBlock') {
     return <DefaultFormBlockVariant {...props} />
   }

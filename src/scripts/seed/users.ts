@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+ 
 
 import type { Payload } from 'payload'
 

@@ -1,4 +1,4 @@
-type LinkFieldOptions = {
+interface LinkFieldOptions {
   appearances?: boolean
 }
 

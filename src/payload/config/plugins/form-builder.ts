@@ -1,7 +1,11 @@
 import { PayloadRequest, Plugin } from 'payload'
 import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
 import { revalidateTag } from 'next/cache'
+import { z } from 'zod'
 import { verifyRecaptcha } from '@/schemas/forms'
+
+const recaptchaSiblingSchema = z.object({ form: z.string() })
+const formRecaptchaSchema = z.object({ requireRecaptcha: z.boolean() }).partial()
 
 export const formBuilderPluginConfig: Plugin = formBuilderPlugin({
   fields: {
@@ -30,7 +34,11 @@ export const formBuilderPluginConfig: Plugin = formBuilderPlugin({
     hooks: {
       afterChange: [
         ({ doc }) => {
-          revalidateTag(`form-${doc.title}`)
+          const formDoc: unknown = doc
+          const parsed = z.object({ title: z.string() }).safeParse(formDoc)
+          if (parsed.success) {
+            revalidateTag(`form-${parsed.data.title}`)
+          }
         },
       ],
     },
@@ -48,12 +56,16 @@ export const formBuilderPluginConfig: Plugin = formBuilderPlugin({
             siblingData,
           }: { req: PayloadRequest; siblingData: Record<string, unknown> }
         ) => {
-          const form = (await req.payload.findByID({
-            id: siblingData?.form as string,
-            collection: 'forms' as 'media',
-          })) as { requireRecaptcha?: boolean } | null
+          const sibling = recaptchaSiblingSchema.safeParse(siblingData)
+          if (!sibling.success) return true
 
-          if (!form?.requireRecaptcha) return true
+          const form = await req.payload.findByID({
+            id: sibling.data.form,
+            collection: 'forms',
+          })
+          const formConfig = formRecaptchaSchema.safeParse(form)
+          if (!formConfig.success || !formConfig.data.requireRecaptcha) return true
+
           if (!value || typeof value !== 'string')
             return 'Please complete the reCAPTCHA'
 

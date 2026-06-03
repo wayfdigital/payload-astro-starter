@@ -1,27 +1,28 @@
 import { routing } from './navigation'
+import { isLocale } from './const'
 
 export type Namespace = 'common' | 'forms' | 'errors'
 
 export type Messages = Record<string, unknown>
 
+/** Type guard for a plain (non-array) message object. */
+const isMessages = (value: unknown): value is Messages =>
+  typeof value === 'object' && value !== null && !Array.isArray(value)
+
 export async function getMessages(locale: string, namespaces: Namespace[]): Promise<Messages> {
-  const validLocale =
-    locale && routing.locales.includes(locale as (typeof routing.locales)[number])
-      ? locale
-      : routing.defaultLocale
+  const validLocale = isLocale(locale) ? locale : routing.defaultLocale
 
   const messages: Messages = {}
 
   await Promise.all(
-    namespaces.map(async namespace => {
+    namespaces.map(async (namespace) => {
       try {
-        const namespaceMessages = await loadNamespace(validLocale, namespace)
-        messages[namespace] = namespaceMessages
+        messages[namespace] = await loadNamespace(validLocale, namespace)
       } catch (error) {
         console.error(`Failed to load namespace ${namespace} for locale ${validLocale}:`, error)
         messages[namespace] = {}
       }
-    })
+    }),
   )
 
   return messages
@@ -29,44 +30,23 @@ export async function getMessages(locale: string, namespaces: Namespace[]): Prom
 
 async function loadNamespace(locale: string, namespace: Namespace): Promise<Messages> {
   try {
-    const messages = await import(`./messages/${locale}/${namespace}.json`)
-    return messages.default
+    const mod: unknown = await import(`./messages/${locale}/${namespace}.json`)
+    if (!isMessages(mod)) {
+      return {}
+    }
+    const content = mod.default
+    return isMessages(content) ? content : {}
   } catch {
     console.warn(`Namespace ${namespace} not found for locale ${locale}`)
     return {}
   }
 }
 
-function deepMerge(target: Messages, source: Messages): Messages {
-  const output = { ...target }
-
-  for (const key in source) {
-    const sourceValue = source[key]
-    const targetValue = output[key]
-
-    if (
-      sourceValue &&
-      typeof sourceValue === 'object' &&
-      !Array.isArray(sourceValue) &&
-      targetValue &&
-      typeof targetValue === 'object' &&
-      !Array.isArray(targetValue)
-    ) {
-      output[key] = deepMerge(targetValue as Messages, sourceValue as Messages)
-    } else {
-      output[key] = sourceValue
-    }
-  }
-
-  return output
-}
-
 export function flattenMessages(messages: Messages): Messages {
   const flattened: Messages = {}
 
-  for (const namespace of Object.keys(messages)) {
-    const namespaceMessages = messages[namespace]
-    if (typeof namespaceMessages === 'object' && namespaceMessages !== null) {
+  for (const namespaceMessages of Object.values(messages)) {
+    if (isMessages(namespaceMessages)) {
       Object.assign(flattened, namespaceMessages)
     }
   }
@@ -75,44 +55,19 @@ export function flattenMessages(messages: Messages): Messages {
 }
 
 export async function getAllMessages(locale: string): Promise<Messages> {
-  const validLocale =
-    locale && routing.locales.includes(locale as (typeof routing.locales)[number])
-      ? locale
-      : routing.defaultLocale
-
-  const messages: Messages = {}
-
+  const validLocale = isLocale(locale) ? locale : routing.defaultLocale
   const allNamespaces: Namespace[] = ['common', 'forms', 'errors']
 
-  const namespaceResults = await Promise.allSettled(
-    allNamespaces.map(async namespace => {
-      try {
-        const namespaceMessages = await import(`./messages/${validLocale}/${namespace}.json`)
-        return { namespace, messages: namespaceMessages.default }
-      } catch {
-        return { namespace, messages: null }
-      }
-    })
+  const results = await Promise.all(
+    allNamespaces.map(async (namespace) => ({
+      namespace,
+      messages: await loadNamespace(validLocale, namespace),
+    })),
   )
 
-  for (const result of namespaceResults) {
-    if (result.status === 'fulfilled' && result.value.messages) {
-      const { namespace, messages: namespaceMessages } = result.value
-
-      if (namespaceMessages && typeof namespaceMessages === 'object') {
-        if (namespace in namespaceMessages) {
-          messages[namespace] = deepMerge(
-            (messages[namespace] as Messages) || {},
-            namespaceMessages[namespace] as Messages
-          )
-        } else {
-          messages[namespace] = deepMerge(
-            (messages[namespace] as Messages) || {},
-            namespaceMessages
-          )
-        }
-      }
-    }
+  const messages: Messages = {}
+  for (const { namespace, messages: namespaceMessages } of results) {
+    messages[namespace] = namespaceMessages
   }
 
   return messages

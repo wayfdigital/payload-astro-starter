@@ -13,7 +13,7 @@ const DefaultHero = (hero: DefaultHeroProps) => {
       alignment={alignment}
       variant={hero.background === 'gradient' ? 'gradient' : 'default'}
       actions={
-        hero.cta?.enabled && hero.cta?.text ? (
+        hero.cta?.enabled && hero.cta.text ? (
           <a href={hero.cta.url ?? '/'}>
             <Button>{hero.cta.text}</Button>
           </a>

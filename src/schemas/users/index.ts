@@ -1,6 +1,5 @@
 import { z } from 'zod'
 import type { User } from '@/payload-types'
-import { optionalPhoneNumberSchema } from '@/schemas/common/phone-validator'
 
 export const userSchema = z.object({
   id: z.string(),
@@ -11,19 +10,19 @@ export const userSchema = z.object({
 }) satisfies z.ZodType<Partial<User>>
 
 export const loginSchema = z.object({
-  email: z.string().email(),
+  email: z.email(),
   password: z.string().min(1),
 })
 export type LoginInput = z.infer<typeof loginSchema>
 
 export const registerSchema = z.object({
-  email: z.string().email(),
+  email: z.email(),
   password: z.string().min(1),
-}).passthrough()
+}).loose()
 export type RegisterInput = z.infer<typeof registerSchema>
 
 export const forgotPasswordSchema = z.object({
-  email: z.string().email(),
+  email: z.email(),
 })
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>
 
@@ -34,7 +33,7 @@ export const resetPasswordSchema = z.object({
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>
 
 export const unlockSchema = z.object({
-  email: z.string().email(),
+  email: z.email(),
 })
 export type UnlockInput = z.infer<typeof unlockSchema>
 

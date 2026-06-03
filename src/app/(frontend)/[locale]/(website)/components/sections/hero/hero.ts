@@ -50,7 +50,7 @@ export const heroField: Field = {
       ],
       defaultValue: 'center',
       admin: {
-        condition: (data, siblingData) => siblingData.type === 'default',
+        condition: (_data, siblingData) => siblingData.type === 'default',
       },
     },
     {
@@ -65,7 +65,7 @@ export const heroField: Field = {
       ],
       defaultValue: 'none',
       admin: {
-        condition: (data, siblingData) => siblingData.type === 'default',
+        condition: (_data, siblingData) => siblingData.type === 'default',
       },
     },
     {
@@ -78,7 +78,7 @@ export const heroField: Field = {
         { name: 'url', type: 'text', label: 'Button URL', defaultValue: '/' },
       ],
       admin: {
-        condition: (data, siblingData) => siblingData.type === 'default',
+        condition: (_data, siblingData) => siblingData.type === 'default',
       },
     },
   ],

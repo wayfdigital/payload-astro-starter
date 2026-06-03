@@ -9,7 +9,7 @@ export interface ContactProps {
   phone?: string
   email?: string
   reservationsUrl?: string
-  hours?: ReadonlyArray<{ days: string; hours: string }>
+  hours?: readonly { days: string; hours: string }[]
 }
 
 export function Contact({

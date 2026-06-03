@@ -9,7 +9,7 @@ export type PageContentSectionProps = Extract<
   { blockType: 'page-content-1' | 'page-content-2' | 'page-content-3' }
 >
 
-export const PageContentSection: FC<PageContentSectionProps> = (props) => {
+export const PageContentSection: FC<PageSection> = (props) => {
   switch (props.blockType) {
     case 'page-content-1':
       return <PageContent1Variant {...props} />

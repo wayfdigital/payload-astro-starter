@@ -1,4 +1,4 @@
-import type { CSSProperties, HTMLAttributes, ReactNode } from 'react'
+import type { HTMLAttributes, ReactNode } from 'react'
 
 export interface HeadingProps extends HTMLAttributes<HTMLHeadingElement> {
   level?: 1 | 2 | 3 | 4 | 5 | 6
@@ -25,7 +25,7 @@ export function Heading({
   return (
     <Tag
       className={[levelStyles[level], className].join(' ')}
-      style={{ color: 'var(--template-color-foreground)', ...style } as CSSProperties}
+      style={{ color: 'var(--template-color-foreground)', ...style }}
       {...props}
     >
       {children}

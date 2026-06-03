@@ -49,7 +49,7 @@ export default buildConfig({
   globals: [FooterSettings, CookieSettings],
   blocks: [pageContentBlock1, pageContentBlock2, pageContentBlock3, FormBlock, ExampleBlock],
   editor: lexicalEditor(),
-  secret: process.env.PAYLOAD_SECRET || '',
+  secret: process.env.PAYLOAD_SECRET ?? '',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
@@ -59,7 +59,7 @@ export default buildConfig({
   },
   db: postgresAdapter({
     pool: {
-      connectionString: process.env.DATABASE_URI || '',
+      connectionString: process.env.DATABASE_URI ?? '',
     },
     idType: 'uuid',
     push: false,

@@ -18,7 +18,9 @@ const adminOrOwner = async ({
   const parsedRouteParams = routeParamsParser.safeParse(req.routeParams)
   if (!parsedRouteParams.success) return false
 
-  const collection = parsedRouteParams.data.collection as CollectionSlug
+  const { collection } = parsedRouteParams.data
+  const isCollectionSlug = (slug: string): slug is CollectionSlug => slug in req.payload.collections
+  if (!isCollectionSlug(collection)) return false
 
   if (id) {
     const collectionItem = await req.payload.findByID({

@@ -6,7 +6,7 @@ interface WebsiteLayoutProps {
   params: Promise<{ locale: string }>
 }
 
-const WebsiteLayout = async ({ children }: WebsiteLayoutProps) => {
+const WebsiteLayout = ({ children }: WebsiteLayoutProps) => {
   return (
     <main className="flex min-h-screen flex-col">
       <Header logo={<span className="text-lg font-bold">Website Starter</span>} />

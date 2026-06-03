@@ -4,7 +4,7 @@ import { ExampleBlockVariant } from './variants/example-block'
 
 export type ExampleBlockSectionProps = Extract<PageSection, { blockType: 'exampleBlock' }>
 
-export const ExampleBlockSection: FC<ExampleBlockSectionProps> = (props) => {
+export const ExampleBlockSection: FC<PageSection> = (props) => {
   if (props.blockType === 'exampleBlock') {
     return <ExampleBlockVariant {...props} />
   }

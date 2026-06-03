@@ -2,7 +2,7 @@ import type { Page } from '@/payload-types'
 
 import PageBuilder from '../../components/page-builder/page-builder'
 
-type DynamicPageContentProps = {
+interface DynamicPageContentProps {
   page: Page
 }
 

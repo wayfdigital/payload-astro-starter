@@ -1,16 +1,17 @@
+export const LOCALE_CODES = ['en', 'pl'] as const
+
+export type Locale = (typeof LOCALE_CODES)[number]
+
 export const LANGUAGES = {
-  en: {
-    code: 'en',
-    name: 'English',
-  },
-  pl: {
-    code: 'pl',
-    name: 'Polski',
-  },
-} as const
+  en: { code: 'en', name: 'English' },
+  pl: { code: 'pl', name: 'Polski' },
+} as const satisfies Record<Locale, { code: Locale; name: string }>
 
-export const DEFAULT_LANGUAGE = 'en'
+export const DEFAULT_LANGUAGE: Locale = 'en'
 
-export type Locale = keyof typeof LANGUAGES
+/** Type guard: narrows an arbitrary string to a supported `Locale`. */
+export const isLocale = (value: string): value is Locale =>
+  LOCALE_CODES.some((code) => code === value)
 
-export const LOCALE_CODES = Object.keys(LANGUAGES) as [Locale, ...Locale[]]
+/** Narrows a string to a `Locale`, falling back to {@link DEFAULT_LANGUAGE}. */
+export const toLocale = (value: string): Locale => (isLocale(value) ? value : DEFAULT_LANGUAGE)

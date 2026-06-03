@@ -5,9 +5,12 @@ interface SectionBase {
   blockType: string
 }
 
-type SectionMap<TSection extends SectionBase> = {
-  [K in TSection['blockType']]: ComponentType<Extract<TSection, { blockType: K }>>
-}
+/**
+ * Maps every `blockType` to a component that accepts the full section union and
+ * self-narrows (each section entry does `if (props.blockType === '…')`). This keeps
+ * the lookup type-safe without any assertions.
+ */
+type SectionMap<TSection extends SectionBase> = Record<string, ComponentType<TSection>>
 
 interface LayoutBuilderProps<TSection extends SectionBase> {
   sections?: TSection[] | null
@@ -16,8 +19,6 @@ interface LayoutBuilderProps<TSection extends SectionBase> {
 export function createLayoutBuilder<TSection extends SectionBase>(
   sectionMap: SectionMap<TSection>,
 ): ComponentType<LayoutBuilderProps<TSection>> {
-  const availableTypes = new Set(Object.keys(sectionMap))
-
   function LayoutBuilder({ sections }: LayoutBuilderProps<TSection>): JSX.Element | null {
     if (!sections || sections.length === 0) {
       return null
@@ -26,14 +27,13 @@ export function createLayoutBuilder<TSection extends SectionBase>(
     return (
       <>
         {sections.map((section, index) => {
-          if (!availableTypes.has(section.blockType)) {
+          const SectionComponent = sectionMap[section.blockType]
+          if (!SectionComponent) {
             if (process.env.NODE_ENV !== 'production') {
               console.warn(`[LayoutBuilder] Unknown blockType: "${section.blockType}"`)
             }
             return null
           }
-          const blockType = section.blockType as TSection['blockType']
-          const SectionComponent = sectionMap[blockType] as ComponentType<TSection>
           const key = section.id ?? `${section.blockType}-${index}`
 
           return <SectionComponent key={key} {...section} />

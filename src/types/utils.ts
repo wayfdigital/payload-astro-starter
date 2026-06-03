@@ -1,6 +1,6 @@
-import type { z, ZodSchema } from 'zod'
+import type { z } from 'zod'
 
-export type Schemas = Record<string, { input: ZodSchema; output: ZodSchema }>
+export type Schemas = Record<string, { input: z.ZodType; output: z.ZodType }>
 
 export type InferSchemas<T extends Schemas = Schemas> = {
   [Property in keyof T]: {
@@ -12,7 +12,7 @@ export type InferSchemas<T extends Schemas = Schemas> = {
 export type QueryKeys<TSchemas extends InferSchemas> = {
   [Property in keyof TSchemas]: (
     params: TSchemas[Property]['input']
-  ) => Array<string>
+  ) => string[]
 }
 
 export type ServerService<TSchemas extends InferSchemas> = {
