@@ -1,163 +1,148 @@
 ---
 name: website-layout-sections
 description: >-
-  Adds a new CMS-driven layout section (Payload blocks field + Next.js renderer)
-  for apps/website. Covers Block definition, registration in Pages and
-  payload.config, layout-sections map, folder layout, and types/migrations.
-  Use when creating a new page section, layout block, "nowa sekcja",
-  workflow/grid-style block, or extending the page builder layout.
+  Adds a new CMS-driven layout section (Payload `blocks` field + Next.js renderer)
+  in this standalone repo. Covers Block definition, dual registration (Pages
+  collection + payload.config), the page-builder section map, folder layout, the
+  `@/theme` renderer, types, and migrations. Use when creating a new page section,
+  layout block, "nowa sekcja", a marketing/grid/CTA/testimonials block, or
+  extending the page builder layout.
 ---
 
 # Website layout sections (Payload + page builder)
 
+This repo is **standalone** — all code lives under `src/`, the import alias `@/*` → `./src/*`,
+and the UI/theme alias is **`@/theme`** → `src/theme/`. (There is no `apps/website`, no
+`getPayloadImageUrl`, and no `.cursor/rules` here.)
+
 ## Scope
 
-Layout sections are **blocks** inside `pages` → tab **Content** → field `layout`. They are **not** the Hero tab (that uses `heroField` on the page doc, not `layout`).
+Layout sections are **blocks** in the `pages` collection → field **`layout`**. They are **not**
+the Hero — Hero is a `heroField` **group** on the page doc (see
+[`sections/hero/hero.ts`](../../../src/app/(frontend)/[locale]/(website)/components/sections/hero/hero.ts))
+and is rendered separately, not from the `layout` array.
 
-**Reference implementation (current standard):**
+**Reference implementations (read these first):**
 
-- `apps/website/src/app/(frontend)/[locale]/(website)/components/sections/products/`
+- `src/app/(frontend)/[locale]/(website)/components/sections/example-block/` — cleanest single block; copy this shape.
+- `…/components/sections/page-content/` — one folder, **three** blocks (`page-content-1/2/3`).
+- `…/components/sections/form-block/` — block backed by the form-builder plugin.
 
-Older single-block sections (still valid, but prefer the products pattern for new work):
-
-- `sections/grid/`, `sections/workflow/`, `sections/cta/`
-
-## Products pattern (multi-block feature folder)
-
-One **feature folder** can own **several Payload blocks** that belong together (different `slug` / `blockType`, shared UI domain). The page builder still sees them as separate blocks in the layout array; the frontend groups them under one section module.
-
-1. **`fields.ts`** — barrel file that **re-exports** each block from `fields/<block>.ts` (one `Block` export per file, each with `slug`, **`dbName`**, **`interfaceName`** per `.cursor/rules/payload-block-definition-metadata.mdc`).
-2. **`fields/<block>.ts`** — single `export const …Fields: Block = { … }` for one block (e.g. `featuredProducts`, `currentDevelopment`).
-3. **`index.tsx`** — one **`ProductsSection`-style** component:
-   - `export type XSectionProps = NonNullable<BlockA | BlockB | …>` using generated types from `@/payload-types`.
-   - **`switch (props.blockType)`** to render the correct variant wrapper (`return null` in `default` for exhaustiveness).
-4. **`variants/<kebab-case-block-theme>/`** — implementation for each block: main file (e.g. `products-showcase.tsx`, `current-development.tsx`) plus splits (`list.tsx`, `terminal.tsx`, views, `utils.ts`) to stay under **600 lines** (`.cursor/rules/cognitive-complexity.mdc`).
-5. **Inner visual modes** — use a **`select`** on the block (e.g. **`variant`**: `list` | `terminal`) when one block has multiple UIs. Prefer clear names; `products` uses `variant` rather than overloading `type` when `blockType` already discriminates blocks.
-
-## Checklist (do in order)
-
-1. **Scaffold** under `sections/<feature>/` using the folder structure below (barrel `fields.ts` if multiple blocks, or a single `fields.ts` with one block for a tiny section).
-2. **Define each Block** in `fields/<name>.ts` with `slug`, **`dbName`**, **`interfaceName`**, and admin `labels` when helpful.
-3. **Register every block in two places** (keep lists identical):
-   - `apps/website/src/payload/collections/Pages.ts` — `layout` → `blocks: [..., BlockA, BlockB]`
-   - `apps/website/src/payload.config.ts` — top-level `blocks: [..., BlockA, BlockB]`
-4. **Wire `layout-sections.tsx`** (`apps/website/src/app/(frontend)/[locale]/(website)/components/page-builder/layout-sections.tsx`):
-   - Import the section entry component once.
-   - Add **one map entry per `blockType`**. Multiple slugs may point to the **same** component when using the multi-block folder pattern (e.g. `featuredProducts` and `currentDevelopment` both → `ProductsSection`).
-5. **Regenerate types** from `apps/website`: `pnpm run types:generate` (updates `apps/website/src/payload-types.ts`).
-6. **Database**: after schema changes, create/run a Payload migration as usual (`migration:generate` / `db:migrate` per `apps/website/package.json`).
-7. **Images**: any `Media` (or media-like) URLs in the section UI must use **`getPayloadImageUrl`** from `@/utils/get-payload-image` (see **Images** below).
-
-## Folder structure
-
-**Multi-block feature (standard):**
+## Folder shape (one section)
 
 ```
 sections/<feature>/
-├── fields.ts                    # re-exports: export { BlockAFields, BlockBFields } from './fields/...'
-├── fields/
-│   ├── <block-a>.ts             # export const BlockAFields: Block = { slug, dbName, interfaceName, fields }
-│   └── <block-b>.ts
-├── index.tsx                    # switch (props.blockType) → variant components; export XSectionProps
+├── <feature>.ts        # export const <Name>Block: Block = { slug, dbName, interfaceName, labels, fields }
+├── index.tsx           # FC router: switch on props.blockType → variant; export <Name>SectionProps
 └── variants/
-    └── <kebab-theme>/
-        ├── <main>.tsx           # async server component or client wrapper as needed
-        ├── <sub-view>.tsx
-        └── utils.ts             # optional
+    └── <variant>.tsx   # presentational markup using @/theme primitives
 ```
 
-**Single-block legacy (still OK):**
+A folder may export **several** blocks (like `page-content`) — one `export const …Block: Block`
+per block, all registered.
 
-```
-sections/<slug>/
-├── fields.ts                    # single export const <Name>Block: Block = { ... }
-├── index.tsx                    # FC: `switch (props.type)` / `switch (props.variant)` → variant components
-└── variants/
-    └── <variant>.tsx
-```
+## Checklist (do in order)
 
-### Block fields pattern
+1. **Reuse check** — is an existing section close? Prefer extending `example-block`/`page-content` over net-new code.
+2. **Define the Block** in `sections/<feature>/<feature>.ts`:
+   ```ts
+   import type { Block } from 'payload'
 
-- Use **`localized: true`** on editor-facing text that should differ per locale.
-- Reuse shared field helpers (e.g. `linkField` from `@/payload/fields/link`) like `products` does.
-- Nested **groups** and **arrays** are fine; split large field sets across files or extract subcomponents.
+   export const ExampleBlock: Block = {
+     slug: 'exampleBlock',          // === blockType === sectionMap key
+     dbName: 'example_block',       // snake_case table name
+     interfaceName: 'ExampleBlock', // PascalCase → exported interface in payload-types.ts
+     labels: { singular: 'Example block', plural: 'Example blocks' },
+     fields: [
+       { name: 'title', type: 'text', localized: true, required: true },
+       { name: 'description', type: 'textarea', localized: true },
+       { name: 'ctaUrl', type: 'text', defaultValue: '/' },
+     ],
+   }
+   ```
+   - `localized: true` on editor-facing copy that differs per locale (this repo localizes `en`/`pl`, default `en`).
+   - Reuse shared field helpers where they exist (e.g. a `link` field under `src/payload/fields/`).
+3. **Register the block in BOTH places** (keep the lists identical):
+   - [`src/payload/collections/Pages.ts`](../../../src/payload/collections/Pages.ts) → `layout` field → `blocks: [..., ExampleBlock]`.
+   - [`src/payload.config.ts`](../../../src/payload.config.ts) → top-level `blocks: [..., ExampleBlock]`.
+4. **Build the renderer** — `index.tsx` routes, `variants/` presents:
+   ```tsx
+   // index.tsx
+   import type { FC } from 'react'
+   import type { PageSection } from '../../page-builder/layout-sections'
+   import { ExampleBlockVariant } from './variants/example-block'
 
-### Frontend section component (`index.tsx`)
+   export type ExampleBlockSectionProps = Extract<PageSection, { blockType: 'exampleBlock' }>
 
-- Import generated types from `@/payload-types`.
-- **Multi-block folder:** union props and `switch (props.blockType)` (see `ProductsSection`).
-- **Single block with inner `type` / `variant`:** use **`switch (props.type)`** or **`switch (props.variant)`** to pick the variant component, with **`default: return null`** for exhaustiveness and unknown values (see `CtaSection`). Prefer this over a chain of `if`/`else` or an object map for dispatch—same style as `blockType` routing.
-- Prefer **arrow functions** for new code (`.cursor/rules/template/arrow-functions-pattern.mdc`).
+   export const ExampleBlockSection: FC<ExampleBlockSectionProps> = (props) => {
+     if (props.blockType === 'exampleBlock') return <ExampleBlockVariant {...props} />
+     return null
+   }
+   export default ExampleBlockSection
+   ```
+   ```tsx
+   // variants/example-block.tsx
+   import { Container, Heading, Text, Button } from '@/theme'
+   import type { ExampleBlockSectionProps } from '../index'
 
-### Variant components
+   export const ExampleBlockVariant = ({ title, description, ctaText, ctaUrl }: ExampleBlockSectionProps) => (
+     <section className="py-16">
+       <Container size="md">
+         <Heading level={2}>{title}</Heading>
+         {description && <Text>{description}</Text>}
+         {ctaText && <a href={ctaUrl ?? '/'}><Button>{ctaText}</Button></a>}
+       </Container>
+     </section>
+   )
+   ```
+5. **Wire the section map** — [`…/components/page-builder/layout-sections.tsx`](../../../src/app/(frontend)/[locale]/(website)/components/page-builder/layout-sections.tsx): import the section once and add **one `sectionMap` entry per `blockType`**. Multiple slugs may point at the same component (e.g. `page-content-1/2/3` → `PageContentSection`). The map feeds `createLayoutBuilder<PageSection>(sectionMap)` from `@/utils/layout-builder`.
+6. **Regenerate types** — `pnpm generate:types` (updates `src/payload-types.ts`). `interfaceName` becomes the exported interface; `PageSection` is `NonNullable<Page['layout']>[number]`, so new blocks join the union. *(If a brand-new block isn't in the generated union yet, `layout-sections.tsx` shows the fallback: a hand-written `…SectionType` unioned into `PageSection`. Prefer regenerating types over keeping the manual augmentation.)*
+7. **Migration** — any new/changed block field is a **schema change** → run the **payload-migrations** skill cycle (DB up → `pnpm migrate:create <name>` → review the file → `pnpm migrate`). Commit the migration with the section.
+8. **Verify** — smoke-test the block in `/admin` (Pages → `layout`) and on a published page.
 
-- Accept **narrowed** props where useful, e.g. `Extract<SectionProps, { blockType: 'featuredProducts' }>` or a single block type from `@/payload-types`.
-- **Server components** may `await` locale and call `getCached…` / data-query modules (see `current-development.tsx`).
-- **Zod** at the variant boundary is appropriate when validating populated relationships or rich shapes (see `products-showcase.tsx` + `productSchema`).
-- **Do not** bake in hardcoded copy fallbacks in React—content from CMS; use Payload `defaultValue`, `required`, admin descriptions. Prefer conditional render (`value && <Component />`) over placeholder strings.
-- For **optional UI** (missing CMS field, optional link group, etc.), prefer **`condition && <Jsx />`** over **`condition ? <Jsx /> : null`**—shorter and consistent across layout sections. THIS IS SUPER IMPORTANT and always check if you are using the correct syntax.
+## Renderer rules
 
-## Zavcodeui theme reference — always copy, never import
+- Prefer **arrow functions**; route with **`switch`/`if` on `props.blockType`** and `return null` for the default (exhaustive, no object-map dispatch).
+- For optional UI prefer **`value && <Jsx />`** over `value ? <Jsx/> : null` — shorter and consistent across sections. Always double-check this syntax.
+- **No hardcoded copy fallbacks** in React. Drive content from CMS via Payload `defaultValue` / `required` / admin descriptions; conditionally render instead of placeholder strings.
+- Use **`@/theme`** for all UI: primitives (`Container`, `Heading`, `Text`, `Button`, `Card`, `Badge`) and theme sections (`Hero`, `PageContent`, `Contact`). Theme components define their **own** props — the variant maps Payload props → theme props (the page builder is the bridge between `payload-types` and theme types). Style with the theme CSS vars (`var(--template-color-*)`).
 
-When layout markup matches or starts from **`ui/themes/Zavcodeui`** (especially `src/components/sections/`):
+## Data fetching (when a section needs CMS data)
 
-- **Copy** the JSX and Tailwind classes into `apps/website` under `variants/<…>/`, then bind fields from Payload props. Treat the theme file as a **visual reference**, not a runtime dependency.
-- **Do not** import or reuse **section** components from `ui/themes/Zavcodeui` in website layout code: no `import … from '../../../../ui/themes/…'`, no workspace imports whose target is theme **sections**, and no tsconfig `paths` whose purpose is to load theme **sections** into the website app.
-- Prefer a one-line comment at the top of the variant citing the source path (e.g. “Copied from `ui/themes/Zavcodeui/...` — keep in sync manually”) so drift is visible in code review.
-
-**Scope:** this rule applies to **page-level section components** under the theme’s `components/sections/` (and similar marketing blocks). **Shadcn-style primitives** under `ui/themes/Zavcodeui/src/components/ui/` may still be consumed via **`@zavcode/theme-ui/*`** where the project already does—that is separate from section duplication.
+For server data, follow the **data-fetching** skill and the `getCached…` pattern in
+[`src/data-queries/`](../../../src/data-queries/) (e.g. `getCachedPageBySlug` in `data-queries/pages/index.ts`):
+`fetch…` (uncached `getPayload` + `payload.find`) wrapped by `getCached…` (`unstable_cache` with
+tags + `revalidate: false` → on-demand revalidation). Server components `await` the locale and
+call `getCached…`; add a client component only for browser interactivity.
 
 ## Images (Payload `Media`)
 
-**Always** resolve upload / relationship image URLs through `apps/website/src/utils/get-payload-image.ts` (import from `@/utils/get-payload-image` in app code):
-
-- Use **`getPayloadImageUrl(image, size?)`** for `src` on `<img>`, Next.js `Image`, CSS `url()`, etc.
-- Pass a **`MediaSizeKey`** when the `Media` document has **`sizes`** populated (the helper throws if `sizes` exist but no size is passed—pick the correct variant for layout/performance).
-- Plain strings are returned as-is; prefer still going through the helper so CDN base URL and path normalization stay consistent when the value is a `Media` object.
-
-Do **not** concatenate `media.url`, `filename`, or env base URLs by hand in layout sections.
-
-## SSR + data-query quality (header/footer-style globals)
-
-When section/layout-adjacent UI is driven by Payload globals or server data:
-
-- Prefer **full SSR** server components for fetching (`getCached…`) and pass data via props.
-- Add a client component only when you need browser interactivity.
-- Keep query layer minimal: **fetch → parse (Zod) → pass through**. No hardcoded fallback data in query mappers.
-- Avoid TS assertions like `as Locale`; type inputs/params correctly.
-
-## Payload ↔ TypeScript
-
-- `interfaceName` on each Block becomes the **exported interface** in `payload-types.ts` (e.g. `FeaturedProducts`, `CurrentDevelopment`).
-- `layout-sections.tsx` types `PageSection` from `Page['Content']['layout']`; new blocks extend the union after `types:generate`.
-
-## Zod (optional)
-
-If you add a Zod schema that models a block’s data:
-
-- Bind with `satisfies z.ZodType<…>` (see `.cursor/rules/payload-zod-satisfies.mdc`).
-
-Not every section needs Zod—add it when parsing/validating block data in queries, hooks, or variant entry (e.g. relationship payloads).
+There is **no image helper util** in this repo. The `Media` collection
+([`src/payload/collections/Media.ts`](../../../src/payload/collections/Media.ts)) defines
+`imageSizes` (`thumbnail`, `square`, `small`, `medium`, `large`, `xlarge`, `og`). Query the
+relationship/upload at `depth >= 1` so you get a `Media` **object**, then read `media.url` (or a
+size: `media.sizes?.medium?.url`) directly for `src`. Pick a size appropriate to the layout.
 
 ## Common mistakes
 
-- Registering a block only in **Pages.ts** or only in **`payload.config.ts`**.
-- Omitting **`dbName` / `interfaceName`** on any Block.
-- **`slug`** / **`blockType`** mismatch: Block `slug` must equal `blockType` and the key in `sectionMap`.
-- Forgetting **`pnpm run types:generate`** after editing block fields.
-- Adding a new file under `fields/` but not re-exporting it from **`fields.ts`** or not appending it to **Pages** / **payload.config** `blocks` arrays.
-- Building image URLs manually instead of **`getPayloadImageUrl`** from `@/utils/get-payload-image`.
-- **Importing Zavcodeui section components** instead of **copying** markup into `variants/` (see **Zavcodeui theme reference — always copy, never import** above).
+- Registering a block in **only one** of `Pages.ts` / `payload.config.ts` (must be both).
+- Omitting **`dbName`** or **`interfaceName`** on a Block.
+- **`slug` ↔ `blockType` ↔ `sectionMap` key** mismatch — all three must be equal.
+- Forgetting **`pnpm generate:types`**, or forgetting the **migration** (schema change with no migration).
+- Inventing paths — use the real `src/...` locations above.
 
 ## Quick naming guide
 
-| Payload / code | Value |
-|----------------|--------|
-| Block export | e.g. `FeaturedProductsFields`, `CurrentDevelopmentFields` |
-| `slug` | Must match `blockType` and `sectionMap` keys. Existing layout uses a mix (`trusted-by`, `featuredProducts`); align new blocks with the closest sibling sections. |
-| `dbName` | snake_case, e.g. `featured_products_section` |
-| `interfaceName` | PascalCase, e.g. `FeaturedProducts` |
-| Feature folder | product/domain name, e.g. `products/` |
-| `variants/` subfolder | kebab-case describing the block theme, e.g. `products-showcase/`, `current-development/`, `contact-booking/` |
+| Thing | Value |
+|---|---|
+| Block export | `ExampleBlock`, `PageContentBlock1` |
+| `slug` | `exampleBlock` — equals `blockType` and the `sectionMap` key |
+| `dbName` | snake_case, e.g. `example_block` |
+| `interfaceName` | PascalCase, e.g. `ExampleBlock` |
+| Feature folder | `sections/<feature>/` (kebab), e.g. `example-block/` |
+| Variant file | `variants/<variant>.tsx` |
 
-After implementation, run **lint** for `apps/website` if available, and smoke-test each block in the admin **layout** field and on a published page.
+## Related skills
+
+- **payload-migrations** — the migration cycle for step 7 (every schema change).
+- **data-fetching** — SSR/ISR strategy + the `getCached…` data-query pattern for step 4/data sections.
