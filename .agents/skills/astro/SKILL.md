@@ -13,12 +13,20 @@ metadata:
 
 Astro is the web framework for content-driven websites.
 
+> **Version & requirements (this repo runs Astro 6).** `apps/astro` is on Astro **6.4.4**.
+> Astro 6 requires **Node ≥ 22.12**, ships **Vite 7**, and **only accepts ESM config**
+> (`.cjs`/`.cts` config files were removed — use `.mjs`/`.js`/`.ts`/`.mts`). Other v6 changes
+> to keep in mind: i18n `routing.redirectToDefaultLocale` now defaults to **`false`**;
+> legacy content collections (`src/content/config.ts`) → Content Layer API (`src/content.config.ts`);
+> `<ViewTransitions />` → `<ClientRouter />`; `Astro.glob()` → `import.meta.glob()`. A
+> server output (`output: 'server'`) still needs an adapter (e.g. `@astrojs/node`) to build for production.
+
 ---
 
 ## Quick Reference
 
 ### File Location
-CLI looks for `astro.config.js`, `astro.config.mjs`, `astro.config.cjs`, and `astro.config.ts` in: `./`. Use `--config` for custom path.
+CLI looks for `astro.config.mjs`, `astro.config.js`, `astro.config.ts`, and `astro.config.mts` in: `./` (ESM only — `.cjs`/`.cts` removed in Astro 6). Use `--config` for custom path.
 
 ### CLI Commands
 
@@ -41,7 +49,7 @@ Reference [project structure docs](https://docs.astro.build/en/basics/project-st
 - `src/styles` - CSS/Sass files (convention, not required).
 - `public/*` - Non-code, unprocessed assets (fonts, icons, etc.); copied as-is to build output.
 - `package.json` - Project manifest.
-- `astro.config.{js,mjs,cjs,ts}` - Astro configuration file. (recommended)
+- `astro.config.{js,mjs,ts,mts}` - Astro configuration file, ESM only. (recommended)
 - `tsconfig.json` - TypeScript configuration file. (recommended)
 
 ---

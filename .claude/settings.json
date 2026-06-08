@@ -1,4 +1,11 @@
 {
+  "permissions": {
+    "allow": [
+      "Edit(/.claude/skills/astro/**)",
+      "Bash(pnpm --filter @repo/astro add @astrojs/node)",
+      "Bash(pnpm --filter @repo/astro run build)"
+    ]
+  },
   "hooks": {
     "UserPromptSubmit": [
       {
