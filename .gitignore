@@ -10,9 +10,15 @@
 !.yarn/releases
 !.yarn/versions
 
-# next.js
-/.next/
-/out/
+# next.js (apps/payload)
+apps/payload/.next/
+apps/payload/out/
+
+# astro (apps/astro)
+apps/astro/dist/
+apps/astro/.astro/
+
+# build outputs
 /build
 /dist
 
@@ -57,3 +63,6 @@ Thumbs.db
 
 # dependency-cruiser — generated graph
 /dependency-graph.svg
+
+# local MCP config (contains a dev token)
+.mcp.json

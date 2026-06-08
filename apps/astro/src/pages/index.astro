@@ -1,0 +1,41 @@
+---
+import Layout from '../layouts/Layout.astro'
+
+const payloadUrl = import.meta.env.PAYLOAD_API_URL ?? 'http://localhost:3100'
+
+let pages: { docs: Array<{ id: string; slug: string }> } = { docs: [] }
+try {
+  const res = await fetch(`${payloadUrl}/api/pages?limit=10&depth=0`)
+  if (res.ok) {
+    pages = (await res.json()) as typeof pages
+  }
+} catch {
+  // Payload not running — graceful fallback
+}
+---
+
+<Layout title="Home">
+  <main style="padding: var(--spacing-xl); max-width: var(--max-width); margin: 0 auto;">
+    <h1 style="font-family: var(--font-heading); color: var(--foreground);">
+      Zavcode — Astro Frontend
+    </h1>
+    <p style="color: var(--muted-foreground); margin-top: var(--spacing-md);">
+      Connected to Payload at <code>{payloadUrl}</code>
+    </p>
+
+    {pages.docs.length > 0 && (
+      <ul style="margin-top: var(--spacing-xl); list-style: none; padding: 0; display: flex; flex-direction: column; gap: var(--spacing-sm);">
+        {pages.docs.map((page) => (
+          <li>
+            <a
+              href={`/${page.slug}`}
+              style="color: var(--primary); text-decoration: underline;"
+            >
+              {page.slug}
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
+  </main>
+</Layout>

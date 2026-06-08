@@ -1,0 +1,19 @@
+---
+import type { Page } from '@repo/payload-types'
+import HeroSection from '../sections/hero/index'
+import LayoutSections from './layout-sections.astro'
+
+/**
+ * Renders a full CMS page: the `hero` group followed by the `layout` blocks.
+ */
+interface Props {
+  page: Page
+  /** Payload REST base URL, forwarded to interactive sections (FormBlock). */
+  apiUrl: string
+}
+
+const { page, apiUrl } = Astro.props
+---
+
+<HeroSection {...page.hero} />
+<LayoutSections sections={page.layout} apiUrl={apiUrl} />

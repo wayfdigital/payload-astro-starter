@@ -1,0 +1,36 @@
+---
+import type { Page } from '@repo/payload-types'
+import ExampleBlockSection from '../sections/example-block/index'
+import PageContentSection from '../sections/page-content/index'
+import FormBlockSection from '../sections/form-block/index'
+
+/**
+ * Maps each CMS `layout` block to its renderer (the Astro-native "layout builder").
+ * Static sections render as server-side React (no JS shipped); the interactive
+ * FormBlock is hydrated as an island via `client:load`.
+ */
+interface Props {
+  sections?: Page['layout']
+  /** Payload REST base URL, forwarded to the FormBlock island. */
+  apiUrl: string
+}
+
+const { sections, apiUrl } = Astro.props
+---
+
+{
+  sections?.map((section) => {
+    switch (section.blockType) {
+      case 'exampleBlock':
+        return <ExampleBlockSection {...section} />
+      case 'page-content-1':
+      case 'page-content-2':
+      case 'page-content-3':
+        return <PageContentSection {...section} />
+      case 'formBlock':
+        return <FormBlockSection client:load {...section} apiUrl={apiUrl} />
+      default:
+        return null
+    }
+  })
+}

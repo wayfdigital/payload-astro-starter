@@ -15,7 +15,7 @@ and **confirm the spec before building — never assume.**
    skill(s) — the user won't ask for them.
 3. **Any DB-schema change ⇒ a migration.** New/changed/removed collection, global, block, or field
    means you run the **payload-migrations** cycle. The user never asks; you always do.
-4. **Keep types honest.** After any schema change, run `pnpm generate:types` (updates `src/payload-types.ts`).
+4. **Keep types honest.** After any schema change, run `pnpm --filter @repo/payload generate:types` (updates `packages/payload-types/src/index.ts`).
 5. **Reuse before writing.** Prefer extending an existing section/component over net-new code.
 6. **Never invent paths.** Use the *Project map* below — every path there is real.
 
@@ -32,18 +32,17 @@ and **confirm the spec before building — never assume.**
 
 ## Build pipeline (new section / from a design)
 
-Run **in order**. This is the "do everything the no-code user can't" path — see the
-**website-layout-sections** skill for the concrete code.
+Run **in order**. This is the "do everything the no-code user can't" path.
 
 0. **Confirm spec** — `AskUserQuestion` with the *Always-ask checklist*.
-1. **Reuse check** — closest existing section in `src/app/(frontend)/[locale]/(website)/components/sections/` (`example-block`, `page-content`, `form-block`, `hero`).
-2. **Define the block** — `sections/<feature>/<feature>.ts` → `export const <Name>Block: Block = { slug, dbName, interfaceName, labels, fields }` (`localized: true` on per-locale copy).
-3. **Register in BOTH** `src/payload/collections/Pages.ts` (`layout` blocks) **and** `src/payload.config.ts` (`blocks`).
-4. **Build the renderer** — `sections/<feature>/index.tsx` (FC, `switch` on `props.blockType`, `return null` default) + `variants/<variant>.tsx` using `@/theme`. For CMS data, server-fetch via `getCached…` from `src/data-queries/` (data-fetching skill).
-5. **Wire the map** — add the `blockType → component` entry in `…/components/page-builder/layout-sections.tsx`.
-6. **Generate types** — `pnpm generate:types`.
-7. **Migrate** — payload-migrations cycle (`docker compose up -d postgres` → `pnpm migrate:create <name>` → review file → `pnpm migrate`). Commit the migration with the change.
-8. **Verify** — `/admin` → Pages → `layout`, and the rendered page.
+1. **Reuse check** — closest existing block in `apps/payload/src/payload/blocks/` and section component in `apps/astro/src/components/sections/`.
+2. **Define the block** — `apps/payload/src/payload/blocks/<feature>.ts` → `export const <Name>Block: Block = { slug, dbName, interfaceName, labels, fields }` (`localized: true` on per-locale copy).
+3. **Register in BOTH** `apps/payload/src/payload/collections/Pages.ts` (`layout` blocks) **and** `apps/payload/src/payload.config.ts` (`blocks`).
+4. **Build the renderer** — `apps/astro/src/components/sections/<feature>/index.astro` (or `.tsx` for React islands) using tokens from `@repo/ui`. For CMS data, fetch via Payload REST API (`PAYLOAD_API_URL`).
+5. **Wire the map** — add `blockType → component` to `apps/astro/src/components/page-builder/layout-sections.astro` (or equivalent).
+6. **Generate types** — `pnpm --filter @repo/payload generate:types` (writes `packages/payload-types/src/index.ts`).
+7. **Migrate** — payload-migrations cycle (`docker compose up -d postgres` → `pnpm --filter @repo/payload migrate:create <name>` → review → `pnpm --filter @repo/payload migrate`). Commit migration with the change.
+8. **Verify** — `/admin` → Pages → `layout`, and the rendered Astro page.
 
 ## Always-ask checklist (step 0)
 
@@ -61,21 +60,33 @@ Confirm these with the user before building — they're developer decisions a no
 
 State any safe default you adopt so the user can correct it.
 
+## Monorepo structure
+
+```
+apps/payload/   — Headless Payload CMS (Next.js, port 3100) — admin + API only
+apps/astro/     — Astro frontend (SSR, port 3000)
+packages/ui/    — Shared design system (React components, CSS vars, shadcn tokens)
+packages/payload-types/  — Generated Payload TypeScript types (shared)
+```
+
 ## Project map (real paths)
 
 | Concept | Path |
 |---|---|
-| Sections (blocks + renderers) | `src/app/(frontend)/[locale]/(website)/components/sections/{hero,page-content,form-block,example-block}/` |
-| Section → component map | `src/app/(frontend)/[locale]/(website)/components/page-builder/layout-sections.tsx` (`createLayoutBuilder` from `src/utils/layout-builder/`) |
-| Pages collection (`layout` blocks) | `src/payload/collections/Pages.ts` |
-| Global block registry | `src/payload.config.ts` (`blocks: [...]`) |
-| Collections / globals | `src/payload/collections/` (Admins, Media, Pages, Users) · `src/payload/globals/` (FooterSettings, CookieSettings) |
-| Theme / UI | alias **`@/theme`** → `src/theme/` (elements, layout, sections); `@/*` → `./src/*` |
-| Cached data queries | `src/data-queries/{pages,header-settings,footer-settings}/` (`getCached…` + `unstable_cache`) |
-| i18n | `src/i18n/const.ts` (`DEFAULT_LANGUAGE = 'en'`, locales `en`/`pl`) · `src/i18n/payload-locales.ts` |
-| Media (images) | `src/payload/collections/Media.ts` (`imageSizes`; no image-url helper — use `media.url` / `media.sizes.*.url`) |
-| Generated types | `src/payload-types.ts` (via `pnpm generate:types`) |
-| DB / migrations | `@payloadcms/db-postgres`, `push:false`; `src/migrations/`; `pnpm migrate:create | migrate | migrate:status | generate:types` |
+| Payload block definitions | `apps/payload/src/payload/blocks/{page-content,example-block,forms}.ts` |
+| Collections / globals | `apps/payload/src/payload/collections/` · `apps/payload/src/payload/globals/` |
+| Global block registry | `apps/payload/src/payload.config.ts` (`blocks: [...]`) |
+| Pages collection (`layout` blocks) | `apps/payload/src/payload/collections/Pages.ts` |
+| Payload config | `apps/payload/src/payload.config.ts` |
+| DB / migrations | `apps/payload/src/migrations/`; `pnpm --filter @repo/payload migrate:create \| migrate \| migrate:status` |
+| i18n (Payload) | `apps/payload/src/i18n/const.ts` · `apps/payload/src/i18n/payload-locales.ts` |
+| Generated types | `packages/payload-types/src/index.ts` (via `pnpm --filter @repo/payload generate:types`) |
+| Design system | `packages/ui/src/` — imports as `@repo/ui`; CSS vars follow shadcn conventions (`--primary`, `--background`, etc.) |
+| Astro sections | `apps/astro/src/components/sections/` (to be created as features are built) |
+| Astro layouts | `apps/astro/src/layouts/Layout.astro` |
+| Astro pages | `apps/astro/src/pages/` |
+| Payload API base URL | `PAYLOAD_API_URL` env in `apps/astro/.env` (default `http://localhost:3100`) |
+| Media (images) | `apps/payload/src/payload/collections/Media.ts` (`imageSizes`; use `media.url` / `media.sizes.*.url`) |
 
 ## Skills index
 
@@ -88,7 +99,8 @@ State any safe default you adopt so the user can correct it.
 ## Hard rules — never
 
 - Never make a schema change without running a migration.
-- Never leave `src/payload-types.ts` stale after editing fields/collections.
+- Never leave `packages/payload-types/src/index.ts` stale — regenerate after every schema change.
 - Never register a block in only one of `Pages.ts` / `payload.config.ts`.
+- Never import from `src/theme/` — use `@repo/ui` instead.
 - Never invent file paths — use the *Project map*.
 - Never assume the spec — ask (Golden rule #1).

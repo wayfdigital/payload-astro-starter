@@ -1,0 +1,10 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "compilerOptions": {
+    "paths": {
+      "@repo/ui": ["../../packages/ui/src/index.ts"],
+      "@repo/ui/*": ["../../packages/ui/src/*"],
+      "@repo/payload-types": ["../../packages/payload-types/src/index.ts"]
+    }
+  }
+}

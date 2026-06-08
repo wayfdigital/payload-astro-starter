@@ -1,60 +1,19 @@
 {
-  "name": "website-starter",
-  "version": "1.0.0",
-  "description": "Content website with pages, layout builder, forms, SEO, and i18n",
+  "name": "zavcode-monorepo",
+  "version": "0.0.0",
   "private": true,
-  "type": "module",
   "scripts": {
-    "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev --port 3100",
-    "build": "cross-env NODE_OPTIONS=--no-deprecation next build",
-    "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
-    "migrate:create": "cross-env NODE_OPTIONS=--no-deprecation payload migrate:create",
-    "migrate": "cross-env NODE_OPTIONS=--no-deprecation payload migrate",
-    "migrate:status": "cross-env NODE_OPTIONS=--no-deprecation payload migrate:status",
-    "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
-    "typecheck": "tsc --noEmit",
-    "lint": "eslint . --max-warnings=0",
-    "depcruise": "depcruise src",
-    "depcruise:graph": "depcruise src --output-type dot | dot -T svg -o dependency-graph.svg",
-    "check": "pnpm typecheck && pnpm lint && pnpm depcruise"
-  },
-  "dependencies": {
-    "@payloadcms/db-postgres": "3.81.0",
-    "@payloadcms/email-nodemailer": "3.81.0",
-    "@payloadcms/next": "3.81.0",
-    "@payloadcms/payload-cloud": "3.81.0",
-    "@payloadcms/plugin-form-builder": "3.81.0",
-    "@payloadcms/plugin-seo": "3.81.0",
-    "@payloadcms/richtext-lexical": "3.81.0",
-    "@payloadcms/storage-s3": "3.81.0",
-    "@payloadcms/translations": "3.81.0",
-    "clsx": "2.1.1",
-    "cross-env": "10.1.0",
-    "next": "15.4.11",
-    "next-intl": "4.7.0",
-    "payload": "3.81.0",
-    "qs-esm": "7.0.3",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
-    "sharp": "0.34.5",
-    "tailwind-merge": "3.4.0",
-    "zod": "4.3.5"
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "typecheck": "turbo typecheck",
+    "lint": "turbo lint"
   },
   "devDependencies": {
-    "@eslint-community/eslint-plugin-eslint-comments": "^4.4.1",
-    "@eslint/js": "^9.18.0",
-    "@next/eslint-plugin-next": "15.4.11",
-    "@tailwindcss/postcss": "4.1.18",
-    "@types/node": "^22.10.0",
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
-    "dependency-cruiser": "^17.4.3",
-    "eslint": "^9.18.0",
-    "eslint-plugin-react-hooks": "^5.1.0",
-    "globals": "^15.14.0",
-    "postcss": "8.5.6",
-    "tailwindcss": "4.1.18",
-    "typescript": "5.9.3",
-    "typescript-eslint": "^8.20.0"
-  }
+    "turbo": "^2.5.4",
+    "typescript": "5.9.3"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "packageManager": "pnpm@10.11.0"
 }

@@ -1,0 +1,50 @@
+---
+import Layout from '../layouts/Layout.astro'
+import PageBuilder from '../components/page-builder/page-builder.astro'
+import { getPageBySlug } from '../lib/payload/pages'
+import { DEFAULT_LOCALE, isLocale, type Locale } from '../i18n/locales'
+
+const apiUrl = import.meta.env.PAYLOAD_API_URL ?? 'http://localhost:3100'
+
+// The slug is non-localized: the same page exists in every locale, only its
+// content differs. A leading `/<locale>/` segment selects which locale to fetch
+// (`/about` = en, `/pl/about` = pl).
+const segments = (Astro.params.slug ?? '').split('/').filter(Boolean)
+let locale: Locale = DEFAULT_LOCALE
+const first = segments[0]
+if (first !== undefined && isLocale(first)) {
+  locale = first
+  segments.shift()
+}
+const slug = segments.join('/')
+
+// A bare `/<locale>` with no page slug → send to the home page.
+if (!slug) {
+  return Astro.redirect('/')
+}
+
+const page = await getPageBySlug(slug, locale)
+
+if (!page) {
+  Astro.response.status = 404
+}
+
+const title = page?.meta?.title ?? page?.slug ?? 'Page not found'
+const description = page?.meta?.description ?? ''
+---
+
+<Layout title={title} description={description}>
+  {
+    page ? (
+      <PageBuilder page={page} apiUrl={apiUrl} />
+    ) : (
+      <main style="padding: var(--spacing-xl); max-width: var(--max-width); margin: 0 auto;">
+        <h1 style="font-family: var(--font-heading); color: var(--foreground);">Page not found</h1>
+        <p style="color: var(--muted-foreground); margin-top: var(--spacing-md);">
+          No page exists at <code>/{slug}</code>.
+        </p>
+        <a href="/" style="color: var(--primary); text-decoration: underline;">Back home</a>
+      </main>
+    )
+  }
+</Layout>
