@@ -3,7 +3,10 @@
     "allow": [
       "Edit(/.claude/skills/astro/**)",
       "Bash(pnpm --filter @repo/astro add @astrojs/node)",
-      "Bash(pnpm --filter @repo/astro run build)"
+      "Bash(pnpm --filter @repo/astro run build)",
+      "mcp__knowledge-base__get_entry_files",
+      "Bash(sed -n '1,40p' src/components/page-builder/layout-sections.astro)",
+      "Bash(sed -n '1,12p' src/components/sections/example-block/index.tsx)"
     ]
   },
   "hooks": {
