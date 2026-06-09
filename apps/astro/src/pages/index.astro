@@ -1,41 +1,59 @@
 ---
 import Layout from '../layouts/Layout.astro'
+import PageBuilder from '../components/page-builder/page-builder.astro'
+import { getHomePage, getAllPages } from '../lib/payload/pages'
+import { DEFAULT_LOCALE, isLocale, type Locale } from '../i18n/locales'
 
-const payloadUrl = import.meta.env.PAYLOAD_API_URL ?? 'http://localhost:3100'
+const apiUrl = import.meta.env.PAYLOAD_API_URL ?? 'http://localhost:3100'
 
-let pages: { docs: Array<{ id: string; slug: string }> } = { docs: [] }
-try {
-  const res = await fetch(`${payloadUrl}/api/pages?limit=10&depth=0`)
-  if (res.ok) {
-    pages = (await res.json()) as typeof pages
-  }
-} catch {
-  // Payload not running — graceful fallback
+// `/` is the default locale; in preview a `?locale=` query can select another.
+const preview = Astro.locals.preview === true
+let locale: Locale = DEFAULT_LOCALE
+const localeParam = Astro.url.searchParams.get('locale')
+if (preview && localeParam !== null && isLocale(localeParam)) {
+  locale = localeParam
 }
+
+const home = await getHomePage(locale, { draft: preview })
+
+// Fallback (no CMS home page set yet): the dev landing listing available pages.
+const pages = home ? [] : await getAllPages(locale)
+
+const title = home?.meta?.title ?? home?.slug ?? 'Home'
+const description = home?.meta?.description ?? ''
 ---
 
-<Layout title="Home">
-  <main style="padding: var(--spacing-xl); max-width: var(--max-width); margin: 0 auto;">
-    <h1 style="font-family: var(--font-heading); color: var(--foreground);">
-      Zavcode — Astro Frontend
-    </h1>
-    <p style="color: var(--muted-foreground); margin-top: var(--spacing-md);">
-      Connected to Payload at <code>{payloadUrl}</code>
-    </p>
+{
+  home ? (
+    <Layout title={title} description={description} lang={locale} preview={preview}>
+      <PageBuilder page={home} apiUrl={apiUrl} />
+    </Layout>
+  ) : (
+    <Layout title="Home" lang={locale} preview={preview}>
+      <main style="padding: var(--spacing-xl); max-width: var(--max-width); margin: 0 auto;">
+        <h1 style="font-family: var(--font-heading); color: var(--foreground);">
+          Zavcode — Astro Frontend
+        </h1>
+        <p style="color: var(--muted-foreground); margin-top: var(--spacing-md);">
+          Connected to Payload at <code>{apiUrl}</code>. Mark a page as the home page to
+          render it here.
+        </p>
 
-    {pages.docs.length > 0 && (
-      <ul style="margin-top: var(--spacing-xl); list-style: none; padding: 0; display: flex; flex-direction: column; gap: var(--spacing-sm);">
-        {pages.docs.map((page) => (
-          <li>
-            <a
-              href={`/${page.slug}`}
-              style="color: var(--primary); text-decoration: underline;"
-            >
-              {page.slug}
-            </a>
-          </li>
-        ))}
-      </ul>
-    )}
-  </main>
-</Layout>
+        {pages.length > 0 && (
+          <ul style="margin-top: var(--spacing-xl); list-style: none; padding: 0; display: flex; flex-direction: column; gap: var(--spacing-sm);">
+            {pages.map((page) => (
+              <li>
+                <a
+                  href={`/${page.slug}`}
+                  style="color: var(--primary); text-decoration: underline;"
+                >
+                  {page.slug}
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
+      </main>
+    </Layout>
+  )
+}

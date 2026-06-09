@@ -23,6 +23,9 @@ importers:
       '@astrojs/react':
         specifier: ^5.0.7
         version: 5.0.7(@types/node@22.19.19)(@types/react-dom@19.2.3(@types/react@19.2.16))(@types/react@19.2.16)(jiti@2.7.0)(lightningcss@1.30.2)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(sass@1.77.4)(tsx@4.21.0)(yaml@2.9.0)
+      '@payloadcms/live-preview':
+        specifier: 3.81.0
+        version: 3.81.0
       '@repo/payload-types':
         specifier: workspace:*
         version: link:../../packages/payload-types
@@ -1503,6 +1506,9 @@ packages:
     peerDependencies:
       graphql: ^16.8.1
       payload: 3.81.0
+
+  '@payloadcms/live-preview@3.81.0':
+    resolution: {integrity: sha512-vi0j7slY1232m7SzatjuhSv3ZQewa8J+hRVQhGZ5qZBao58b5y1fgbjAJWINV9/fFx/juV0L772beK3AcO76FA==}
 
   '@payloadcms/next@3.81.0':
     resolution: {integrity: sha512-5ynclSrQDZ/lEFRj0AUnUcD3Q+wtFp3u6PRSZTvp0u3I4tkKfV6BcZbUAH+Vx9kGZcNv7wuIRTdn2Rqa9s5lhA==}
@@ -6228,6 +6234,8 @@ snapshots:
       tsx: 4.21.0
     transitivePeerDependencies:
       - typescript
+
+  '@payloadcms/live-preview@3.81.0': {}
 
   '@payloadcms/next@3.81.0(@types/react@19.2.16)(graphql@16.14.1)(monaco-editor@0.55.1)(next@15.4.11(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(sass@1.77.4))(payload@3.81.0(graphql@16.14.1)(typescript@5.9.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3)':
     dependencies:

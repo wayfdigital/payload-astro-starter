@@ -18,12 +18,19 @@ if (first !== undefined && isLocale(first)) {
 }
 const slug = segments.join('/')
 
+// In preview the iframe URL has no locale prefix, so `?locale=` selects the locale.
+const preview = Astro.locals.preview === true
+const localeParam = Astro.url.searchParams.get('locale')
+if (preview && localeParam !== null && isLocale(localeParam)) {
+  locale = localeParam
+}
+
 // A bare `/<locale>` with no page slug → send to the home page.
 if (!slug) {
   return Astro.redirect('/')
 }
 
-const page = await getPageBySlug(slug, locale)
+const page = await getPageBySlug(slug, locale, { draft: preview })
 
 if (!page) {
   Astro.response.status = 404
@@ -33,7 +40,7 @@ const title = page?.meta?.title ?? page?.slug ?? 'Page not found'
 const description = page?.meta?.description ?? ''
 ---
 
-<Layout title={title} description={description}>
+<Layout title={title} description={description} lang={locale} preview={preview}>
   {
     page ? (
       <PageBuilder page={page} apiUrl={apiUrl} />

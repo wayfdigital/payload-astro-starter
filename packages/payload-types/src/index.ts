@@ -595,6 +595,9 @@ export interface Admin {
   id: string;
   updatedAt: string;
   createdAt: string;
+  enableAPIKey?: boolean | null;
+  apiKey?: string | null;
+  apiKeyIndex?: string | null;
   email: string;
   resetPasswordToken?: string | null;
   resetPasswordExpiration?: string | null;
@@ -618,7 +621,11 @@ export interface Admin {
  */
 export interface Page {
   id: string;
-  slug: string;
+  /**
+   * Serve this page at the site root (/). Leave the slug empty.
+   */
+  isHomePage?: boolean | null;
+  slug?: string | null;
   hero: {
     type: 'default' | 'exampleHero' | 'category' | 'categoriesGrid';
     title?: string | null;
@@ -689,6 +696,7 @@ export interface Page {
   };
   updatedAt: string;
   createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -840,6 +848,9 @@ export interface PayloadMigration {
 export interface AdminsSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
+  enableAPIKey?: T;
+  apiKey?: T;
+  apiKeyIndex?: T;
   email?: T;
   resetPasswordToken?: T;
   resetPasswordExpiration?: T;
@@ -953,6 +964,7 @@ export interface MediaSelect<T extends boolean = true> {
  * via the `definition` "pages_select".
  */
 export interface PagesSelect<T extends boolean = true> {
+  isHomePage?: T;
   slug?: T;
   hero?:
     | T
@@ -1030,6 +1042,7 @@ export interface PagesSelect<T extends boolean = true> {
       };
   updatedAt?: T;
   createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

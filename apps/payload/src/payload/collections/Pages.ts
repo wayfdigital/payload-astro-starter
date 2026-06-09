@@ -28,12 +28,35 @@ export const Pages: CollectionConfig = {
   },
   fields: [
     {
-      name: 'slug',
-      type: 'text',
-      required: true,
-      unique: true,
+      name: 'isHomePage',
+      type: 'checkbox',
+      defaultValue: false,
+      label: {
+        en: 'Home page',
+        pl: 'Strona główna',
+      },
       admin: {
         position: 'sidebar',
+        description: {
+          en: 'Serve this page at the site root (/). Leave the slug empty.',
+          pl: 'Wyświetlaj tę stronę w katalogu głównym (/). Zostaw pusty slug.',
+        },
+      },
+    },
+    {
+      name: 'slug',
+      type: 'text',
+      unique: true,
+      // Optional: the home page is served at `/` and has no slug. Every other page
+      // needs one.
+      validate: (value: string | null | undefined, { data }: { data?: { isHomePage?: boolean } }) => {
+        if (data?.isHomePage) return true
+        if (!value) return 'Slug is required for pages that are not the home page.'
+        return true
+      },
+      admin: {
+        position: 'sidebar',
+        condition: (data) => !data?.isHomePage,
       },
     },
     heroField,
