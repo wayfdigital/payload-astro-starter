@@ -24,6 +24,7 @@ Three kinds of entries, mirroring the KB model:
 | `payloadcms` | shared | 7 | Payload 3 + Next App Router: Local API, access guards, hooks + cache revalidation |
 | `data-fetching` | project | 6 | Next.js + Payload data-fetching strategy (SSR/ISR/Server Actions/TanStack) |
 | `cms-migration` | project | 2 | Migrating another CMS (WordPress/Contentful/Strapi…) into Payload + field reference |
+| `vibe-coding` | project | 1 | Vibecoder front door: plain-language request → dev spec → loads the right skills → runs the build pipeline |
 | `payload-local-api` | shared | 1 | Short note: read Payload via the Local API in server code |
 | `astro` | local | 1 | Astro framework usage (already in repo; updated for Astro 6) |
 | `knowledge-base` | local | 1 | How to use the KB MCP server (already in repo) |
