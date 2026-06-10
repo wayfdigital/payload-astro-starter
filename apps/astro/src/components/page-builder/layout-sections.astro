@@ -1,5 +1,6 @@
 ---
 import type { Page } from '@repo/payload-types'
+import type { Locale } from '../../i18n/locales'
 import ExampleBlockSection from '../sections/example-block/index'
 import PageContentSection from '../sections/page-content/index'
 import FormBlockSection from '../sections/form-block/index'
@@ -13,20 +14,22 @@ interface Props {
   sections?: Page['layout']
   /** Payload REST base URL, forwarded to the FormBlock island. */
   apiUrl: string
+  /** Active locale, forwarded so CMS links resolve to locale-prefixed hrefs. */
+  locale: Locale
 }
 
-const { sections, apiUrl } = Astro.props
+const { sections, apiUrl, locale } = Astro.props
 ---
 
 {
   sections?.map((section) => {
     switch (section.blockType) {
       case 'exampleBlock':
-        return <ExampleBlockSection {...section} />
+        return <ExampleBlockSection {...section} locale={locale} />
       case 'page-content-1':
       case 'page-content-2':
       case 'page-content-3':
-        return <PageContentSection {...section} />
+        return <PageContentSection {...section} locale={locale} />
       case 'formBlock':
         return <FormBlockSection client:load {...section} apiUrl={apiUrl} />
       default:

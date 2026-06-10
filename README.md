@@ -16,12 +16,14 @@ You assemble pages from ready blocks and edit content in a simple panel.
 - **Handles your media** — upload images once, the system prepares the right sizes for you.
 - **Secure and organized** — proper accounts, access control, and site-wide settings in one place.
 - **Email-ready** — send messages (e.g. from forms) with a safe local preview while building.
+- **Background jobs ready** — a built-in jobs queue is wired up, so scheduled and async work (emails, imports, revalidation) can be added without extra setup.
 
 ## Getting started (for developers)
 
 ```bash
-cp .env.example .env      # fill in the variables (incl. PAYLOAD_SECRET)
-docker compose up -d      # database + local mail
+cp apps/payload/.env.example apps/payload/.env   # fill in the variables (incl. PAYLOAD_SECRET)
+cp apps/astro/.env.example apps/astro/.env        # frontend env (PAYLOAD_API_URL, etc.)
+docker compose up -d                              # database + local mail
 pnpm install
-pnpm dev                  # panel: http://localhost:3100/admin · site: http://localhost:3000
+pnpm dev                                          # panel: http://localhost:3100/admin · site: http://localhost:3000
 ```

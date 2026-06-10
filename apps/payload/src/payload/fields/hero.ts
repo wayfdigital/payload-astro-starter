@@ -1,4 +1,5 @@
 import type { Field } from 'payload'
+import { linkField } from '@/payload/fields/link'
 
 export const heroField: Field = {
   name: 'hero',
@@ -68,18 +69,11 @@ export const heroField: Field = {
         condition: (_data, siblingData) => siblingData.type === 'default',
       },
     },
-    {
+    // A CTA renders only when it has a label, so no separate "enabled" toggle.
+    linkField({
       name: 'cta',
-      type: 'group',
       label: 'Call to Action',
-      fields: [
-        { name: 'enabled', type: 'checkbox', label: 'Enable CTA Button', defaultValue: false },
-        { name: 'text', type: 'text', label: 'Button Text', defaultValue: 'Learn More', localized: true },
-        { name: 'url', type: 'text', label: 'Button URL', defaultValue: '/' },
-      ],
-      admin: {
-        condition: (_data, siblingData) => siblingData.type === 'default',
-      },
-    },
+      admin: { condition: (_data, siblingData) => siblingData.type === 'default' },
+    }),
   ],
 }

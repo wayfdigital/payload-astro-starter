@@ -45,7 +45,7 @@ const customCode = settings?.customCode
 {
   home ? (
     <Layout seo={seo} jsonLd={jsonLd} customCode={customCode} preview={preview}>
-      <PageBuilder page={home} apiUrl={apiUrl} />
+      <PageBuilder page={home} apiUrl={apiUrl} locale={locale} />
     </Layout>
   ) : (
     <Layout seo={seo} jsonLd={jsonLd} customCode={customCode} preview={preview}>

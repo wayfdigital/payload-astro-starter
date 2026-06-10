@@ -79,6 +79,26 @@ Run the relevant skill's checklist. For a new section / design that is the **Bui
 `CLAUDE.md`: reuse check → define block → register in **both** `Pages.ts` and `payload.config.ts`
 → Astro renderer → wire `layout-sections.astro` → `generate:types` → migration → verify.
 
+### 6. Wrap up — confirm done + offer a memory
+After the build is implemented and verified, **always** close the loop with the user. Emit a
+**large H1 heading** (markdown `#`) so it visually stands out as the end-of-work checkpoint, then
+ask two things:
+
+```
+# Czy to wszystko? ✅
+```
+
+1. **Is this everything?** — confirm the deliverable matches what they wanted, or if there's
+   anything else to add/adjust before we call it done.
+2. **Generate a memory?** — if anything non-obvious was decided or discovered during the build (a
+   gotcha, an architectural choice, a project convention), recommend writing a `type: project`
+   memory file and adding its pointer to `MEMORY.md` — and ask whether to do it now. Skip the offer
+   only when nothing durable came out of the work (e.g. a pure copy/color tweak).
+
+Use one `AskUserQuestion` round for this (recommend "Yes, save a memory" as the first option when a
+memory is warranted). Don't write the memory silently — confirm first, since the user owns what's
+worth remembering.
+
 ## Hard rules (inherited from CLAUDE.md — never break)
 
 - **Any DB-schema change ⇒ a migration.** New/changed/removed collection, global, block, or field.

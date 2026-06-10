@@ -36,15 +36,16 @@ and **confirm the spec before building — never assume.**
 Run **in order**. This is the "do everything the no-code user can't" path.
 
 0. **Confirm spec** — `AskUserQuestion` with the *Always-ask checklist*.
-1. **Reuse check** — closest existing block in `apps/payload/src/payload/blocks/` and section component in `apps/astro/src/components/sections/`.
-2. **Define the block** — `apps/payload/src/payload/blocks/<feature>.ts` → `export const <Name>Block: Block = { slug, dbName, interfaceName, labels, fields }` (`localized: true` on per-locale copy).
-3. **Register in BOTH** `apps/payload/src/payload/collections/Pages.ts` (`layout` blocks) **and** `apps/payload/src/payload.config.ts` (`blocks`).
-4. **Build the renderer** — `apps/astro/src/components/sections/<feature>/index.astro` (or `.tsx` for React islands) using tokens from `@repo/ui`. For CMS data, fetch via Payload REST API (`PAYLOAD_API_URL`).
-5. **Wire the map** — add `blockType → component` to `apps/astro/src/components/page-builder/layout-sections.astro` (or equivalent).
-6. **Generate types** — `pnpm --filter @repo/payload generate:types` (writes `packages/payload-types/src/index.ts`).
-7. **Migrate** — payload-migrations cycle (`docker compose up -d postgres` → `pnpm --filter @repo/payload migrate:create <name>` → review → `pnpm --filter @repo/payload migrate`). Commit migration with the change.
-8. **Verify** — `/admin` → Pages → `layout`, and the rendered Astro page.
-9. **SEO pass** — load **seo-structured-data**: does the new section/content type warrant structured data (Product/Article/FAQ/etc.)? Emit applicable JSON-LD or record it as deferred.
+1. **Reuse check** — closest existing `@repo/ui` section in `packages/ui/src/components/sections/`, block in `apps/payload/src/payload/blocks/`, and adapter in `apps/astro/src/components/sections/`.
+2. **Build the presentational component** — `packages/ui/src/components/sections/<feature>/<feature>.tsx`: a **pure, Payload-agnostic** React component (plain props, **no** `@repo/payload-types`). Wire all three export points (`<feature>/index.ts` → `sections/index.ts` → `src/index.ts`). **All new section UI lives here.** Reference: `packages/ui/src/components/sections/hero/hero.tsx`.
+3. **Define the block** — `apps/payload/src/payload/blocks/<feature>.ts` → `export const <Name>Block: Block = { slug, dbName, interfaceName, labels, fields }` (`localized: true` on per-locale copy).
+4. **Register in BOTH** `apps/payload/src/payload/collections/Pages.ts` (`layout` blocks) **and** `apps/payload/src/payload.config.ts` (`blocks`).
+5. **Build the Astro adapter** — `apps/astro/src/components/sections/<feature>/index.tsx`: a **thin** component typed by the block interface that **maps block fields onto the `@repo/ui` component's props** (no markup of its own). Reference: `apps/astro/src/components/sections/hero/variants/default-hero.tsx`. For CMS data, use the typed layer in `apps/astro/src/lib/payload/`.
+6. **Wire the map** — add `blockType → component` to `apps/astro/src/components/page-builder/layout-sections.astro` (or equivalent).
+7. **Generate types** — `pnpm --filter @repo/payload generate:types` (writes `packages/payload-types/src/index.ts`).
+8. **Migrate** — payload-migrations cycle (`docker compose up -d postgres` → `pnpm --filter @repo/payload migrate:create <name>` → review → `pnpm --filter @repo/payload migrate`). Commit migration with the change.
+9. **Verify** — `/admin` → Pages → `layout`, and the rendered Astro page.
+10. **SEO pass** — load **seo-structured-data**: does the new section/content type warrant structured data (Product/Article/FAQ/etc.)? Emit applicable JSON-LD or record it as deferred.
 
 ## Always-ask checklist (step 0)
 
@@ -84,7 +85,8 @@ packages/payload-types/  — Generated Payload TypeScript types (shared)
 | i18n (Payload) | `apps/payload/src/i18n/const.ts` · `apps/payload/src/i18n/payload-locales.ts` |
 | Generated types | `packages/payload-types/src/index.ts` (via `pnpm --filter @repo/payload generate:types`) |
 | Design system | `packages/ui/src/` — imports as `@repo/ui`; CSS vars follow shadcn conventions (`--primary`, `--background`, etc.) |
-| Astro sections | `apps/astro/src/components/sections/` (to be created as features are built) |
+| Section UI components | `packages/ui/src/components/sections/<feature>/` — **pure, Payload-agnostic** React; all new section UI lives here (ref: `hero/hero.tsx`). Export via `<feature>/index.ts` → `sections/index.ts` → `src/index.ts` |
+| Astro section adapters | `apps/astro/src/components/sections/<feature>/index.tsx` — thin; maps block fields → `@repo/ui` component props (ref: `hero/variants/default-hero.tsx`) |
 | Astro layouts | `apps/astro/src/layouts/Layout.astro` |
 | Astro pages | `apps/astro/src/pages/` |
 | Payload API base URL | `PAYLOAD_API_URL` env in `apps/astro/.env` (default `http://localhost:3100`) |
@@ -105,6 +107,8 @@ packages/payload-types/  — Generated Payload TypeScript types (shared)
 - Never make a schema change without running a migration.
 - Never leave `packages/payload-types/src/index.ts` stale — regenerate after every schema change.
 - Never register a block in only one of `Pages.ts` / `payload.config.ts`.
+- Never put a section's markup in the Astro adapter — section UI belongs in a `@repo/ui` component (`packages/ui/src/components/sections/`); the adapter only maps block fields onto its props.
+- Never import `@repo/payload-types` into a `@repo/ui` component — components stay Payload-agnostic; only the Astro adapter knows the block types.
 - Never import from `src/theme/` — use `@repo/ui` instead.
 - Never invent file paths — use the *Project map*.
 - Never assume the spec — ask (Golden rule #1).

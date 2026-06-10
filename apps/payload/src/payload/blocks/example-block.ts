@@ -1,4 +1,5 @@
 import type { Block } from 'payload'
+import { linkField } from '@/payload/fields/link'
 
 export const ExampleBlock: Block = {
   slug: 'exampleBlock',
@@ -22,17 +23,6 @@ export const ExampleBlock: Block = {
       label: 'Description',
       localized: true,
     },
-    {
-      name: 'ctaText',
-      type: 'text',
-      label: 'CTA text',
-      localized: true,
-    },
-    {
-      name: 'ctaUrl',
-      type: 'text',
-      label: 'CTA URL',
-      defaultValue: '/',
-    },
+    linkField({ label: 'CTA' }),
   ],
 }

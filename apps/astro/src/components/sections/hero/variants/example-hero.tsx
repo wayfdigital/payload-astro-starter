@@ -1,11 +1,15 @@
-import { Hero, Button, Container, Text } from '@repo/ui'
+import { Hero, CmsLink, Container, Text } from '@repo/ui'
+import type { Locale } from '../../../../i18n/locales'
+import { resolveLink } from '../../../../lib/link/resolve-link'
 import type { PageHero } from '../index'
 
 /**
  * Hero variant with an "eyebrow" label above the title. Selected when the page's
  * `hero.type` is `exampleHero`.
  */
-export const ExampleHero = (hero: PageHero) => {
+export const ExampleHero = ({ locale, ...hero }: PageHero & { locale: Locale }) => {
+  const cta = resolveLink(hero.cta, locale)
+
   return (
     <Hero
       title={hero.title ?? ''}
@@ -21,11 +25,7 @@ export const ExampleHero = (hero: PageHero) => {
               </Text>
             </Container>
           ) : null}
-          {hero.cta?.enabled && hero.cta.text ? (
-            <a href={hero.cta.url ?? '/'}>
-              <Button>{hero.cta.text}</Button>
-            </a>
-          ) : null}
+          {cta ? <CmsLink link={cta} /> : null}
         </>
       }
     />

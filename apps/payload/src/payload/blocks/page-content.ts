@@ -1,4 +1,5 @@
 import { type Block } from 'payload'
+import { linkField } from '@/payload/fields/link'
 
 export const pageContentBlock1: Block = {
   slug: 'page-content-1',
@@ -8,8 +9,7 @@ export const pageContentBlock1: Block = {
     { name: 'subtitle', type: 'textarea', label: 'Section Subtitle', localized: true },
     { name: 'image', type: 'upload', label: 'Image', relationTo: 'media' },
     { name: 'content', type: 'textarea', label: 'Section Content', localized: true },
-    { name: 'buttonText', type: 'text', label: 'Button Text', localized: true },
-    { name: 'buttonLink', type: 'text', label: 'Button Link', localized: true },
+    linkField({ label: 'Button' }),
   ],
 }
 
@@ -29,8 +29,7 @@ export const pageContentBlock2: Block = {
         { name: 'title', type: 'text', label: 'Title', localized: true },
         { name: 'icon', type: 'upload', label: 'Icon', relationTo: 'media' },
         { name: 'content', type: 'textarea', label: 'Content', localized: true },
-        { name: 'linkText', type: 'text', label: 'Link Text', localized: true, defaultValue: 'Mehr Sehen' },
-        { name: 'linkUrl', type: 'text', label: 'Link URL', localized: true },
+        linkField({ label: 'Link' }),
       ],
     },
   ],

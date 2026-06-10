@@ -1,5 +1,6 @@
 ---
 import type { Page } from '@repo/payload-types'
+import type { Locale } from '../../i18n/locales'
 import HeroSection from '../sections/hero/index'
 import LayoutSections from './layout-sections.astro'
 
@@ -10,10 +11,12 @@ interface Props {
   page: Page
   /** Payload REST base URL, forwarded to interactive sections (FormBlock). */
   apiUrl: string
+  /** Active locale, forwarded so CMS links resolve to locale-prefixed hrefs. */
+  locale: Locale
 }
 
-const { page, apiUrl } = Astro.props
+const { page, apiUrl, locale } = Astro.props
 ---
 
-<HeroSection {...page.hero} />
-<LayoutSections sections={page.layout} apiUrl={apiUrl} />
+<HeroSection {...page.hero} locale={locale} />
+<LayoutSections sections={page.layout} apiUrl={apiUrl} locale={locale} />

@@ -1,5 +1,6 @@
 import type { Page } from '@repo/payload-types'
 import type { FC } from 'react'
+import type { Locale } from '../../../i18n/locales'
 import { PageContent1Variant } from './variants/page-content-1'
 import { PageContent2Variant } from './variants/page-content-2'
 import { PageContent3Variant } from './variants/page-content-3'
@@ -12,12 +13,15 @@ export type PageContentSectionProps = Extract<
   { blockType: 'page-content-1' | 'page-content-2' | 'page-content-3' }
 >
 
-export const PageContentSection: FC<PageContentSectionProps> = (props) => {
+export const PageContentSection: FC<PageContentSectionProps & { locale: Locale }> = ({
+  locale,
+  ...props
+}) => {
   switch (props.blockType) {
     case 'page-content-1':
-      return <PageContent1Variant {...props} />
+      return <PageContent1Variant {...props} locale={locale} />
     case 'page-content-2':
-      return <PageContent2Variant {...props} />
+      return <PageContent2Variant {...props} locale={locale} />
     case 'page-content-3':
       return <PageContent3Variant {...props} />
     default:

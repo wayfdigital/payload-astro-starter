@@ -1,4 +1,6 @@
-import { Hero, Button } from '@repo/ui'
+import { Hero, CmsLink } from '@repo/ui'
+import type { Locale } from '../../../../i18n/locales'
+import { resolveLink } from '../../../../lib/link/resolve-link'
 import type { PageHero } from '../index'
 
 /**
@@ -6,8 +8,9 @@ import type { PageHero } from '../index'
  * the `@repo/ui` Hero. Used for the `default`, `category` and `categoriesGrid`
  * hero types (anything that isn't `exampleHero`).
  */
-export const DefaultHero = (hero: PageHero) => {
+export const DefaultHero = ({ locale, ...hero }: PageHero & { locale: Locale }) => {
   const alignment = hero.alignment === 'left' ? 'left' : 'center'
+  const cta = resolveLink(hero.cta, locale)
 
   return (
     <Hero
@@ -15,13 +18,7 @@ export const DefaultHero = (hero: PageHero) => {
       subtitle={hero.description ?? undefined}
       alignment={alignment}
       variant={hero.background === 'gradient' ? 'gradient' : 'default'}
-      actions={
-        hero.cta?.enabled && hero.cta.text ? (
-          <a href={hero.cta.url ?? '/'}>
-            <Button>{hero.cta.text}</Button>
-          </a>
-        ) : undefined
-      }
+      actions={cta ? <CmsLink link={cta} /> : undefined}
     />
   )
 }

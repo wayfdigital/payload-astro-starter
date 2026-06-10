@@ -266,8 +266,17 @@ export interface PageContent1 {
   subtitle?: string | null;
   image?: (string | null) | Media;
   content?: string | null;
-  buttonText?: string | null;
-  buttonLink?: string | null;
+  link?: {
+    type?: ('custom' | 'reference') | null;
+    label?: string | null;
+    url?: string | null;
+    reference?: {
+      relationTo: 'pages';
+      value: string | Page;
+    } | null;
+    variant?: ('primary' | 'secondary' | 'outline' | 'ghost' | 'link' | 'link-underline') | null;
+    newTab?: boolean | null;
+  };
   id?: string | null;
   blockName?: string | null;
   blockType: 'page-content-1';
@@ -352,41 +361,119 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "page-content-2".
+ * via the `definition` "pages".
  */
-export interface PageContent2 {
-  title?: string | null;
-  subtitle?: string | null;
-  items?:
+export interface Page {
+  id: string;
+  /**
+   * Serve this page at the site root (/). Leave the slug empty.
+   */
+  isHomePage?: boolean | null;
+  slug?: string | null;
+  hero: {
+    type: 'default' | 'exampleHero' | 'category' | 'categoriesGrid';
+    title?: string | null;
+    description?: string | null;
+    eyebrow?: string | null;
+    alignment?: ('left' | 'center' | 'right') | null;
+    background?: ('none' | 'light-gray' | 'dark' | 'gradient') | null;
+    cta?: {
+      type?: ('custom' | 'reference') | null;
+      label?: string | null;
+      url?: string | null;
+      reference?: {
+        relationTo: 'pages';
+        value: string | Page;
+      } | null;
+      variant?: ('primary' | 'secondary' | 'outline' | 'ghost' | 'link' | 'link-underline') | null;
+      newTab?: boolean | null;
+    };
+  };
+  layout?:
+    | (
+        | {
+            title?: string | null;
+            subtitle?: string | null;
+            image?: (string | null) | Media;
+            content?: string | null;
+            link?: {
+              type?: ('custom' | 'reference') | null;
+              label?: string | null;
+              url?: string | null;
+              reference?: {
+                relationTo: 'pages';
+                value: string | Page;
+              } | null;
+              variant?: ('primary' | 'secondary' | 'outline' | 'ghost' | 'link' | 'link-underline') | null;
+              newTab?: boolean | null;
+            };
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'page-content-1';
+          }
+        | {
+            title?: string | null;
+            subtitle?: string | null;
+            items?:
+              | {
+                  title?: string | null;
+                  icon?: (string | null) | Media;
+                  content?: string | null;
+                  link?: {
+                    type?: ('custom' | 'reference') | null;
+                    label?: string | null;
+                    url?: string | null;
+                    reference?: {
+                      relationTo: 'pages';
+                      value: string | Page;
+                    } | null;
+                    variant?: ('primary' | 'secondary' | 'outline' | 'ghost' | 'link' | 'link-underline') | null;
+                    newTab?: boolean | null;
+                  };
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'page-content-2';
+          }
+        | {
+            title?: string | null;
+            subtitle?: string | null;
+            audience?:
+              | {
+                  title?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'page-content-3';
+          }
+        | FormBlock
+        | ExampleBlock
+      )[]
+    | null;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
+     */
+    image?: (string | null) | Media;
+  };
+  parent?: (string | null) | Page;
+  breadcrumbs?:
     | {
-        title?: string | null;
-        icon?: (string | null) | Media;
-        content?: string | null;
-        linkText?: string | null;
-        linkUrl?: string | null;
+        doc?: (string | null) | Page;
+        url?: string | null;
+        label?: string | null;
         id?: string | null;
       }[]
     | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'page-content-2';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "page-content-3".
- */
-export interface PageContent3 {
-  title?: string | null;
-  subtitle?: string | null;
-  audience?:
-    | {
-        title?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  id?: string | null;
-  blockName?: string | null;
-  blockType: 'page-content-3';
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -600,11 +687,67 @@ export interface Form {
 export interface ExampleBlock {
   title: string;
   description?: string | null;
-  ctaText?: string | null;
-  ctaUrl?: string | null;
+  link?: {
+    type?: ('custom' | 'reference') | null;
+    label?: string | null;
+    url?: string | null;
+    reference?: {
+      relationTo: 'pages';
+      value: string | Page;
+    } | null;
+    variant?: ('primary' | 'secondary' | 'outline' | 'ghost' | 'link' | 'link-underline') | null;
+    newTab?: boolean | null;
+  };
   id?: string | null;
   blockName?: string | null;
   blockType: 'exampleBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-content-2".
+ */
+export interface PageContent2 {
+  title?: string | null;
+  subtitle?: string | null;
+  items?:
+    | {
+        title?: string | null;
+        icon?: (string | null) | Media;
+        content?: string | null;
+        link?: {
+          type?: ('custom' | 'reference') | null;
+          label?: string | null;
+          url?: string | null;
+          reference?: {
+            relationTo: 'pages';
+            value: string | Page;
+          } | null;
+          variant?: ('primary' | 'secondary' | 'outline' | 'ghost' | 'link' | 'link-underline') | null;
+          newTab?: boolean | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'page-content-2';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page-content-3".
+ */
+export interface PageContent3 {
+  title?: string | null;
+  subtitle?: string | null;
+  audience?:
+    | {
+        title?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'page-content-3';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -633,98 +776,6 @@ export interface Admin {
     | null;
   password?: string | null;
   collection: 'admins';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "pages".
- */
-export interface Page {
-  id: string;
-  /**
-   * Serve this page at the site root (/). Leave the slug empty.
-   */
-  isHomePage?: boolean | null;
-  slug?: string | null;
-  hero: {
-    type: 'default' | 'exampleHero' | 'category' | 'categoriesGrid';
-    title?: string | null;
-    description?: string | null;
-    eyebrow?: string | null;
-    alignment?: ('left' | 'center' | 'right') | null;
-    background?: ('none' | 'light-gray' | 'dark' | 'gradient') | null;
-    cta?: {
-      enabled?: boolean | null;
-      text?: string | null;
-      url?: string | null;
-    };
-  };
-  layout?:
-    | (
-        | {
-            title?: string | null;
-            subtitle?: string | null;
-            image?: (string | null) | Media;
-            content?: string | null;
-            buttonText?: string | null;
-            buttonLink?: string | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'page-content-1';
-          }
-        | {
-            title?: string | null;
-            subtitle?: string | null;
-            items?:
-              | {
-                  title?: string | null;
-                  icon?: (string | null) | Media;
-                  content?: string | null;
-                  linkText?: string | null;
-                  linkUrl?: string | null;
-                  id?: string | null;
-                }[]
-              | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'page-content-2';
-          }
-        | {
-            title?: string | null;
-            subtitle?: string | null;
-            audience?:
-              | {
-                  title?: string | null;
-                  id?: string | null;
-                }[]
-              | null;
-            id?: string | null;
-            blockName?: string | null;
-            blockType: 'page-content-3';
-          }
-        | FormBlock
-        | ExampleBlock
-      )[]
-    | null;
-  meta?: {
-    title?: string | null;
-    description?: string | null;
-    /**
-     * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
-     */
-    image?: (string | null) | Media;
-  };
-  parent?: (string | null) | Page;
-  breadcrumbs?:
-    | {
-        doc?: (string | null) | Page;
-        url?: string | null;
-        label?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  updatedAt: string;
-  createdAt: string;
-  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1245,9 +1296,12 @@ export interface PagesSelect<T extends boolean = true> {
         cta?:
           | T
           | {
-              enabled?: T;
-              text?: T;
+              type?: T;
+              label?: T;
               url?: T;
+              reference?: T;
+              variant?: T;
+              newTab?: T;
             };
       };
   layout?:
@@ -1260,8 +1314,16 @@ export interface PagesSelect<T extends boolean = true> {
               subtitle?: T;
               image?: T;
               content?: T;
-              buttonText?: T;
-              buttonLink?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    label?: T;
+                    url?: T;
+                    reference?: T;
+                    variant?: T;
+                    newTab?: T;
+                  };
               id?: T;
               blockName?: T;
             };
@@ -1276,8 +1338,16 @@ export interface PagesSelect<T extends boolean = true> {
                     title?: T;
                     icon?: T;
                     content?: T;
-                    linkText?: T;
-                    linkUrl?: T;
+                    link?:
+                      | T
+                      | {
+                          type?: T;
+                          label?: T;
+                          url?: T;
+                          reference?: T;
+                          variant?: T;
+                          newTab?: T;
+                        };
                     id?: T;
                   };
               id?: T;
@@ -1338,8 +1408,16 @@ export interface FormBlockSelect<T extends boolean = true> {
 export interface ExampleBlockSelect<T extends boolean = true> {
   title?: T;
   description?: T;
-  ctaText?: T;
-  ctaUrl?: T;
+  link?:
+    | T
+    | {
+        type?: T;
+        label?: T;
+        url?: T;
+        reference?: T;
+        variant?: T;
+        newTab?: T;
+      };
   id?: T;
   blockName?: T;
 }
@@ -1702,6 +1780,10 @@ export interface FooterSetting {
           type?: ('custom' | 'reference') | null;
           label?: string | null;
           url?: string | null;
+          reference?: {
+            relationTo: 'pages';
+            value: string | Page;
+          } | null;
           newTab?: boolean | null;
         };
         id?: string | null;
@@ -1723,6 +1805,10 @@ export interface CookieSetting {
     type?: ('custom' | 'reference') | null;
     label?: string | null;
     url?: string | null;
+    reference?: {
+      relationTo: 'pages';
+      value: string | Page;
+    } | null;
     newTab?: boolean | null;
   };
   updatedAt?: string | null;
@@ -1831,6 +1917,7 @@ export interface FooterSettingsSelect<T extends boolean = true> {
               type?: T;
               label?: T;
               url?: T;
+              reference?: T;
               newTab?: T;
             };
         id?: T;
@@ -1853,6 +1940,7 @@ export interface CookieSettingsSelect<T extends boolean = true> {
         type?: T;
         label?: T;
         url?: T;
+        reference?: T;
         newTab?: T;
       };
   updatedAt?: T;

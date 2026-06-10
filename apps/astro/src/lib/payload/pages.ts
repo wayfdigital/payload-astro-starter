@@ -12,64 +12,69 @@ interface PageFetchOptions {
 }
 
 /**
- * Loads one page by slug for a locale via the Payload REST API.
+ * Fetches the first page matching `where` for a locale.
  * `depth=2` populates relationships (block images, the form on a FormBlock).
- * When `draft` is set, fetches the latest draft with the Admins API key (preview).
- * Returns `null` when no page matches or the API is unreachable.
+ *
+ * In `draft` (preview) mode we ask Payload for the latest draft using the Admins
+ * API key. If that finds nothing or the authenticated fetch fails (e.g. the API
+ * key isn't set up yet), we **fall back to the last published version** so the
+ * page still renders rather than collapsing to the empty landing. Outside preview
+ * we only ever read published content.
+ *
+ * Returns `null` when nothing matches or the API is unreachable.
  */
-export const getPageBySlug = async (
-  slug: string,
-  locale: Locale = DEFAULT_LOCALE,
-  { draft = false }: PageFetchOptions = {},
+const fetchFirstPage = async (
+  where: Record<string, string>,
+  locale: Locale,
+  { draft = false }: PageFetchOptions,
 ): Promise<Page | null> => {
-  const params = new URLSearchParams({
-    'where[slug][equals]': slug,
-    locale,
-    depth: '2',
-    limit: '1',
-  })
-  if (draft) params.set('draft', 'true')
-
-  try {
+  const run = async (useDraft: boolean): Promise<Page | null> => {
+    const params = new URLSearchParams({ ...where, locale, depth: '2', limit: '1' })
+    if (useDraft) params.set('draft', 'true')
     const { docs } = await payloadFetch<PaginatedDocs<Page>>(
       `/api/pages?${params.toString()}`,
       undefined,
-      { draft },
+      { draft: useDraft },
     )
     return docs[0] ?? null
+  }
+
+  if (draft) {
+    try {
+      const draftDoc = await run(true)
+      if (draftDoc) return draftDoc
+    } catch {
+      // Draft fetch failed (e.g. missing/invalid API key) — fall back to published.
+    }
+  }
+
+  try {
+    return await run(false)
   } catch {
     return null
   }
 }
 
 /**
- * Loads the page marked as the home page (`isHomePage: true`) for a locale.
- * When `draft` is set, fetches the latest draft with the Admins API key (preview).
- * Returns `null` when no home page is set or the API is unreachable.
+ * Loads one page by slug for a locale. In preview, returns the latest draft and
+ * falls back to the last published version (see `fetchFirstPage`).
+ */
+export const getPageBySlug = async (
+  slug: string,
+  locale: Locale = DEFAULT_LOCALE,
+  options: PageFetchOptions = {},
+): Promise<Page | null> =>
+  fetchFirstPage({ 'where[slug][equals]': slug }, locale, options)
+
+/**
+ * Loads the page marked as the home page (`isHomePage: true`) for a locale. In
+ * preview, returns the latest draft and falls back to the last published version.
  */
 export const getHomePage = async (
   locale: Locale = DEFAULT_LOCALE,
-  { draft = false }: PageFetchOptions = {},
-): Promise<Page | null> => {
-  const params = new URLSearchParams({
-    'where[isHomePage][equals]': 'true',
-    locale,
-    depth: '2',
-    limit: '1',
-  })
-  if (draft) params.set('draft', 'true')
-
-  try {
-    const { docs } = await payloadFetch<PaginatedDocs<Page>>(
-      `/api/pages?${params.toString()}`,
-      undefined,
-      { draft },
-    )
-    return docs[0] ?? null
-  } catch {
-    return null
-  }
-}
+  options: PageFetchOptions = {},
+): Promise<Page | null> =>
+  fetchFirstPage({ 'where[isHomePage][equals]': 'true' }, locale, options)
 
 /**
  * Lists all pages (slugs only) for building navigation / the home index.

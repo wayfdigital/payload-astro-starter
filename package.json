@@ -10,7 +10,8 @@
     "depcruise": "turbo depcruise",
     "db:clean": "pnpm run db:down && pnpm run db:up",
     "db:up": "docker compose up -d",
-    "db:down": "docker compose down -v"
+    "db:down": "docker compose down -v && rm -rf .volume/data/postgres",
+    "db:migrate": "pnpm --filter @repo/payload migrate"
   },
   "devDependencies": {
     "turbo": "^2.5.4",

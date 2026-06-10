@@ -7,13 +7,14 @@
     "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev --port 3100",
     "build": "cross-env NODE_OPTIONS=--no-deprecation next build",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
-    "migrate:create": "cross-env NODE_OPTIONS=--no-deprecation payload migrate:create",
+    "generate:migration": "cross-env NODE_OPTIONS=--no-deprecation payload migrate:create",
     "migrate": "cross-env NODE_OPTIONS=--no-deprecation payload migrate",
     "migrate:status": "cross-env NODE_OPTIONS=--no-deprecation payload migrate:status",
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . --max-warnings=0",
-    "depcruise": "depcruise src"
+    "depcruise": "depcruise src",
+    "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "catalog:",

@@ -74,7 +74,7 @@ const customCode = settings?.customCode
 <Layout seo={seo} jsonLd={jsonLd} customCode={customCode} preview={preview}>
   {
     page ? (
-      <PageBuilder page={page} apiUrl={apiUrl} />
+      <PageBuilder page={page} apiUrl={apiUrl} locale={locale} />
     ) : (
       <main style="padding: var(--spacing-xl); max-width: var(--max-width); margin: 0 auto;">
         <h1 style="font-family: var(--font-heading); color: var(--foreground);">Page not found</h1>
