@@ -30,6 +30,7 @@ and **confirm the spec before building — never assume.**
 | Payload config / collections / hooks / access / validation questions | **payload** (global skill) | per skill |
 | "change text / color / spacing only", "tylko zmień kolor/tekst" | theme only (no skill, **no migration**) | edit `@/theme` usage + verify |
 | "add structured data / rich results", "improve SEO on this page", "Google preview / social share", "site name / OG image / tracking scripts" | **seo-structured-data** (→ **payload-migrations** if a new content type needs CMS fields) | detect collections → emit applicable JSON-LD; edit Site Settings / `lib/seo` |
+| "is my site secure / safe to launch", "security audit / review / harden", "OWASP", "exposed admin / leaked data", "czy bezpieczne", "audyt bezpieczeństwa", "zabezpiecz stronę" | **security-audit** (→ **payload-migrations** if a fix changes schema/config) | audit the 7 areas vs. real files → report by severity → fix app-level, advise infra |
 
 ## Build pipeline (new section / from a design)
 
@@ -101,6 +102,7 @@ packages/payload-types/  — Generated Payload TypeScript types (shared)
 - **figma** (MCP) — fires on a Figma URL / design-to-code; read the design, then run the Build pipeline per section.
 - **seo-structured-data** — fires when a page/section is built or a content type is added, or on any SEO / structured-data / social-preview / tracking-script request. Detects which collections exist and emits only the applicable JSON-LD (WebSite/Organization/WebPage/Breadcrumb now; Product/Article/FAQ deferred). Owns `apps/astro/src/lib/seo`, `components/seo`, and the `SiteSettings` global. Run an SEO pass after any new section ships.
 - **seo-audit** (generic) — broad SEO framework (crawlability, Core Web Vitals, on-page, international) for "audit my SEO" requests.
+- **security-audit** — fires on any "is my site secure / safe to launch / security audit / harden / OWASP" request. Audits 7 areas (admin auth, access control, API exposure, secrets, input/XSS, logging, infra) against this repo's real files (`Admins.ts`, `access-guards/`, `cors.ts`, `payload.config.ts` secret, `Media.ts` uploads, `.env`), maps each finding to OWASP Top 10, reports by severity, fixes app-level issues (→ migration if schema/config changes) and advises on infra.
 
 ## Hard rules — never
 

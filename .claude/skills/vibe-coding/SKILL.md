@@ -32,6 +32,7 @@ everything downstream:
 | "show / list products / posts", "load from the CMS", "make it dynamic" | **dynamic data** |
 | "change text / color / spacing only", "tylko zmień kolor/tekst" | **content/theme only** |
 | Payload config / hooks / access / validation question | **payload config** |
+| "is my site secure / safe to launch", "security audit / review / harden", "OWASP", "czy bezpieczne", "audyt bezpieczeństwa", "zabezpiecz stronę" | **security audit** |
 
 If the request mixes types (e.g. a Figma with several sections, some static, some CMS-driven),
 split it into one line per deliverable and route each independently.
@@ -46,6 +47,7 @@ split it into one line per deliverable and route each independently.
 | **dynamic data** | `data-fetching` → `payload-migrations` (if it needs new schema) |
 | **content/theme only** | none — edit `@repo/ui` tokens / copy, **no migration** |
 | **payload config** | `payload` (global skill) |
+| **security audit** | `security-audit` (+ `payload-migrations` if a fix changes schema/config) |
 
 ### 3. Confirm the spec — ONE `AskUserQuestion` round
 Never assume. Batch every open developer decision into a **single** `AskUserQuestion` round and
