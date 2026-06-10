@@ -1,10 +1,17 @@
 /**
- * dependency-cruiser configuration.
+ * Shared dependency-cruiser rules for the whole monorepo.
  *
  * Validates the module dependency graph: forbids circular imports, flags
  * orphans, blocks production code from reaching into devDependencies, etc.
  *
- * Run `pnpm depcruise` to validate, `pnpm depcruise:graph` for an SVG graph.
+ * This file holds the rules ONLY. Each workspace
+ * (`apps/*`, `packages/*`) has a tiny `.dependency-cruiser.cjs` that
+ * `extends` this one and points `tsConfig` at its OWN `tsconfig.json` — that
+ * is how per-package path aliases (`@/*`, `@payload-config`, `@repo/*`)
+ * resolve correctly. dependency-cruiser only accepts one `tsConfig` per run,
+ * so the check is fanned out per package via the `depcruise` turbo task.
+ *
+ * Run `pnpm depcruise` (from the repo root) to validate every workspace.
  * Docs: https://github.com/sverweij/dependency-cruiser/blob/main/doc/rules-reference.md
  *
  * @type {import('dependency-cruiser').IConfiguration}
@@ -35,6 +42,7 @@ module.exports = {
           String.raw`\.d\.ts$`, // type declarations
           String.raw`(^|/)tsconfig\.json$`,
           String.raw`(^|/)(?:babel|webpack|next|postcss|tailwind)\.config\.(js|cjs|mjs|ts)$`,
+          String.raw`^src/index\.(ts|tsx)$`, // package entry point (consumed by other workspaces)
           String.raw`^src/payload-types\.ts$`, // generated
           '^src/types/', // type-only modules (followed only as `import type`)
           // Next.js App Router & Payload convention entry points — loaded by
@@ -76,7 +84,12 @@ module.exports = {
         'This import could not be resolved. Fix the path/alias or install the ' +
         'missing package.',
       from: {},
-      to: { couldNotResolve: true },
+      to: {
+        couldNotResolve: true,
+        // Astro virtual modules (astro:middleware, astro:content, astro:assets,
+        // astro:env, …) exist only at build time — not resolvable on disk.
+        pathNot: [String.raw`^astro:`],
+      },
     },
     {
       name: 'no-duplicate-dep-types',
@@ -125,13 +138,20 @@ module.exports = {
         'A peerDependency is imported. This is usually only appropriate for ' +
         'plugins/libraries — double-check it belongs here.',
       from: {},
-      to: { dependencyTypes: ['npm-peer'] },
+      to: {
+        dependencyTypes: ['npm-peer'],
+        // The JSX transform auto-injects these; not an authored import choice.
+        pathNot: [String.raw`(^|/)react/jsx-(dev-)?runtime(\.js)?$`],
+      },
     },
   ],
 
   options: {
-    /* resolve TypeScript path aliases (@/*, @payload-config) from tsconfig */
-    tsConfig: { fileName: 'tsconfig.json' },
+    /*
+     * NOTE: `tsConfig` is intentionally NOT set here. Each workspace's
+     * `.dependency-cruiser.cjs` sets `tsConfig: { fileName: 'tsconfig.json' }`
+     * so its own path aliases (@/*, @payload-config, @repo/*) resolve.
+     */
 
     /*
      * Analyse the *runtime* dependency graph only. Type-only imports
@@ -145,9 +165,13 @@ module.exports = {
     /* don't analyse what's inside dependencies, just that they're used */
     doNotFollow: { path: 'node_modules' },
 
-    /* skip generated / build output */
+    /* skip generated / build output (Next.js `.next`, Astro `dist`) */
     exclude: {
-      path: [String.raw`^\.next/`, String.raw`^src/payload-types\.ts$`],
+      path: [
+        String.raw`(^|/)\.next/`,
+        String.raw`(^|/)dist/`,
+        String.raw`^src/payload-types\.ts$`,
+      ],
     },
 
     enhancedResolveOptions: {

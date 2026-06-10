@@ -8,7 +8,11 @@
   },
   "main": "./src/index.ts",
   "types": "./src/index.ts",
+  "scripts": {
+    "depcruise": "depcruise src"
+  },
   "devDependencies": {
+    "dependency-cruiser": "catalog:",
     "typescript": "catalog:"
   }
 }

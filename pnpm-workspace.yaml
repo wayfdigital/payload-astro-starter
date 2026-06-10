@@ -16,6 +16,7 @@ catalog:
   # Tooling
   typescript: 5.9.3
   tailwindcss: 4.1.18
+  dependency-cruiser: ^16.0.0
 
   # Next / Payload core
   next: 15.4.11
