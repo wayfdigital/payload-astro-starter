@@ -4,16 +4,8 @@
       "Edit(/.claude/skills/astro/**)",
       "Bash(pnpm --filter @repo/astro add @astrojs/node)",
       "Bash(pnpm --filter @repo/astro run build)",
-      "mcp__knowledge-base__get_entry_files",
       "Bash(sed -n '1,40p' src/components/page-builder/layout-sections.astro)",
       "Bash(sed -n '1,12p' src/components/sections/example-block/index.tsx)",
-      "mcp__knowledge-base__search_patterns",
-      "Bash(echo \"=== first 30 lines ===\")",
-      "Bash(head -30 /Users/kacperzawojski/.claude/projects/-Users-kacperzawojski-code-payload-starter/69635243-82da-45a3-b52c-0e81142b28ae/tool-results/mcp-knowledge-base-get_entry_files-1780930696225.txt)",
-      "Bash(echo \"\")",
-      "Bash(echo \"=== is it JSON? ===\")",
-      "Bash(head -c 1 /Users/kacperzawojski/.claude/projects/-Users-kacperzawojski-code-payload-starter/69635243-82da-45a3-b52c-0e81142b28ae/tool-results/mcp-knowledge-base-get_entry_files-1780930696225.txt)",
-      "Bash(grep -nE '^# [A-Za-z0-9_/-]+\\\\.\\(md|ts|tsx|js|json\\)$' /Users/kacperzawojski/.claude/projects/-Users-kacperzawojski-code-payload-starter/69635243-82da-45a3-b52c-0e81142b28ae/tool-results/mcp-knowledge-base-get_entry_files-1780930696225.txt)",
       "Edit(/.claude/skills/payloadcms/**)"
     ]
   },

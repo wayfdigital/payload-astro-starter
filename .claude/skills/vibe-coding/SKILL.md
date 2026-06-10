@@ -42,8 +42,6 @@ split it into one line per deliverable and route each independently.
 | **content/theme only** | none — edit `@repo/ui` tokens / copy, **no migration** |
 | **payload config** | `payload` (global skill) |
 
-Always also call `knowledge-base` `get_context` first to pull repo patterns and prior decisions.
-
 ### 3. Confirm the spec — ONE `AskUserQuestion` round
 Never assume. Batch every open developer decision into a **single** `AskUserQuestion` round and
 wait. Pull the questions that actually apply from the *Always-ask checklist*:
@@ -101,7 +99,7 @@ Run the relevant skill's checklist. For a new section / design that is the **Bui
 > User: "I want a section with three pricing plans I can edit later."
 
 1. **Intent / type** → new section, CMS-editable copy → **new section**.
-2. **Skills** → `website-layout-sections` → `data-fetching` (editable in admin = CMS field) → `payload-migrations`; `knowledge-base.get_context` first.
+2. **Skills** → `website-layout-sections` → `data-fetching` (editable in admin = CMS field) → `payload-migrations`.
 3. **Ask (one round)** → localized pl/en? · which page + position? · static cards vs relationship to a `plans` collection? · highlight/"most popular" toggle? (default: 3 static localized cards, cached). 
 4. **Spec** → `PricingBlock` (slug `pricingBlock`, dbName `pricing_block`), repeatable `plans` array (name, price, features[], ctaUrl, featured) localized; renders on `/pricing`; cached.
 5. **Build** → run the Build pipeline, commit the migration with the change, verify in `/admin` and the rendered page.

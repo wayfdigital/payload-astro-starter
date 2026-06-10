@@ -25,6 +25,7 @@ import {
 import { FormBlock } from './payload/blocks/forms'
 import { FooterSettings } from './payload/globals/FooterSettings'
 import { CookieSettings } from './payload/globals/CookieSettings'
+import { SiteSettings } from './payload/globals/SiteSettings'
 import { ExampleBlock } from './payload/blocks/example-block'
 
 const filename = fileURLToPath(import.meta.url)
@@ -46,7 +47,7 @@ export default buildConfig({
     fallbackLanguage: 'pl',
   },
   collections: [Admins, Media, Pages, Users],
-  globals: [FooterSettings, CookieSettings],
+  globals: [FooterSettings, CookieSettings, SiteSettings],
   blocks: [pageContentBlock1, pageContentBlock2, pageContentBlock3, FormBlock, ExampleBlock],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET ?? '',

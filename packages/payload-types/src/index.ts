@@ -172,10 +172,12 @@ export interface Config {
   globals: {
     'footer-settings': FooterSetting;
     cookieSettings: CookieSetting;
+    'site-settings': SiteSetting;
   };
   globalsSelect: {
     'footer-settings': FooterSettingsSelect<false> | FooterSettingsSelect<true>;
     cookieSettings: CookieSettingsSelect<false> | CookieSettingsSelect<true>;
+    'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
   };
   locale:
     | 'en'
@@ -1728,6 +1730,75 @@ export interface CookieSetting {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings".
+ */
+export interface SiteSetting {
+  id: string;
+  /**
+   * Brand name used in the title template and JSON-LD (e.g. "Acme").
+   */
+  siteName?: string | null;
+  /**
+   * How the browser/tab title is built. %s = the page title, %siteName% = the site name above.
+   */
+  titleTemplate?: string | null;
+  /**
+   * Used when a page has no SEO description of its own.
+   */
+  defaultDescription?: string | null;
+  /**
+   * Fallback Open Graph / Twitter image. The 1200×630 "og" size is used.
+   */
+  defaultOgImage?: (string | null) | Media;
+  /**
+   * Including the @ — used for twitter:site / twitter:creator.
+   */
+  twitterHandle?: string | null;
+  /**
+   * Feeds the Organization JSON-LD emitted on the home page.
+   */
+  organization?: {
+    legalName?: string | null;
+    logo?: (string | null) | Media;
+    /**
+     * Full URLs to social/brand profiles (Facebook, LinkedIn, X, …).
+     */
+    sameAs?:
+      | {
+          url: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  robots?: {
+    /**
+     * Turn on for staging environments. Adds noindex to every page.
+     */
+    noindexSite?: boolean | null;
+  };
+  customCode?: {
+    /**
+     * Injected right after <head> opens — e.g. meta verification tags.
+     */
+    headStart?: string | null;
+    /**
+     * Injected just before </head> — e.g. Google Analytics / GTM, pixels.
+     */
+    headEnd?: string | null;
+    /**
+     * Injected right after <body> opens — e.g. GTM <noscript>.
+     */
+    bodyStart?: string | null;
+    /**
+     * Injected just before </body> — e.g. chat widgets, deferred scripts.
+     */
+    bodyEnd?: string | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "footer-settings_select".
  */
 export interface FooterSettingsSelect<T extends boolean = true> {
@@ -1783,6 +1854,45 @@ export interface CookieSettingsSelect<T extends boolean = true> {
         label?: T;
         url?: T;
         newTab?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings_select".
+ */
+export interface SiteSettingsSelect<T extends boolean = true> {
+  siteName?: T;
+  titleTemplate?: T;
+  defaultDescription?: T;
+  defaultOgImage?: T;
+  twitterHandle?: T;
+  organization?:
+    | T
+    | {
+        legalName?: T;
+        logo?: T;
+        sameAs?:
+          | T
+          | {
+              url?: T;
+              id?: T;
+            };
+      };
+  robots?:
+    | T
+    | {
+        noindexSite?: T;
+      };
+  customCode?:
+    | T
+    | {
+        headStart?: T;
+        headEnd?: T;
+        bodyStart?: T;
+        bodyEnd?: T;
       };
   updatedAt?: T;
   createdAt?: T;

@@ -1,30 +1,34 @@
 ---
-import '@repo/ui/styles/theme.css'
-import '@repo/ui/styles/globals.css'
-import LivePreviewListener from '../components/preview/live-preview-listener'
-import { ADMIN_ORIGIN } from '../lib/preview-env'
+import '@repo/ui/styles/theme.css';
+import '@repo/ui/styles/globals.css';
+import LivePreviewListener from '../components/preview/live-preview-listener';
+import { ADMIN_ORIGIN } from '../lib/preview-env';
 
 interface Props {
-  title: string
-  description?: string
-  lang?: string
+  title: string;
+  description?: string;
+  lang?: string;
   /** When true, mount the live-preview listener (set on preview/draft renders). */
-  preview?: boolean
+  preview?: boolean;
 }
 
-const { title, description = '', lang = 'en', preview = false } = Astro.props
+const { title, description = '', lang = 'en', preview = false } = Astro.props;
 ---
 
 <!doctype html>
 <html lang={lang}>
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content={description} />
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <meta name='description' content={description} />
     <title>{title}</title>
   </head>
-  <body data-theme="ui">
+  <body data-theme='ui'>
     <slot />
-    {preview && <LivePreviewListener client:only="react" adminOrigin={ADMIN_ORIGIN} />}
+    {
+      preview && (
+        <LivePreviewListener client:only='react' adminOrigin={ADMIN_ORIGIN} />
+      )
+    }
   </body>
 </html>
