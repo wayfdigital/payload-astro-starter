@@ -1,0 +1,18 @@
+---
+/**
+ * Renders one or more schema.org objects as a JSON-LD <script>. Accepts a single
+ * object or an array; nullish entries (e.g. a builder that returned null) are
+ * dropped, and nothing renders when nothing is left. `<` is escaped so the payload
+ * can never break out of the <script> element.
+ */
+interface Props {
+  schema: unknown | unknown[]
+}
+
+const { schema } = Astro.props as Props
+const items = (Array.isArray(schema) ? schema : [schema]).filter(Boolean)
+const payload = items.length === 1 ? items[0] : items
+const json = JSON.stringify(payload).replaceAll('<', '\\u003c')
+---
+
+{items.length > 0 && <script type="application/ld+json" is:inline set:html={json} />}

@@ -2,6 +2,9 @@
 import Layout from '../layouts/Layout.astro'
 import PageBuilder from '../components/page-builder/page-builder.astro'
 import { getPageBySlug } from '../lib/payload/pages'
+import { getSiteSettings } from '../lib/payload/site-settings'
+import { buildSeo } from '../lib/seo/meta'
+import { webPageSchema, breadcrumbSchema } from '../lib/seo/jsonld'
 import { DEFAULT_LOCALE, isLocale, type Locale } from '../i18n/locales'
 
 const apiUrl = import.meta.env.PAYLOAD_API_URL ?? 'http://localhost:3100'
@@ -30,17 +33,45 @@ if (!slug) {
   return Astro.redirect('/')
 }
 
-const page = await getPageBySlug(slug, locale, { draft: preview })
+const [page, settings] = await Promise.all([
+  getPageBySlug(slug, locale, { draft: preview }),
+  getSiteSettings(locale),
+])
 
 if (!page) {
   Astro.response.status = 404
 }
 
-const title = page?.meta?.title ?? page?.slug ?? 'Page not found'
-const description = page?.meta?.description ?? ''
+const seo = buildSeo(
+  {
+    title: page?.meta?.title ?? page?.slug ?? 'Page not found',
+    description: page?.meta?.description,
+    image: page?.meta?.image,
+    slug,
+    locale,
+    type: 'website',
+    // Drafts/preview and the not-found state must never be indexed.
+    noindex: preview || !page,
+  },
+  settings,
+)
+
+const jsonLd = page
+  ? [
+      webPageSchema({
+        title: seo.title,
+        description: seo.description,
+        url: seo.canonical,
+        image: seo.ogImage,
+      }),
+      breadcrumbSchema(page.breadcrumbs, locale),
+    ]
+  : []
+
+const customCode = settings?.customCode
 ---
 
-<Layout title={title} description={description} lang={locale} preview={preview}>
+<Layout seo={seo} jsonLd={jsonLd} customCode={customCode} preview={preview}>
   {
     page ? (
       <PageBuilder page={page} apiUrl={apiUrl} />

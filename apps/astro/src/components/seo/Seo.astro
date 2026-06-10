@@ -1,0 +1,51 @@
+---
+/**
+ * Renders the full <head> SEO block from already-resolved values (see
+ * `buildSeo` in `lib/seo/meta.ts`). Lives inside <head>; emits title,
+ * description, canonical, robots, Open Graph, Twitter cards, and hreflang.
+ */
+import type { ResolvedSeo } from '../../lib/seo/meta'
+
+type Props = ResolvedSeo
+
+const {
+  title,
+  description,
+  canonical,
+  ogImage,
+  ogType,
+  locale,
+  siteName,
+  twitterHandle,
+  alternates,
+  noindex,
+} = Astro.props as Props
+---
+
+<title>{title}</title>
+{description && <meta name="description" content={description} />}
+<link rel="canonical" href={canonical} />
+{noindex && <meta name="robots" content="noindex, nofollow" />}
+
+{/* Open Graph */}
+<meta property="og:type" content={ogType} />
+<meta property="og:title" content={title} />
+{description && <meta property="og:description" content={description} />}
+<meta property="og:url" content={canonical} />
+<meta property="og:locale" content={locale} />
+{siteName && <meta property="og:site_name" content={siteName} />}
+{ogImage && <meta property="og:image" content={ogImage} />}
+
+{/* Twitter */}
+<meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
+{twitterHandle && <meta name="twitter:site" content={twitterHandle} />}
+<meta name="twitter:title" content={title} />
+{description && <meta name="twitter:description" content={description} />}
+{ogImage && <meta name="twitter:image" content={ogImage} />}
+
+{/* hreflang alternates */}
+{
+  alternates.map((alt) => (
+    <link rel="alternate" hreflang={alt.hreflang} href={alt.href} />
+  ))
+}

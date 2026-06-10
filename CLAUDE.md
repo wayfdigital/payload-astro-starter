@@ -29,6 +29,7 @@ and **confirm the spec before building — never assume.**
 | "show / list products / posts / data", "load from the CMS", "make it dynamic" | **data-fetching** → **payload-migrations** (if it needs new schema) | choose SSR/ISR + add a data-query |
 | Payload config / collections / hooks / access / validation questions | **payload** (global skill) | per skill |
 | "change text / color / spacing only", "tylko zmień kolor/tekst" | theme only (no skill, **no migration**) | edit `@/theme` usage + verify |
+| "add structured data / rich results", "improve SEO on this page", "Google preview / social share", "site name / OG image / tracking scripts" | **seo-structured-data** (→ **payload-migrations** if a new content type needs CMS fields) | detect collections → emit applicable JSON-LD; edit Site Settings / `lib/seo` |
 
 ## Build pipeline (new section / from a design)
 
@@ -43,6 +44,7 @@ Run **in order**. This is the "do everything the no-code user can't" path.
 6. **Generate types** — `pnpm --filter @repo/payload generate:types` (writes `packages/payload-types/src/index.ts`).
 7. **Migrate** — payload-migrations cycle (`docker compose up -d postgres` → `pnpm --filter @repo/payload migrate:create <name>` → review → `pnpm --filter @repo/payload migrate`). Commit migration with the change.
 8. **Verify** — `/admin` → Pages → `layout`, and the rendered Astro page.
+9. **SEO pass** — load **seo-structured-data**: does the new section/content type warrant structured data (Product/Article/FAQ/etc.)? Emit applicable JSON-LD or record it as deferred.
 
 ## Always-ask checklist (step 0)
 
@@ -95,6 +97,8 @@ packages/payload-types/  — Generated Payload TypeScript types (shared)
 - **data-fetching** — fires when choosing how a page/section loads data (SSR / ISR / cached). The `getCached…` pattern.
 - **payload** (global) — Payload config, fields, hooks, access control, queries, validation.
 - **figma** (MCP) — fires on a Figma URL / design-to-code; read the design, then run the Build pipeline per section.
+- **seo-structured-data** — fires when a page/section is built or a content type is added, or on any SEO / structured-data / social-preview / tracking-script request. Detects which collections exist and emits only the applicable JSON-LD (WebSite/Organization/WebPage/Breadcrumb now; Product/Article/FAQ deferred). Owns `apps/astro/src/lib/seo`, `components/seo`, and the `SiteSettings` global. Run an SEO pass after any new section ships.
+- **seo-audit** (generic) — broad SEO framework (crawlability, Core Web Vitals, on-page, international) for "audit my SEO" requests.
 
 ## Hard rules — never
 

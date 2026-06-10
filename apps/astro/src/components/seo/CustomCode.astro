@@ -1,0 +1,15 @@
+---
+/**
+ * Injects one admin-authored custom-code slot (from Site Settings → Custom Code)
+ * as raw HTML. Renders nothing when the slot is empty. The content is intentionally
+ * unescaped — that is the feature (analytics/GTM/pixels/widgets) — and is gated by
+ * admin-only editing on the SiteSettings global.
+ */
+interface Props {
+  html?: string | null
+}
+
+const { html } = Astro.props as Props
+---
+
+{html && <Fragment set:html={html} />}

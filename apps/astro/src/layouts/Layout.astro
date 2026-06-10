@@ -1,34 +1,47 @@
 ---
 import '@repo/ui/styles/theme.css';
 import '@repo/ui/styles/globals.css';
+import type { SiteSetting } from '@repo/payload-types';
 import LivePreviewListener from '../components/preview/live-preview-listener';
+import Seo from '../components/seo/Seo.astro';
+import JsonLd from '../components/seo/JsonLd.astro';
+import CustomCode from '../components/seo/CustomCode.astro';
 import { ADMIN_ORIGIN } from '../lib/preview-env';
+import type { ResolvedSeo } from '../lib/seo/meta';
 
 interface Props {
-  title: string;
-  description?: string;
-  lang?: string;
+  /** Fully-resolved SEO values (build with `buildSeo` in the page). */
+  seo: ResolvedSeo;
+  /** schema.org objects rendered as JSON-LD (nullish entries are dropped). */
+  jsonLd?: unknown[];
+  /** Admin-authored custom code injected at the four page edges. */
+  customCode?: SiteSetting['customCode'];
   /** When true, mount the live-preview listener (set on preview/draft renders). */
   preview?: boolean;
 }
 
-const { title, description = '', lang = 'en', preview = false } = Astro.props;
+const { seo, jsonLd = [], customCode, preview = false } = Astro.props;
 ---
 
 <!doctype html>
-<html lang={lang}>
+<html lang={seo.locale}>
   <head>
+    <CustomCode html={customCode?.headStart} />
     <meta charset='UTF-8' />
     <meta name='viewport' content='width=device-width, initial-scale=1.0' />
-    <meta name='description' content={description} />
-    <title>{title}</title>
+    <link rel='icon' href='/favicon.svg' type='image/svg+xml' />
+    <Seo {...seo} />
+    {jsonLd.length > 0 && <JsonLd schema={jsonLd} />}
+    <CustomCode html={customCode?.headEnd} />
   </head>
   <body data-theme='ui'>
+    <CustomCode html={customCode?.bodyStart} />
     <slot />
     {
       preview && (
         <LivePreviewListener client:only='react' adminOrigin={ADMIN_ORIGIN} />
       )
     }
+    <CustomCode html={customCode?.bodyEnd} />
   </body>
 </html>

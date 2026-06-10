@@ -1,8 +1,16 @@
 ---
 import Layout from '../layouts/Layout.astro'
+import { buildSeo } from '../lib/seo/meta'
+import { DEFAULT_LOCALE } from '../i18n/locales'
+
+// 404s must never be indexed; keep this page static (no CMS fetch).
+const seo = buildSeo(
+  { title: 'Page not found', slug: '', locale: DEFAULT_LOCALE, noindex: true },
+  null,
+)
 ---
 
-<Layout title="Page not found">
+<Layout seo={seo}>
   <main style="padding: var(--spacing-xl); max-width: var(--max-width); margin: 0 auto; text-align: center;">
     <h1 style="font-family: var(--font-heading); color: var(--foreground); font-size: 3rem;">404</h1>
     <p style="color: var(--muted-foreground); margin-top: var(--spacing-md);">

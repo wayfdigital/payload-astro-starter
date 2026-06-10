@@ -21,8 +21,11 @@ export const absoluteUrl = (path: string): string =>
  * uploads are relative to the Payload origin (which serves the file), so we prefix
  * those with {@link ADMIN_ORIGIN}.
  */
-const absoluteMediaUrl = (url: string): string =>
-  /^https?:\/\//.test(url) ? url : `${ADMIN_ORIGIN}${url.startsWith('/') ? url : `/${url}`}`
+const absoluteMediaUrl = (url: string): string => {
+  if (/^https?:\/\//.test(url)) return url
+  const path = url.startsWith('/') ? url : `/${url}`
+  return `${ADMIN_ORIGIN}${path}`
+}
 
 /** A populated Media object, or `null`/an unpopulated id, as relationships arrive. */
 type MediaRef = (string | null | undefined) | Media
@@ -59,7 +62,7 @@ export const resolveTitle = (
   const siteName = settings?.siteName?.trim()
   const template = settings?.titleTemplate?.trim()
   if (template) {
-    return template.replace(/%s/g, pageTitle).replace(/%siteName%/g, siteName ?? '').trim()
+    return template.replaceAll('%s', pageTitle).replaceAll('%siteName%', siteName ?? '').trim()
   }
   return siteName ? `${pageTitle} · ${siteName}` : pageTitle
 }
@@ -84,6 +87,50 @@ export interface HreflangAlternate {
   hreflang: string
   href: string
 }
+
+/** Fully-resolved SEO values handed to the `<Seo>` component. */
+export interface ResolvedSeo {
+  title: string
+  description: string
+  canonical: string
+  ogImage: string | null
+  ogType: 'website' | 'article'
+  locale: Locale
+  siteName: string | null
+  twitterHandle: string | null
+  alternates: HreflangAlternate[]
+  noindex: boolean
+}
+
+/**
+ * Merges page-level fields with site-wide settings into the final tag values.
+ * One call per page render keeps the three page files free of resolution logic.
+ */
+export const buildSeo = (
+  input: {
+    title: string
+    description?: string | null
+    image?: MediaRef
+    /** Non-localized slug; `''` for the home page. Drives canonical + hreflang. */
+    slug: string
+    locale: Locale
+    type?: 'website' | 'article'
+    /** Force noindex (drafts, 404s) on top of the site-wide robots switch. */
+    noindex?: boolean
+  },
+  settings: SiteSetting | null,
+): ResolvedSeo => ({
+  title: resolveTitle(input.title, settings),
+  description: resolveDescription(input.description, settings),
+  canonical: absoluteUrl(localizedPath(input.slug, input.locale)),
+  ogImage: ogImageUrl(input.image, settings),
+  ogType: input.type ?? 'website',
+  locale: input.locale,
+  siteName: settings?.siteName ?? null,
+  twitterHandle: settings?.twitterHandle ?? null,
+  alternates: hreflangAlternates(input.slug),
+  noindex: Boolean(input.noindex) || Boolean(settings?.robots?.noindexSite),
+})
 
 /**
  * Builds the hreflang alternate set for a slug across every locale, plus an

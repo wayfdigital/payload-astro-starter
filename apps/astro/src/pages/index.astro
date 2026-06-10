@@ -2,6 +2,9 @@
 import Layout from '../layouts/Layout.astro'
 import PageBuilder from '../components/page-builder/page-builder.astro'
 import { getHomePage, getAllPages } from '../lib/payload/pages'
+import { getSiteSettings } from '../lib/payload/site-settings'
+import { buildSeo } from '../lib/seo/meta'
+import { websiteSchema, organizationSchema } from '../lib/seo/jsonld'
 import { DEFAULT_LOCALE, isLocale, type Locale } from '../i18n/locales'
 
 const apiUrl = import.meta.env.PAYLOAD_API_URL ?? 'http://localhost:3100'
@@ -14,22 +17,38 @@ if (preview && localeParam !== null && isLocale(localeParam)) {
   locale = localeParam
 }
 
-const home = await getHomePage(locale, { draft: preview })
+const [home, settings] = await Promise.all([
+  getHomePage(locale, { draft: preview }),
+  getSiteSettings(locale),
+])
 
 // Fallback (no CMS home page set yet): the dev landing listing available pages.
 const pages = home ? [] : await getAllPages(locale)
 
-const title = home?.meta?.title ?? home?.slug ?? 'Home'
-const description = home?.meta?.description ?? ''
+const seo = buildSeo(
+  {
+    title: home?.meta?.title ?? home?.slug ?? 'Home',
+    description: home?.meta?.description,
+    image: home?.meta?.image,
+    slug: '',
+    locale,
+    type: 'website',
+    noindex: preview,
+  },
+  settings,
+)
+
+const jsonLd = [websiteSchema(settings), organizationSchema(settings)]
+const customCode = settings?.customCode
 ---
 
 {
   home ? (
-    <Layout title={title} description={description} lang={locale} preview={preview}>
+    <Layout seo={seo} jsonLd={jsonLd} customCode={customCode} preview={preview}>
       <PageBuilder page={home} apiUrl={apiUrl} />
     </Layout>
   ) : (
-    <Layout title="Home" lang={locale} preview={preview}>
+    <Layout seo={seo} jsonLd={jsonLd} customCode={customCode} preview={preview}>
       <main style="padding: var(--spacing-xl); max-width: var(--max-width); margin: 0 auto;">
         <h1 style="font-family: var(--font-heading); color: var(--foreground);">
           Zavcode — Astro Frontend
