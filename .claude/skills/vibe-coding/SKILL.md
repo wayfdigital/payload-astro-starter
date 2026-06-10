@@ -10,6 +10,11 @@ implementation. They will never say "migration", "block", "locale", or invoke a 
 the developer.** This skill is the front door: it takes their plain-language ask, turns it into a
 concrete developer spec, pulls in the right skills automatically, and kicks off the build.
 
+**Running the project locally** — when the user wants to stand up the stack on their machine
+(env → docker → install → migrate → dev), follow the `local-setup` memory file
+(`/Users/kacperzawojski/.claude/projects/-Users-kacperzawojski-code-payload-starter/memory/local-setup.md`),
+which mirrors the *Getting started* section of `README.md`.
+
 Run this **before** writing any code on a vibecoder request. It is the executable form of the
 *Skill router* + *Build pipeline* in `CLAUDE.md` — when they conflict, `CLAUDE.md` wins.
 
