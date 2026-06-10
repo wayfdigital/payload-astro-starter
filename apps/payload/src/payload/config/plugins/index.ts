@@ -1,14 +1,14 @@
-import { payloadCloudPlugin } from '@payloadcms/payload-cloud'
-import { Plugin } from 'payload'
-import { seoPluginConfig } from './seo'
-import { formBuilderPluginConfig } from './form-builder'
-import { s3PluginConfig } from './s3'
-import { previewPlugin } from './preview'
-import { nestedDocsPluginConfig } from './nested-docs'
-import { redirectsPluginConfig } from './redirects'
-import { searchPluginConfig } from './search'
-import { importExportPluginConfig } from './import-export'
-import { sentryPluginConfig } from './sentry'
+import { payloadCloudPlugin } from '@payloadcms/payload-cloud';
+import { Plugin } from 'payload';
+import { seoPluginConfig } from './seo';
+import { formBuilderPluginConfig } from './form-builder';
+import { s3PluginConfig } from './s3';
+import { previewPlugin } from './preview';
+import { nestedDocsPluginConfig } from './nested-docs';
+import { redirectsPluginConfig } from './redirects';
+import { searchPluginConfig } from './search';
+import { importExportPluginConfig } from './import-export';
+import { sentryPluginConfig } from './sentry';
 
 /**
  * Resolves a browser-facing URL env var. In production, when the feature is enabled,
@@ -21,12 +21,14 @@ const requirePublicUrl = (
   devFallback: string,
   enabled: boolean,
 ): string => {
-  if (value) return value
+  if (value) return value;
   if (enabled && process.env.NODE_ENV === 'production') {
-    throw new Error(`[preview] ${name} must be set to a public URL in production.`)
+    throw new Error(
+      `[preview] ${name} must be set to a public URL in production.`,
+    );
   }
-  return devFallback
-}
+  return devFallback;
+};
 
 export const plugins: Plugin[] = [
   payloadCloudPlugin(),
@@ -53,7 +55,10 @@ export const plugins: Plugin[] = [
     // Temporarily disabled to test manual "Save draft" / "Publish" refresh.
     autosave: false,
     // Home page is served at `/`; every other page at `/<slug>`.
-    resolvePath: (doc) =>
-      doc.isHomePage ? '/' : `/${(doc.slug as string | undefined) ?? ''}`,
+    resolvePath: (doc) => {
+      if (doc.isHomePage === true) return '/';
+      const slug = typeof doc.slug === 'string' ? doc.slug : '';
+      return `/${slug}`;
+    },
   }),
-]
+];

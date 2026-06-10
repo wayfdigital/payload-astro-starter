@@ -14,6 +14,7 @@ import { pl } from '@payloadcms/translations/languages/pl'
 import { DEFAULT_LANGUAGE } from './i18n/const'
 import { PAYLOAD_LOCALES } from './i18n/payload-locales'
 import { corsOptions } from './payload/config/cors'
+import { jobsConfig } from './payload/config/jobs'
 import { mailOptions } from './payload/config/mail'
 import { plugins } from './payload/config/plugins'
 import { seedUsers } from './scripts/seed/users'
@@ -48,6 +49,7 @@ export default buildConfig({
   },
   collections: [Admins, Media, Pages, Users],
   globals: [FooterSettings, CookieSettings, SiteSettings],
+  jobs: jobsConfig,
   blocks: [pageContentBlock1, pageContentBlock2, pageContentBlock3, FormBlock, ExampleBlock],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET ?? '',
