@@ -1,29 +1,29 @@
 ---
-import Layout from '../layouts/Layout.astro'
-import PageBuilder from '../components/page-builder/page-builder.astro'
-import { getHomePage, getAllPages } from '../lib/payload/pages'
-import { getSiteSettings } from '../lib/payload/site-settings'
-import { buildSeo } from '../lib/seo/meta'
-import { websiteSchema, organizationSchema } from '../lib/seo/jsonld'
-import { DEFAULT_LOCALE, isLocale, type Locale } from '../i18n/locales'
+import Layout from '../layouts/Layout.astro';
+import PageBuilder from '../components/page-builder/page-builder.astro';
+import { getHomePage, getAllPages } from '../lib/payload/pages';
+import { getSiteSettings } from '../lib/payload/site-settings';
+import { buildSeo } from '../lib/seo/meta';
+import { websiteSchema, organizationSchema } from '../lib/seo/jsonld';
+import { DEFAULT_LOCALE, isLocale, type Locale } from '../i18n/locales';
 
-const apiUrl = import.meta.env.PAYLOAD_API_URL ?? 'http://localhost:3100'
+const apiUrl = import.meta.env.PAYLOAD_API_URL ?? 'http://localhost:3100';
 
 // `/` is the default locale; in preview a `?locale=` query can select another.
-const preview = Astro.locals.preview === true
-let locale: Locale = DEFAULT_LOCALE
-const localeParam = Astro.url.searchParams.get('locale')
+const preview = Astro.locals.preview === true;
+let locale: Locale = DEFAULT_LOCALE;
+const localeParam = Astro.url.searchParams.get('locale');
 if (preview && localeParam !== null && isLocale(localeParam)) {
-  locale = localeParam
+  locale = localeParam;
 }
 
 const [home, settings] = await Promise.all([
   getHomePage(locale, { draft: preview }),
   getSiteSettings(locale),
-])
+]);
 
 // Fallback (no CMS home page set yet): the dev landing listing available pages.
-const pages = home ? [] : await getAllPages(locale)
+const pages = home ? [] : await getAllPages(locale);
 
 const seo = buildSeo(
   {
@@ -36,10 +36,10 @@ const seo = buildSeo(
     noindex: preview,
   },
   settings,
-)
+);
 
-const jsonLd = [websiteSchema(settings), organizationSchema(settings)]
-const customCode = settings?.customCode
+const jsonLd = [websiteSchema(settings), organizationSchema(settings)];
+const customCode = settings?.customCode;
 ---
 
 {
@@ -49,22 +49,22 @@ const customCode = settings?.customCode
     </Layout>
   ) : (
     <Layout seo={seo} jsonLd={jsonLd} customCode={customCode} preview={preview}>
-      <main style="padding: var(--spacing-xl); max-width: var(--max-width); margin: 0 auto;">
-        <h1 style="font-family: var(--font-heading); color: var(--foreground);">
-          Zavcode — Astro Frontend
+      <main style='padding: var(--spacing-xl); max-width: var(--max-width); margin: 0 auto;'>
+        <h1 style='font-family: var(--font-heading); color: var(--foreground);'>
+          wayf — Astro Frontend
         </h1>
-        <p style="color: var(--muted-foreground); margin-top: var(--spacing-md);">
-          Connected to Payload at <code>{apiUrl}</code>. Mark a page as the home page to
-          render it here.
+        <p style='color: var(--muted-foreground); margin-top: var(--spacing-md);'>
+          Connected to Payload at <code>{apiUrl}</code>. Mark a page as the home
+          page to render it here.
         </p>
 
         {pages.length > 0 && (
-          <ul style="margin-top: var(--spacing-xl); list-style: none; padding: 0; display: flex; flex-direction: column; gap: var(--spacing-sm);">
+          <ul style='margin-top: var(--spacing-xl); list-style: none; padding: 0; display: flex; flex-direction: column; gap: var(--spacing-sm);'>
             {pages.map((page) => (
               <li>
                 <a
                   href={`/${page.slug}`}
-                  style="color: var(--primary); text-decoration: underline;"
+                  style='color: var(--primary); text-decoration: underline;'
                 >
                   {page.slug}
                 </a>

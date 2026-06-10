@@ -19,7 +19,7 @@ const TRIGGER =
   /(section|sekcj|\bblock\b|blok|\bpage\b|stron|\bfield\b|\bpole\b|collection|kolekcj|schema|schemat|migrat|design|projekt|figma|layout|hero|formularz|\bform\b|locale|lokaliz|tłumacz|translat|\bi18n\b|dynamic|dynamicz|\bcms\b|data[ -]quer|content type|typ treści)/i
 
 const REMINDER = [
-  '[zavcode router] This repo serves a NO-CODE user who describes outcomes, not code — you are the developer.',
+  '[wayf router] This repo serves a NO-CODE user who describes outcomes, not code — you are the developer.',
   'Before building: (1) classify this request;',
   '(2) load the matching skill(s) — website-layout-sections (new section/block/page/design),',
   'payload-migrations (any schema/field/collection change), data-fetching (loading CMS data), figma (a Figma design);',

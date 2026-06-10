@@ -6,7 +6,7 @@ alwaysApply: true
 
 ## Overview
 
-`website-starter` is a Zavcode **package** (product) that provides a ready-to-use content website built on Payload CMS + Next.js. It includes a full content model (Pages, Media, Users), layout blocks (hero, page-content, forms), i18n, SEO, seeds, schemas, hooks, services, and app route templates.
+`website-starter` is a wayf **package** (product) that provides a ready-to-use content website built on Payload CMS + Next.js. It includes a full content model (Pages, Media, Users), layout blocks (hero, page-content, forms), i18n, SEO, seeds, schemas, hooks, services, and app route templates.
 
 The package is assembled with a theme from `/ui/themes` and optional plugins into a standalone ZIP repo — structurally identical to `dev-playground`.
 
@@ -44,18 +44,18 @@ The **layout builder engine** lives in **`utils/layout-builder`** (shared lib). 
 
 `apps/runtime` is the empty shell that loads the active package. Which package is loaded is controlled by **env**, so you can switch packages without code changes.
 
-- **Env variable:** `ZAVCODE_PACKAGE=<package-name>`  
-  Examples: `ZAVCODE_PACKAGE=website-starter`, `ZAVCODE_PACKAGE=ecommerce-starter`.
+- **Env variable:** `wayf_PACKAGE=<package-name>`  
+  Examples: `wayf_PACKAGE=website-starter`, `wayf_PACKAGE=ecommerce-starter`.
 - **Usage:** set in `.env` or `.env.local` in the repo root (or in `apps/runtime` if runtime has its own env loading). Then run:
   ```bash
   pnpm dev:runtime
   ```
-  which runs `nx dev runtime` (or `nx serve runtime`). Runtime reads `ZAVCODE_PACKAGE`, loads that package’s Payload config, routes, and theme, and serves the app.
+  which runs `nx dev runtime` (or `nx serve runtime`). Runtime reads `wayf_PACKAGE`, loads that package’s Payload config, routes, and theme, and serves the app.
 - **Default:** if unset, runtime can default to e.g. `website-starter` or refuse to start with a clear error.
 
 This allows:
 
-- Working on `website-starter` by setting `ZAVCODE_PACKAGE=website-starter` and running `pnpm dev:runtime`.
+- Working on `website-starter` by setting `wayf_PACKAGE=website-starter` and running `pnpm dev:runtime`.
 - Switching to another package by changing the env and restarting.
 
 Add a root script (if not already present):
@@ -64,25 +64,25 @@ Add a root script (if not already present):
 "dev:runtime": "nx dev runtime"
 ```
 
-Runtime must implement package loading (e.g. via `libs/package-loader` or dynamic require of `packages/${ZAVCODE_PACKAGE}/src/payload.config.ts` and route merging). Details belong in the runtime/package-loader implementation doc.
+Runtime must implement package loading (e.g. via `libs/package-loader` or dynamic require of `packages/${wayf_PACKAGE}/src/payload.config.ts` and route merging). Details belong in the runtime/package-loader implementation doc.
 
 ### Where envs live
 
-- **Development (monorepo):** env is read from **one place** for the running app — either **repo root** `.env` / `.env.local` or **`apps/runtime/.env`** (if runtime loads its own). Next.js and Node resolve env at process start; the app that runs (runtime or dev-playground) uses whatever is in that process (e.g. root `.env` when you run `pnpm dev:runtime` from root). So: **put shared and package-selection vars in the root** (e.g. `ZAVCODE_PACKAGE`, `DATABASE_URI`, `PAYLOAD_SECRET`, `NEXT_PUBLIC_UI_THEME`) so one file drives both runtime and dev-playground.
+- **Development (monorepo):** env is read from **one place** for the running app — either **repo root** `.env` / `.env.local` or **`apps/runtime/.env`** (if runtime loads its own). Next.js and Node resolve env at process start; the app that runs (runtime or dev-playground) uses whatever is in that process (e.g. root `.env` when you run `pnpm dev:runtime` from root). So: **put shared and package-selection vars in the root** (e.g. `wayf_PACKAGE`, `DATABASE_URI`, `PAYLOAD_SECRET`, `NEXT_PUBLIC_UI_THEME`) so one file drives both runtime and dev-playground.
 - **Assembled app (ZIP):** the build script produces a single app with its own root `.env.example` (and optionally `.env`). All vars the app needs (base + package-specific) are documented there; the user copies to `.env` and fills values.
 
-So: **one env source per running process** (root when developing; app root in the assembled project). No per-package `.env` at runtime — the active package is chosen by `ZAVCODE_PACKAGE`, and that package’s _declared_ vars are part of the same env.
+So: **one env source per running process** (root when developing; app root in the assembled project). No per-package `.env` at runtime — the active package is chosen by `wayf_PACKAGE`, and that package’s _declared_ vars are part of the same env.
 
 ### Package-specific envs
 
 A **package can declare its own env variables** (required or optional). That way, runtime and the assembly script know what the package needs.
 
-- **Where to declare:** in the package (e.g. `packages/website-starter/env.schema.ts` or `package.json` under `zavcode.env` / `zavcode.envExample`), or a shared `.env.example` inside the package listing only vars this package adds.
+- **Where to declare:** in the package (e.g. `packages/website-starter/env.schema.ts` or `package.json` under `wayf.env` / `wayf.envExample`), or a shared `.env.example` inside the package listing only vars this package adds.
 - **Contents:** list variable names, optional description, and whether they’re required. Example: `RECAPTCHA_SECRET_KEY` (optional), `NEXT_PUBLIC_SITE_NAME` (optional), etc. Base vars (e.g. `DATABASE_URI`, `PAYLOAD_SECRET`) are usually defined by runtime/base and reused by all packages.
 - **At dev time:** you set those vars in the **single env source** (e.g. root `.env`). When runtime loads the package, it reads `process.env`; no extra “package env file” is loaded. So package-specific vars are just documented; the developer adds them to the same root `.env` when using that package.
 - **At assembly time:** the build script **merges** base env + active package’s declared env into the assembled app’s `.env.example`, so the final app has one coherent list. The package does not “own” a separate env file at runtime — it only declares what it needs so the app can document and validate them (e.g. via `src/env.ts` Zod schema merged from base + package).
 
-Summary: **envs live in one place per run** (root in monorepo; app root in ZIP). **Packages declare custom envs** in the package (`package.json` `zavcode` field or env schema); those are merged into that single env at assembly and set by the developer in the same file at dev time.
+Summary: **envs live in one place per run** (root in monorepo; app root in ZIP). **Packages declare custom envs** in the package (`package.json` `wayf` field or env schema); those are merged into that single env at assembly and set by the developer in the same file at dev time.
 
 ---
 
@@ -104,9 +104,9 @@ The **layout builder** (PageBuilder) is implemented as a shared library in **`ut
 Example usage from a package:
 
 ```typescript
-import { createLayoutBuilder } from '@zavcode/layout-builder'
+import { createLayoutBuilder } from '@wayf/layout-builder'
 import type { Page } from '@/payload-types'
-import { PageContent, Hero, FormBlock } from '@zavcode/ui-template'
+import { PageContent, Hero, FormBlock } from '@wayf/ui-template'
 
 type PageSection = NonNullable<Page['layout']>[number]
 
@@ -145,7 +145,7 @@ packages/website-starter/
 │   │       ├── cors.ts
 │   │       └── mail.ts
 │   │
-│   ├── schemas/                      ← Zod schemas (import from @/payload-types). Shared query building: workspace `utils/query-builder` (`@zavcode/query-builder`).
+│   ├── schemas/                      ← Zod schemas (import from @/payload-types). Shared query building: workspace `utils/query-builder` (`@wayf/query-builder`).
 │   │   ├── common/                   base, phone-validator
 │   │   ├── users/
 │   │   ├── media/
@@ -195,17 +195,17 @@ packages/website-starter/
 │   ├── styles/
 │   └── middleware.ts
 │
-├── package.json                      ← npm metadata + `zavcode` field (displayName, plugins, themes)
+├── package.json                      ← npm metadata + `wayf` field (displayName, plugins, themes)
 ├── layout.config.ts                  ← blockType → section component mapping
 ├── ui.config.ts                      ← active theme, allowed themes list
-├── package.json                      ← @zavcode/website-starter
+├── package.json                      ← @wayf/website-starter
 ├── project.json                      ← Nx: typecheck, test, generate:types
 └── tsconfig.json                     ← paths: { "@/*": ["./src/*"] }
 ```
 
 **Reusable libs/utils (not inside the package):**
 
-- **Query building** — **`utils/query-builder`** (`@zavcode/query-builder`). Reusable across all packages for building Payload CMS queries. Contains: query params schema (Zod), query-builder helpers, and api-fetch utilities. Source of truth to extract from dev-playground: `apps/dev-playground/src/schemas/query-builder`, `apps/dev-playground/src/utils/query-builder`, `apps/dev-playground/src/utils/api-fetch`. Every package depends on this package instead of duplicating query logic.
+- **Query building** — **`utils/query-builder`** (`@wayf/query-builder`). Reusable across all packages for building Payload CMS queries. Contains: query params schema (Zod), query-builder helpers, and api-fetch utilities. Source of truth to extract from dev-playground: `apps/dev-playground/src/schemas/query-builder`, `apps/dev-playground/src/utils/query-builder`, `apps/dev-playground/src/utils/api-fetch`. Every package depends on this package instead of duplicating query logic.
 - **Theme loading** — **`utils/`** (e.g. `utils/theme-loader` or `utils/theme-registry`). Reusable theme registry, active-theme resolution, and theme provider. Same behaviour as current dev-playground `src/theme/` (registry, register-themes, active-theme, theme-provider). The package does **not** ship its own `theme/` folder; it depends on this util. Apps and runtime use it to load the active theme from env and register themes from `ui/themes`.
 
 ---
@@ -237,12 +237,12 @@ export const userSchema = z.object({
 Testing in dev-playground:
 
 ```bash
-ZAVCODE_PACKAGE=website-starter pnpm dev:playground
+wayf_PACKAGE=website-starter pnpm dev:playground
 ```
 
 ### 2. During assembly (build script → ZIP)
 
-1. Build script reads `package.json` `zavcode` field → determines plugins and themes (collections come from the package source).
+1. Build script reads `package.json` `wayf` field → determines plugins and themes (collections come from the package source).
 2. Copies the package's `src/` into the assembled app's `src/`.
 3. Merges plugin Payload configs (e.g., audit-logs adds its collection).
 4. **Regenerates `payload-types.ts`** with the full merged config (package + plugins).
@@ -306,22 +306,22 @@ Flow:
 | `payload/collections/Pages.ts`      | Pages collection with `layout` blocks field                |
 | `layout.config.ts`                  | blockType → section component mapping contract             |
 | `ui.config.ts`                      | Active theme + allowed themes list                         |
-| `package.json` `zavcode` field      | Package metadata (displayName, plugins, themes)            |
+| `package.json` `wayf` field      | Package metadata (displayName, plugins, themes)            |
 | `payload.config.ts` (package-level) | Full config for type generation and dev-playground loading |
 
 ---
 
 ## Package Metadata Shape
 
-Package metadata lives in `package.json` under the `zavcode` field. See `docs/development/packages.md` for the full convention.
+Package metadata lives in `package.json` under the `wayf` field. See `docs/development/packages.md` for the full convention.
 
 ```json
 {
-  "name": "@zavcode/website-starter",
+  "name": "@wayf/website-starter",
   "version": "1.0.0",
   "description": "Content website with pages, layout builder, forms, SEO, and i18n",
   "dependencies": { "@payloadcms/plugin-seo": "catalog:", "@payloadcms/plugin-form-builder": "catalog:" },
-  "zavcode": {
+  "wayf": {
     "displayName": "Website Starter",
     "plugins": ["@payloadcms/plugin-seo", "@payloadcms/plugin-form-builder"],
     "themes": {
@@ -338,11 +338,11 @@ Package metadata lives in `package.json` under the `zavcode` field. See `docs/de
 
 ```bash
 # 1. Choose active package (in .env or .env.local)
-ZAVCODE_PACKAGE=website-starter
+wayf_PACKAGE=website-starter
 
 # 2. Run runtime with that package
 pnpm dev:runtime
-# → nx dev runtime; runtime loads package from ZAVCODE_PACKAGE
+# → nx dev runtime; runtime loads package from wayf_PACKAGE
 
 # 3. Work on content model
 #    Edit: packages/website-starter/src/payload/collections/Pages.ts
@@ -354,7 +354,7 @@ cd packages/website-starter && pnpm generate:types
 #    Edit: packages/website-starter/src/schemas/pages/index.ts
 
 # 6. (Optional) Test in dev-playground instead of runtime
-ZAVCODE_PACKAGE=website-starter pnpm dev:playground
+wayf_PACKAGE=website-starter pnpm dev:playground
 
 # 7. Assemble ZIP (build script)
 pnpm build:package website-starter
@@ -367,10 +367,10 @@ pnpm build:package website-starter
 
 The build script (to be created in `tools/`) performs:
 
-1. **Read** `packages/website-starter/package.json` `zavcode` field → plugins list, theme.
+1. **Read** `packages/website-starter/package.json` `wayf` field → plugins list, theme.
 2. **Copy** runtime shell from `apps/runtime/` (or base from dev-playground) → output dir.
 3. **Copy** package `src/` → `output/src/` (overwriting runtime placeholders).
-4. **Copy** plugin source for each plugin in `zavcode.plugins` → merge into `output/src/payload/config/plugins/`.
+4. **Copy** plugin source for each plugin in `wayf.plugins` → merge into `output/src/payload/config/plugins/`.
 5. **Copy** theme from `ui/themes/<active-theme>/` → `output/` (as dependency or inlined).
 6. **Merge** `payload.config.ts`: base + package collections/blocks/globals + plugin registrations.
 7. **Regenerate** `payload-types.ts` in output (full merged config).
@@ -388,8 +388,8 @@ Result: a standalone Next.js + Payload CMS repo, structurally identical to dev-p
 - **Theme components never import from `payload-types`**. They define their own generic props. The page builder in the package is the adapter between the two type domains.
 - **Plugins are additive**. They don't break package schemas because schemas only validate package-owned data. Plugin-specific types are internal to each plugin.
 - **Pages collection** (new) is the centerpiece — it has a `layout` field (array of blocks) that drives the page builder.
-- **Runtime** loads the package set in `ZAVCODE_PACKAGE`; use `pnpm dev:runtime` to run the app with that package.
+- **Runtime** loads the package set in `wayf_PACKAGE`; use `pnpm dev:runtime` to run the app with that package.
 - **Layout builder** lives in `utils/layout-builder`; packages pass their types + section map into it for reuse and single-place maintenance.
-- **Query building** (params schema, validation, api-fetch) lives in **`utils/query-builder`** (`@zavcode/query-builder`); all packages depend on it instead of duplicating (extract from dev-playground: `schemas/query-builder`, app `utils/query-builder`, `utils/api-fetch`).
+- **Query building** (params schema, validation, api-fetch) lives in **`utils/query-builder`** (`@wayf/query-builder`); all packages depend on it instead of duplicating (extract from dev-playground: `schemas/query-builder`, app `utils/query-builder`, `utils/api-fetch`).
 - **Theme loading** (registry, active theme, theme provider) is a **reusable util** in `utils/`; the package does not ship its own theme folder, it uses this util (same behaviour as dev-playground `src/theme/`).
 - **Payload config plugins** (SEO, form-builder) work the same way as in dev-playground: `payload/config/plugins/` with seo.ts, form-builder.ts, index.ts.
