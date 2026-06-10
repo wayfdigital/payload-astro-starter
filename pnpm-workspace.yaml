@@ -1,3 +1,39 @@
 packages:
   - 'apps/*'
   - 'packages/*'
+
+# Single source of truth for shared dependency versions.
+# Reference these in any package via the `catalog:` protocol, e.g.
+#   "payload": "catalog:"
+# Bump the version here once and every app/package picks it up.
+catalog:
+  # React
+  react: 19.2.3
+  react-dom: 19.2.3
+  '@types/react': ^19.0.0
+  '@types/react-dom': ^19.0.0
+
+  # Tooling
+  typescript: 5.9.3
+  tailwindcss: 4.1.18
+
+  # Next / Payload core
+  next: 15.4.11
+  payload: 3.81.0
+
+  # Payload packages (keep all on the same version)
+  '@payloadcms/db-postgres': 3.81.0
+  '@payloadcms/email-nodemailer': 3.81.0
+  '@payloadcms/live-preview': 3.81.0
+  '@payloadcms/next': 3.81.0
+  '@payloadcms/payload-cloud': 3.81.0
+  '@payloadcms/plugin-form-builder': 3.81.0
+  '@payloadcms/plugin-import-export': 3.81.0
+  '@payloadcms/plugin-nested-docs': 3.81.0
+  '@payloadcms/plugin-redirects': 3.81.0
+  '@payloadcms/plugin-search': 3.81.0
+  '@payloadcms/plugin-sentry': 3.81.0
+  '@payloadcms/plugin-seo': 3.81.0
+  '@payloadcms/richtext-lexical': 3.81.0
+  '@payloadcms/storage-s3': 3.81.0
+  '@payloadcms/translations': 3.81.0

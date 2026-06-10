@@ -89,6 +89,12 @@ Run the relevant skill's checklist. For a new section / design that is the **Bui
 - Never import from `src/theme/` — use `@repo/ui`.
 - Never invent paths — use the *Project map* in `CLAUDE.md`.
 - Never assume the spec — step 3 is mandatory for any non-trivial build.
+- **Documentation lives in memory — no `docs/` folder.** When you'd normally write or update
+  documentation, write a self-contained memory file instead, in
+  `/Users/kacperzawojski/.claude/projects/-Users-kacperzawojski-code-payload-starter/memory/`
+  (`type: project`), and add its one-line pointer to `MEMORY.md`. Memories are loaded each session
+  via `MEMORY.md`; a `docs/` folder is not. Example: the former `docs/preview-mode.md` is now the
+  memory `preview-draft-mode-architecture`.
 
 ## Worked example
 

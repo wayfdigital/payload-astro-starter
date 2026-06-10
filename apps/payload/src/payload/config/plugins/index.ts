@@ -4,6 +4,11 @@ import { seoPluginConfig } from './seo'
 import { formBuilderPluginConfig } from './form-builder'
 import { s3PluginConfig } from './s3'
 import { previewPlugin } from './preview'
+import { nestedDocsPluginConfig } from './nested-docs'
+import { redirectsPluginConfig } from './redirects'
+import { searchPluginConfig } from './search'
+import { importExportPluginConfig } from './import-export'
+import { sentryPluginConfig } from './sentry'
 
 /**
  * Resolves a browser-facing URL env var. In production, when the feature is enabled,
@@ -28,6 +33,11 @@ export const plugins: Plugin[] = [
   s3PluginConfig,
   seoPluginConfig,
   formBuilderPluginConfig,
+  nestedDocsPluginConfig,
+  redirectsPluginConfig,
+  searchPluginConfig,
+  importExportPluginConfig,
+  sentryPluginConfig,
   previewPlugin({
     collections: ['pages'],
     // `frontendUrl` is the browser-facing Astro origin (used as the Live Preview
