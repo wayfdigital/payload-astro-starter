@@ -112,7 +112,7 @@ module.exports = {
       from: {
         path: '^src',
         pathNot: [
-          String.raw`\.(spec|test)\.(js|mjs|cjs|ts|cts|mts|jsx|tsx)$`,
+          String.raw`\.(spec|test|stories)\.(js|mjs|cjs|ts|cts|mts|jsx|tsx)$`,
           '^src/scripts/', // seed/CLI scripts run in dev only
         ],
       },

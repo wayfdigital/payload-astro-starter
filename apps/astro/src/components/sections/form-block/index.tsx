@@ -2,6 +2,7 @@ import { useState, type CSSProperties, type FC } from 'react'
 import { Container, Heading, Text, Button } from '@repo/ui'
 import type { Form, FormBlock } from '@repo/payload-types'
 import { submitForm, type FormSubmissionValue } from '../../../lib/payload/forms'
+import { executeRecaptcha } from '../../../lib/recaptcha'
 import { RichText } from './lexical'
 
 /** A single field within a form-builder `Form`. */
@@ -10,6 +11,8 @@ type FormField = NonNullable<Form['fields']>[number]
 interface FormBlockSectionProps extends FormBlock {
   /** Payload REST base URL, passed from the Astro page (browser can't read non-PUBLIC env). */
   apiUrl: string
+  /** reCAPTCHA v3 site key, passed from the Astro page. Empty when not configured. */
+  recaptchaSiteKey?: string
 }
 
 const inputStyle: CSSProperties = {
@@ -42,6 +45,7 @@ export const FormBlockSection: FC<FormBlockSectionProps> = ({
   enableIntro,
   introContent,
   apiUrl,
+  recaptchaSiteKey,
 }) => {
   const [values, setValues] = useState<Record<string, string>>({})
   const [status, setStatus] = useState<Status>('idle')
@@ -64,8 +68,25 @@ export const FormBlockSection: FC<FormBlockSectionProps> = ({
       value,
     }))
 
+    // v3 is invisible: mint a token only when the form requires reCAPTCHA.
+    let recaptchaToken: string | undefined
+    if (form.requireRecaptcha) {
+      if (!recaptchaSiteKey) {
+        setError('reCAPTCHA is required but not configured. Please contact the site owner.')
+        setStatus('error')
+        return
+      }
+      try {
+        recaptchaToken = await executeRecaptcha(recaptchaSiteKey)
+      } catch {
+        setError('Could not verify reCAPTCHA. Please try again.')
+        setStatus('error')
+        return
+      }
+    }
+
     try {
-      await submitForm(apiUrl, form.id, submissionData)
+      await submitForm(apiUrl, form.id, submissionData, recaptchaToken)
       if (form.confirmationType === 'redirect' && form.redirect?.url) {
         globalThis.location.assign(form.redirect.url)
         return

@@ -51,6 +51,12 @@ Then re-export from the package root `packages/ui/src/index.ts` (`// Sections` b
 as `import { <Feature> } from '@repo/ui'`. **Three wiring points** (`<feature>/index.ts` →
 `sections/index.ts` → `src/index.ts`) — miss one and `@repo/ui` won't resolve the export.
 
+**Always ship a story.** Add a co-located `<feature>.stories.tsx` next to the component (copy
+`packages/ui/src/components/_TEMPLATE.stories.tsx.txt`). Import from `@repo/ui`, set `title` to
+`Sections/<Feature>`, and add an `argTypes` control for each union prop. Preview it in isolation with
+`pnpm --filter @repo/ui storybook` (port 6006) before wiring the Payload block + Astro adapter — it's
+the fastest way to iterate on the presentational layer without booting the full app.
+
 ### Payload block definition (`apps/payload/src/payload/blocks/`)
 ```
 blocks/

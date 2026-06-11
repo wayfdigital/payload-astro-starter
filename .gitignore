@@ -66,3 +66,6 @@ Thumbs.db
 
 # local MCP config (contains a dev token)
 .mcp.json
+
+# Storybook
+storybook-static/

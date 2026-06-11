@@ -38,7 +38,7 @@ Run **in order**. This is the "do everything the no-code user can't" path.
 
 0. **Confirm spec** — `AskUserQuestion` with the *Always-ask checklist*.
 1. **Reuse check** — closest existing `@repo/ui` section in `packages/ui/src/components/sections/`, block in `apps/payload/src/payload/blocks/`, and adapter in `apps/astro/src/components/sections/`.
-2. **Build the presentational component** — `packages/ui/src/components/sections/<feature>/<feature>.tsx`: a **pure, Payload-agnostic** React component (plain props, **no** `@repo/payload-types`). Wire all three export points (`<feature>/index.ts` → `sections/index.ts` → `src/index.ts`). **All new section UI lives here.** Reference: `packages/ui/src/components/sections/hero/hero.tsx`.
+2. **Build the presentational component** — `packages/ui/src/components/sections/<feature>/<feature>.tsx`: a **pure, Payload-agnostic** React component (plain props, **no** `@repo/payload-types`). Wire all three export points (`<feature>/index.ts` → `sections/index.ts` → `src/index.ts`). **All new section UI lives here.** Reference: `packages/ui/src/components/sections/hero/hero.tsx`. **Ship a co-located `<feature>.stories.tsx`** (copy `packages/ui/src/components/_TEMPLATE.stories.tsx.txt`) and preview it with `pnpm --filter @repo/ui storybook` before wiring the block/adapter.
 3. **Define the block** — `apps/payload/src/payload/blocks/<feature>.ts` → `export const <Name>Block: Block = { slug, dbName, interfaceName, labels, fields }` (`localized: true` on per-locale copy).
 4. **Register in BOTH** `apps/payload/src/payload/collections/Pages.ts` (`layout` blocks) **and** `apps/payload/src/payload.config.ts` (`blocks`).
 5. **Build the Astro adapter** — `apps/astro/src/components/sections/<feature>/index.tsx`: a **thin** component typed by the block interface that **maps block fields onto the `@repo/ui` component's props** (no markup of its own). Reference: `apps/astro/src/components/sections/hero/variants/default-hero.tsx`. For CMS data, use the typed layer in `apps/astro/src/lib/payload/`.
@@ -86,6 +86,7 @@ packages/payload-types/  — Generated Payload TypeScript types (shared)
 | i18n (Payload) | `apps/payload/src/i18n/const.ts` · `apps/payload/src/i18n/payload-locales.ts` |
 | Generated types | `packages/payload-types/src/index.ts` (via `pnpm --filter @repo/payload generate:types`) |
 | Design system | `packages/ui/src/` — imports as `@repo/ui`; CSS vars follow shadcn conventions (`--primary`, `--background`, etc.) |
+| Storybook (design-system preview) | `pnpm --filter @repo/ui storybook` (port 6006). Config `packages/ui/.storybook/`; stories co-located as `*.stories.tsx`; token reference at `packages/ui/src/foundations/`; new-component template `packages/ui/src/components/_TEMPLATE.stories.tsx.txt` |
 | Section UI components | `packages/ui/src/components/sections/<feature>/` — **pure, Payload-agnostic** React; all new section UI lives here (ref: `hero/hero.tsx`). Export via `<feature>/index.ts` → `sections/index.ts` → `src/index.ts` |
 | Astro section adapters | `apps/astro/src/components/sections/<feature>/index.tsx` — thin; maps block fields → `@repo/ui` component props (ref: `hero/variants/default-hero.tsx`) |
 | Astro layouts | `apps/astro/src/layouts/Layout.astro` |
