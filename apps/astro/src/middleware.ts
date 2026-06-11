@@ -1,6 +1,10 @@
 import { defineMiddleware } from 'astro:middleware'
 import { ADMIN_ORIGIN, PREVIEW_COOKIE, PREVIEW_SECRET } from './lib/preview-env'
 
+// Dev-only: forward Astro SSR console output to the debug-mode ingest server.
+// The dynamic import + guard tree-shake this out of production builds.
+if (import.meta.env.DEV) void import('./lib/debug/server-capture')
+
 /**
  * Detects preview requests and, for them, (a) marks `locals.preview` so routes
  * fetch drafts, (b) allows the Payload admin to embed the page in its Live Preview

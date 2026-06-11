@@ -8,6 +8,9 @@ import JsonLd from '../components/seo/JsonLd.astro';
 import CustomCode from '../components/seo/CustomCode.astro';
 import { ADMIN_ORIGIN } from '../lib/preview-env';
 import type { ResolvedSeo } from '../lib/seo/meta';
+// Dev-only: raw source of the browser debug-capture, inlined below. The
+// `import.meta.env.DEV` guard + `?raw` import tree-shake this out of prod builds.
+import browserCaptureSrc from '../lib/debug/browser-capture.ts?raw';
 
 interface Props {
   /** Fully-resolved SEO values (build with `buildSeo` in the page). */
@@ -28,6 +31,15 @@ const { seo, jsonLd = [], customCode, preview = false } = Astro.props;
   <head>
     <CustomCode html={customCode?.headStart} />
     <meta charset='UTF-8' />
+    {
+      import.meta.env.DEV && (
+        <script
+          is:inline
+          define:vars={{ port: Number(import.meta.env.PUBLIC_DEBUG_SERVER_PORT ?? 7913), sessionId: 'dev' }}
+          set:html={browserCaptureSrc}
+        />
+      )
+    }
     <meta name='viewport' content='width=device-width, initial-scale=1.0' />
     <link rel='icon' href='/favicon.svg' type='image/svg+xml' />
     <Seo {...seo} />
