@@ -46,7 +46,7 @@ split it into one line per deliverable and route each independently.
 | **schema change** | `payload-migrations` (+ `payload` for field/hook/access design) |
 | **dynamic data** | `data-fetching` → `payload-migrations` (if it needs new schema) |
 | **content/theme only** | none — edit `@repo/ui` tokens / copy, **no migration** |
-| **payload config** | `payload` (global skill) |
+| **payload config** | `payload` (global skill) — for a **custom HTTP endpoint**, use the `defineEndpoint` wrapper (see Hard rules), never a bare `Endpoint` |
 | **security audit** | `security-audit` (+ `payload-migrations` if a fix changes schema/config) |
 
 ### 3. Confirm the spec — ONE `AskUserQuestion` round
@@ -114,6 +114,13 @@ worth remembering.
 - Never import from `src/theme/` — use `@repo/ui`.
 - Never invent paths — use the *Project map* in `CLAUDE.md`.
 - Never assume the spec — step 3 is mandatory for any non-trivial build.
+- **Custom Payload endpoints use the `defineEndpoint` wrapper**
+  (`apps/payload/src/payload/endpoints/_lib/defineEndpoint.ts`) — never a hand-written bare
+  `Endpoint`. It factors out collection auth, zod body parsing, and the error envelope, and infers
+  the handler's `body` type from the schema. Schemas come from `@/schemas/<domain>` (never inline).
+  See the `custom-endpoint-pattern` memory.
+- **Zod schemas live in `src/schemas/<domain>/`** — never inline in a task/endpoint/collection/hook
+  (see the `zod-schemas-in-schemas-folder` memory).
 - **Documentation lives in memory — no `docs/` folder.** When you'd normally write or update
   documentation, write a self-contained memory file instead, in
   `/Users/kacperzawojski/.claude/projects/-Users-kacperzawojski-code-payload-starter/memory/`

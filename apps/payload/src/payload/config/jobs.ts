@@ -1,17 +1,20 @@
 import { Config } from 'payload'
+import { sendExampleTask } from '@/payload/jobs/tasks/sendExample'
 
 /**
  * Payload Jobs Queue.
  *
- * Initialized empty — no tasks or workflows yet. This wires up the
- * `payload-jobs` collection and the `/api/payload-jobs/run` endpoint so
- * background jobs can be added later without another infra change.
+ * Wires up the `payload-jobs` collection and the `/api/payload-jobs/run`
+ * endpoint. Email sends run here so HTTP requests return immediately and
+ * transient transport failures retry automatically.
  *
  * To add work: push a task to `tasks` (or a workflow to `workflows`) and
  * enqueue it via `payload.jobs.queue(...)`.
  */
 export const jobsConfig: Config['jobs'] = {
-  tasks: [],
+  // Keep completed/failed job rows so sends can be inspected in the admin.
+  deleteJobOnComplete: false,
+  tasks: [sendExampleTask],
   workflows: [],
   // Only authenticated admins may trigger the run endpoint.
   access: {

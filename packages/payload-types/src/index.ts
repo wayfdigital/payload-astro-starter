@@ -78,6 +78,7 @@ export interface Config {
     media: Media;
     pages: Page;
     users: User;
+    'email-templates': EmailTemplate;
     forms: Form;
     'form-submissions': FormSubmission;
     redirects: Redirect;
@@ -96,6 +97,7 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
+    'email-templates': EmailTemplatesSelect<false> | EmailTemplatesSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
@@ -173,11 +175,13 @@ export interface Config {
     'footer-settings': FooterSetting;
     cookieSettings: CookieSetting;
     'site-settings': SiteSetting;
+    'email-settings': EmailSetting;
   };
   globalsSelect: {
     'footer-settings': FooterSettingsSelect<false> | FooterSettingsSelect<true>;
     cookieSettings: CookieSettingsSelect<false> | CookieSettingsSelect<true>;
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
+    'email-settings': EmailSettingsSelect<false> | EmailSettingsSelect<true>;
   };
   locale:
     | 'en'
@@ -211,6 +215,7 @@ export interface Config {
   user: Admin | User;
   jobs: {
     tasks: {
+      sendExample: TaskSendExample;
       createCollectionExport: TaskCreateCollectionExport;
       createCollectionImport: TaskCreateCollectionImport;
       inline: {
@@ -803,6 +808,43 @@ export interface User {
   collection: 'users';
 }
 /**
+ * Editable subject + body for each transactional email. Use {placeholders} like {recipientName}, {siteName}, {message}, {actionUrl}.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "email-templates".
+ */
+export interface EmailTemplate {
+  id: string;
+  /**
+   * Stable identifier the code looks up (do not change once in use). The seeded example uses "example".
+   */
+  key: string;
+  /**
+   * Human label shown in the admin list.
+   */
+  name: string;
+  subject: string;
+  /**
+   * Inbox preview line shown before the email is opened.
+   */
+  previewText?: string | null;
+  heading: string;
+  /**
+   * Line breaks become paragraphs. Supports {placeholders}.
+   */
+  body: string;
+  /**
+   * Leave blank (with Button URL) to omit the call-to-action button.
+   */
+  buttonText?: string | null;
+  /**
+   * Supports {actionUrl}. Both button fields must be set to show a button.
+   */
+  buttonUrl?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "form-submissions".
  */
@@ -1028,7 +1070,7 @@ export interface PayloadJob {
     | {
         executedAt: string;
         completedAt: string;
-        taskSlug: 'inline' | 'createCollectionExport' | 'createCollectionImport';
+        taskSlug: 'inline' | 'sendExample' | 'createCollectionExport' | 'createCollectionImport';
         taskID: string;
         input?:
           | {
@@ -1061,7 +1103,7 @@ export interface PayloadJob {
         id?: string | null;
       }[]
     | null;
-  taskSlug?: ('inline' | 'createCollectionExport' | 'createCollectionImport') | null;
+  taskSlug?: ('inline' | 'sendExample' | 'createCollectionExport' | 'createCollectionImport') | null;
   queue?: string | null;
   waitUntil?: string | null;
   processing?: boolean | null;
@@ -1090,6 +1132,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'users';
         value: string | User;
+      } | null)
+    | ({
+        relationTo: 'email-templates';
+        value: string | EmailTemplate;
       } | null)
     | ({
         relationTo: 'forms';
@@ -1442,6 +1488,22 @@ export interface UsersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "email-templates_select".
+ */
+export interface EmailTemplatesSelect<T extends boolean = true> {
+  key?: T;
+  name?: T;
+  subject?: T;
+  previewText?: T;
+  heading?: T;
+  body?: T;
+  buttonText?: T;
+  buttonUrl?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1885,6 +1947,35 @@ export interface SiteSetting {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "email-settings".
+ */
+export interface EmailSetting {
+  id: string;
+  /**
+   * Shown in the email footer and available as the {siteName} placeholder.
+   */
+  siteName: string;
+  /**
+   * Display name on the From line. Falls back to the adapter default if blank.
+   */
+  fromName?: string | null;
+  /**
+   * From email address. Falls back to the adapter default if blank.
+   */
+  fromAddress?: string | null;
+  /**
+   * Shown in the footer and available as the {supportEmail} placeholder.
+   */
+  supportEmail?: string | null;
+  /**
+   * Absolute URL to a logo image shown at the top of every email (optional).
+   */
+  logoUrl?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "footer-settings_select".
  */
 export interface FooterSettingsSelect<T extends boolean = true> {
@@ -1988,6 +2079,20 @@ export interface SiteSettingsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "email-settings_select".
+ */
+export interface EmailSettingsSelect<T extends boolean = true> {
+  siteName?: T;
+  fromName?: T;
+  fromAddress?: T;
+  supportEmail?: T;
+  logoUrl?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "collections_widget".
  */
 export interface CollectionsWidget {
@@ -1995,6 +2100,23 @@ export interface CollectionsWidget {
     [k: string]: unknown;
   };
   width: 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskSendExample".
+ */
+export interface TaskSendExample {
+  input: {
+    to: string;
+    templateKey?: string | null;
+    locale?: string | null;
+    recipientName?: string | null;
+    message?: string | null;
+    actionUrl?: string | null;
+  };
+  output: {
+    sent?: boolean | null;
+  };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2010,6 +2132,7 @@ export interface TaskCreateCollectionExport {
       | 'media'
       | 'pages'
       | 'users'
+      | 'email-templates'
       | 'forms'
       | 'form-submissions'
       | 'redirects'

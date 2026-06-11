@@ -20,6 +20,12 @@ export const recaptchaValidationSchema = z.object({
   form: z.string().optional(),
 })
 
+/** Sibling data on a submission field — carries the related form id. */
+export const recaptchaSiblingSchema = z.object({ form: z.string() })
+
+/** The `requireRecaptcha` flag read off a form doc to decide whether to gate. */
+export const formRecaptchaSchema = z.object({ requireRecaptcha: z.boolean() }).partial()
+
 export async function verifyRecaptcha(token: string): Promise<boolean> {
   const secretKey = process.env.NEXT_PRIVATE_RECAPTCHA_SECRET_KEY ?? ''
 

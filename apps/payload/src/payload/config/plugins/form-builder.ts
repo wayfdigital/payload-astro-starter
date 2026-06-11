@@ -2,10 +2,11 @@ import { PayloadRequest, Plugin } from 'payload'
 import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
 import { revalidateTag } from 'next/cache'
 import { z } from 'zod'
-import { verifyRecaptcha } from '@/schemas/forms'
-
-const recaptchaSiblingSchema = z.object({ form: z.string() })
-const formRecaptchaSchema = z.object({ requireRecaptcha: z.boolean() }).partial()
+import {
+  formRecaptchaSchema,
+  recaptchaSiblingSchema,
+  verifyRecaptcha,
+} from '@/schemas/forms'
 
 export const formBuilderPluginConfig: Plugin = formBuilderPlugin({
   fields: {

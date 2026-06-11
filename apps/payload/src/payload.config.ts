@@ -9,6 +9,7 @@ import { Pages } from './payload/collections/Pages'
 import { Media } from './payload/collections/Media'
 import { Admins } from './payload/collections/Admins'
 import { Users } from './payload/collections/Users'
+import { EmailTemplates } from './payload/collections/EmailTemplates'
 import { en } from '@payloadcms/translations/languages/en'
 import { pl } from '@payloadcms/translations/languages/pl'
 import { DEFAULT_LANGUAGE } from './i18n/const'
@@ -27,7 +28,10 @@ import { FormBlock } from './payload/blocks/forms'
 import { FooterSettings } from './payload/globals/FooterSettings'
 import { CookieSettings } from './payload/globals/CookieSettings'
 import { SiteSettings } from './payload/globals/SiteSettings'
+import { EmailSettings } from './payload/globals/EmailSettings'
 import { ExampleBlock } from './payload/blocks/example-block'
+import { sendExampleEmailEndpoint } from './payload/endpoints/sendExampleEmail'
+import { seedEmail } from './scripts/seed/email'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -42,13 +46,15 @@ export default buildConfig({
   },
   onInit: async (payload) => {
     await seedUsers(payload)
+    await seedEmail(payload)
   },
   i18n: {
     supportedLanguages: { en, pl },
     fallbackLanguage: 'pl',
   },
-  collections: [Admins, Media, Pages, Users],
-  globals: [FooterSettings, CookieSettings, SiteSettings],
+  collections: [Admins, Media, Pages, Users, EmailTemplates],
+  globals: [FooterSettings, CookieSettings, SiteSettings, EmailSettings],
+  endpoints: [sendExampleEmailEndpoint],
   jobs: jobsConfig,
   blocks: [pageContentBlock1, pageContentBlock2, pageContentBlock3, FormBlock, ExampleBlock],
   editor: lexicalEditor(),
