@@ -6,7 +6,7 @@
  * Imported for its side effect from middleware.ts behind an import.meta.env.DEV
  * guard, so it never loads in production.
  */
-import { DEBUG_INGEST_URL, resolveLogDir } from './config'
+import { DEBUG_INGEST_URL } from './config'
 
 installServerCapture('astro')
 
@@ -19,7 +19,6 @@ export function installServerCapture(source: 'astro' | 'payload'): void {
   if (globalThis.__DEBUG_SERVER_PATCHED) return
   globalThis.__DEBUG_SERVER_PATCHED = true
 
-  const logDir = resolveLogDir()
   const levels = ['log', 'info', 'warn', 'error', 'debug'] as const
   let sending = false
 
@@ -57,7 +56,7 @@ export function installServerCapture(source: 'astro' | 'payload'): void {
       try {
         void fetch(DEBUG_INGEST_URL, {
           method: 'POST',
-          headers: { 'content-type': 'text/plain', 'x-debug-log-dir': logDir },
+          headers: { 'content-type': 'text/plain' },
           body: JSON.stringify({
             source,
             level,

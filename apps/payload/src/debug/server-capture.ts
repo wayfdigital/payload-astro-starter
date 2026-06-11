@@ -6,23 +6,9 @@
  * NODE_ENV !== 'production', so it never runs in prod. Forwards console.* to the
  * reused debug-mode ingest server (same-process Node → 127.0.0.1, no CORS).
  */
-import fs from 'node:fs'
-import path from 'node:path'
-
 declare global {
   // eslint-disable-next-line no-var
   var __DEBUG_SERVER_PATCHED: boolean | undefined
-}
-
-function resolveLogDir(): string {
-  let dir = process.cwd()
-  for (let i = 0; i < 8; i++) {
-    if (fs.existsSync(path.join(dir, 'pnpm-workspace.yaml'))) break
-    const parent = path.dirname(dir)
-    if (parent === dir) break
-    dir = parent
-  }
-  return path.join(dir, '.debug-logs')
 }
 
 export function installServerCapture(): void {
@@ -31,8 +17,7 @@ export function installServerCapture(): void {
 
   const host = process.env.DEBUG_SERVER_HOST || '127.0.0.1'
   const port = process.env.DEBUG_SERVER_PORT || '7913'
-  const ingestUrl = `http://${host}:${port}/ingest/dev`
-  const logDir = resolveLogDir()
+  const ingestUrl = `http://${host}:${port}/ingest`
   const levels = ['log', 'info', 'warn', 'error', 'debug'] as const
   let sending = false
 
@@ -70,7 +55,7 @@ export function installServerCapture(): void {
       try {
         void fetch(ingestUrl, {
           method: 'POST',
-          headers: { 'content-type': 'text/plain', 'x-debug-log-dir': logDir },
+          headers: { 'content-type': 'text/plain' },
           body: JSON.stringify({
             source: 'payload',
             level,
