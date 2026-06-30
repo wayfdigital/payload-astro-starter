@@ -45,7 +45,7 @@ if (!page) {
 
 const seo = buildSeo(
   {
-    title: page?.meta?.title ?? page?.slug ?? 'Page not found',
+    title: page?.meta?.title || page?.slug || 'Page not found',
     description: page?.meta?.description,
     image: page?.meta?.image,
     slug,

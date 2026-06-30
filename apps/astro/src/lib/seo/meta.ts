@@ -59,9 +59,9 @@ export const resolveTitle = (
   pageTitle: string,
   settings: SiteSetting | null,
 ): string => {
-  const siteName = settings?.siteName?.trim()
+  const siteName = settings?.siteName?.trim() || null
   const template = settings?.titleTemplate?.trim()
-  if (template) {
+  if (template && (!template.includes('%siteName%') || siteName)) {
     return template.replaceAll('%s', pageTitle).replaceAll('%siteName%', siteName ?? '').trim()
   }
   return siteName ? `${pageTitle} · ${siteName}` : pageTitle

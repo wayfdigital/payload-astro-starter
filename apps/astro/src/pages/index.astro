@@ -28,7 +28,7 @@ const pages = home ? [] : await getAllPages(locale);
 
 const seo = buildSeo(
   {
-    title: home?.meta?.title ?? home?.slug ?? 'Home',
+    title: home?.meta?.title || home?.slug || 'Home',
     description: home?.meta?.description,
     image: home?.meta?.image,
     slug: '',
