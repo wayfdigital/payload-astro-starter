@@ -21,6 +21,10 @@ export default function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   const hostname = request.headers.get('host') ?? ''
 
+  if (pathname === '/') {
+    return NextResponse.redirect(new URL('/admin', request.url))
+  }
+
   const response = NextResponse.next()
 
   const apiAllowedOrigins = parseOrigins(process.env.NEXT_PUBLIC_API_ALLOWED_ORIGINS)

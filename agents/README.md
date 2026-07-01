@@ -2,27 +2,27 @@
 
 ## Source of truth
 
-**`agents/source.md`** — the single source of truth. Contains the build pipeline, always-ask
-checklist, monorepo structure, project map, and hard rules. Edit here when the project structure
-or procedures change. All agent config files point to it.
+**`AGENTS.md`** (repo root) — the single source of truth. Contains the build pipeline, always-ask
+checklist, monorepo structure, project map, skills index, and hard rules. Edit it directly when
+the project structure or procedures change.
 
 ## Agent config files
 
-| Agent | Config file | What it contains |
+| Agent | Config file | How it gets the manual |
 |---|---|---|
-| [Claude Code](https://claude.ai/code) | `CLAUDE.md` | Claude-specific: skill routing, hooks framing, skills index + reference to `agents/source.md` |
-| [Cursor](https://cursor.sh) | `AGENTS.md` + `.cursor/rules/*.mdc` | Thin routing + reference to `agents/source.md`; MDC rules load skill files on demand |
-| [OpenAI Codex CLI](https://github.com/openai/codex) | `AGENTS.md` | Thin routing + reference to `agents/source.md` |
-| [opencode](https://opencode.ai) | `AGENTS.md` | Thin routing + reference to `agents/source.md` |
+| [Cursor](https://cursor.sh) | `AGENTS.md` | Reads it natively, in full |
+| [OpenAI Codex CLI](https://github.com/openai/codex) | `AGENTS.md` | Reads it natively, in full |
+| [opencode](https://opencode.ai) | `AGENTS.md` | Reads it natively, in full |
 | Other | `AGENTS.md` | Read natively by most AI coding tools |
+| [Claude Code](https://claude.ai/code) | `CLAUDE.md` | First line `@AGENTS.md` imports the full manual; the rest of the file adds Claude-specific skill routing |
 
 ## Updating the operating manual
 
-Edit **`agents/source.md`** only. `AGENTS.md` and `CLAUDE.md` reference it — no sync needed.
+Edit **`AGENTS.md`** directly. `CLAUDE.md` imports it via `@AGENTS.md` — no sync needed, no
+generation step.
 
-For Claude-specific changes (skill routing, skills index): edit `CLAUDE.md` directly.
+For Claude-specific changes (skill routing, skills index): edit `CLAUDE.md` below the import line.
 
 ## Adding a new agent
 
-Most agents read `AGENTS.md` natively — nothing to do. If yours needs a dedicated file, point it
-to `agents/source.md` for the operating manual content.
+Most agents read `AGENTS.md` natively — nothing to do.

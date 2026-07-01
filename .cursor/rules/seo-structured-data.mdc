@@ -1,6 +1,0 @@
----
-description: Use when adding structured data, JSON-LD, rich results, OG images, social previews, site name, or tracking scripts to a page or section.
-alwaysApply: false
----
-
-Read `.claude/skills/seo-structured-data/SKILL.md` for the full SEO structured data guide.

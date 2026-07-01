@@ -1,6 +1,0 @@
----
-description: Use when working with the shared design system — @repo/ui components, CSS variables, shadcn tokens, Storybook, theming.
-alwaysApply: false
----
-
-Read `.claude/skills/design-system/SKILL.md` for the full design system guide.

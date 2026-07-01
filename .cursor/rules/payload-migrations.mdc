@@ -1,6 +1,0 @@
----
-description: Use when adding, changing, or removing a Payload collection, global, block, or field — anything that changes the DB schema.
-alwaysApply: false
----
-
-Read `.claude/skills/payload-migrations/SKILL.md` for the full migration cycle guide.

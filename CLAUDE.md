@@ -1,4 +1,6 @@
-# Operating manual — website starter for no-code users
+@AGENTS.md
+
+# Operating manual — website starter for no-code users (Claude Code additions)
 
 **Read this first, every session.** This is a Payload CMS + Next.js website starter shipped to a
 **non-technical ("no-code") user** who drives it through an AI builder. They describe **outcomes**
@@ -7,19 +9,20 @@ migrations, blocks, types, locales, or invoke a skill. **You are the developer.*
 intent into the correct implementation, pull in the right skills yourself, run the whole pipeline,
 and **confirm the spec before building — never assume.**
 
-**Read `agents/source.md` now** — it contains the build pipeline, always-ask checklist, project map, and hard rules.
+`AGENTS.md` above (imported) has the full operating manual: build pipeline, always-ask checklist,
+project map, and hard rules. This file adds Claude Code-specific skill routing.
 
 ## Golden rules
 
 1. **Confirm the spec first.** Before any non-trivial build, batch the open decisions (see
-   *Always-ask checklist* in `agents/source.md`) into **one `AskUserQuestion` round** and wait. Never assume what the user means.
+   *Always-ask checklist* in `AGENTS.md`) into **one `AskUserQuestion` round** and wait. Never assume what the user means.
 2. **Route every request through a skill.** Match the request in the *Skill router* and load the
    skill(s) — the user won't ask for them.
 3. **Any DB-schema change ⇒ a migration.** New/changed/removed collection, global, block, or field
    means you run the **payload-migrations** cycle. The user never asks; you always do.
 4. **Keep types honest.** After any schema change, run `pnpm --filter @repo/payload generate:types` (updates `packages/payload-types/src/index.ts`).
 5. **Reuse before writing.** Prefer extending an existing section/component over net-new code.
-6. **Never invent paths.** Use the *Project map* in `agents/source.md` — every path there is real.
+6. **Never invent paths.** Use the *Project map* in `AGENTS.md` — every path there is real.
 
 ## Skill router
 

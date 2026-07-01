@@ -1,6 +1,0 @@
----
-description: Use when migrating content from another CMS (WordPress, Contentful, Sanity, etc.) into this Payload starter.
-alwaysApply: false
----
-
-Read `.claude/skills/cms-migration/SKILL.md` for the full CMS migration guide.

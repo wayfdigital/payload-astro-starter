@@ -1,6 +1,0 @@
----
-description: Use for Payload CMS 3 patterns with Next.js App Router — collections, globals, REST API, local API, auth.
-alwaysApply: false
----
-
-Read `.claude/skills/payloadcms/SKILL.md` for the full guide.
