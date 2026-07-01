@@ -1,0 +1,6 @@
+---
+description: Use when querying Payload data server-side via the Local API instead of REST — in server components, hooks, or endpoints.
+alwaysApply: false
+---
+
+Read `.claude/skills/payload-local-api/SKILL.md` for the full Local API guide.

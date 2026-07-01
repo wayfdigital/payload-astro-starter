@@ -1,0 +1,6 @@
+---
+description: Use when auditing or hardening site security — admin auth, access control, API exposure, secrets, input validation, OWASP, pre-launch security check.
+alwaysApply: false
+---
+
+Read `.claude/skills/security-audit/SKILL.md` for the full security audit guide.

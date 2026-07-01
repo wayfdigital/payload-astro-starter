@@ -7,17 +7,19 @@ migrations, blocks, types, locales, or invoke a skill. **You are the developer.*
 intent into the correct implementation, pull in the right skills yourself, run the whole pipeline,
 and **confirm the spec before building — never assume.**
 
+**Read `agents/source.md` now** — it contains the build pipeline, always-ask checklist, project map, and hard rules.
+
 ## Golden rules
 
 1. **Confirm the spec first.** Before any non-trivial build, batch the open decisions (see
-   *Always-ask checklist*) into **one `AskUserQuestion` round** and wait. Never assume what the user means.
+   *Always-ask checklist* in `agents/source.md`) into **one `AskUserQuestion` round** and wait. Never assume what the user means.
 2. **Route every request through a skill.** Match the request in the *Skill router* and load the
    skill(s) — the user won't ask for them.
 3. **Any DB-schema change ⇒ a migration.** New/changed/removed collection, global, block, or field
    means you run the **payload-migrations** cycle. The user never asks; you always do.
 4. **Keep types honest.** After any schema change, run `pnpm --filter @repo/payload generate:types` (updates `packages/payload-types/src/index.ts`).
 5. **Reuse before writing.** Prefer extending an existing section/component over net-new code.
-6. **Never invent paths.** Use the *Project map* below — every path there is real.
+6. **Never invent paths.** Use the *Project map* in `agents/source.md` — every path there is real.
 
 ## Skill router
 
@@ -32,68 +34,6 @@ and **confirm the spec before building — never assume.**
 | "add structured data / rich results", "improve SEO on this page", "Google preview / social share", "site name / OG image / tracking scripts" | **seo-structured-data** (→ **payload-migrations** if a new content type needs CMS fields) | detect collections → emit applicable JSON-LD; edit Site Settings / `lib/seo` |
 | "is my site secure / safe to launch", "security audit / review / harden", "OWASP", "exposed admin / leaked data", "czy bezpieczne", "audyt bezpieczeństwa", "zabezpiecz stronę" | **security-audit** (→ **payload-migrations** if a fix changes schema/config) | audit the 7 areas vs. real files → report by severity → fix app-level, advise infra |
 
-## Build pipeline (new section / from a design)
-
-Run **in order**. This is the "do everything the no-code user can't" path.
-
-0. **Confirm spec** — `AskUserQuestion` with the *Always-ask checklist*.
-1. **Reuse check** — closest existing `@repo/ui` section in `packages/ui/src/components/sections/`, block in `apps/payload/src/payload/blocks/`, and adapter in `apps/astro/src/components/sections/`.
-2. **Build the presentational component** — `packages/ui/src/components/sections/<feature>/<feature>.tsx`: a **pure, Payload-agnostic** React component (plain props, **no** `@repo/payload-types`). Wire all three export points (`<feature>/index.ts` → `sections/index.ts` → `src/index.ts`). **All new section UI lives here.** Reference: `packages/ui/src/components/sections/hero/hero.tsx`. **Ship a co-located `<feature>.stories.tsx`** (copy `packages/ui/src/components/_TEMPLATE.stories.tsx.txt`) and preview it with `pnpm --filter @repo/ui storybook` before wiring the block/adapter.
-3. **Define the block** — `apps/payload/src/payload/blocks/<feature>.ts` → `export const <Name>Block: Block = { slug, dbName, interfaceName, labels, fields }` (`localized: true` on per-locale copy).
-4. **Register in BOTH** `apps/payload/src/payload/collections/Pages.ts` (`layout` blocks) **and** `apps/payload/src/payload.config.ts` (`blocks`).
-5. **Build the Astro adapter** — `apps/astro/src/components/sections/<feature>/index.tsx`: a **thin** component typed by the block interface that **maps block fields onto the `@repo/ui` component's props** (no markup of its own). Reference: `apps/astro/src/components/sections/hero/variants/default-hero.tsx`. For CMS data, use the typed layer in `apps/astro/src/lib/payload/`.
-6. **Wire the map** — add `blockType → component` to `apps/astro/src/components/page-builder/layout-sections.astro` (or equivalent).
-7. **Generate types** — `pnpm --filter @repo/payload generate:types` (writes `packages/payload-types/src/index.ts`).
-8. **Migrate** — payload-migrations cycle (`docker compose up -d postgres` → `pnpm --filter @repo/payload migrate:create <name>` → review → `pnpm --filter @repo/payload migrate`). Commit migration with the change.
-9. **Verify** — `/admin` → Pages → `layout`, and the rendered Astro page.
-10. **SEO pass** — load **seo-structured-data**: does the new section/content type warrant structured data (Product/Article/FAQ/etc.)? Emit applicable JSON-LD or record it as deferred.
-
-## Always-ask checklist (step 0)
-
-Confirm these with the user before building — they're developer decisions a no-code user won't volunteer:
-
-- **Content source** — static copy, a CMS-managed field, or a relationship to an existing collection?
-- **Localization** — should the text be `localized` (pl / en)?
-- **Responsiveness** — any specific mobile / tablet behavior?
-- **Interactivity** — static, or client-side (filters, carousel, form)?
-- **Freshness** — always-fresh (SSR) vs cached + on-demand revalidate (default: cached via `src/data-queries`)?
-- **SEO** — does it need meta / OG / structured data?
-- **Naming & placement** — block name, which page/slug, and position in the layout.
-- **Reuse** — the closest existing section to start from.
-- **(Figma)** — which frames/sections are in scope, and the breakpoint set.
-
-State any safe default you adopt so the user can correct it.
-
-## Monorepo structure
-
-```
-apps/payload/   — Headless Payload CMS (Next.js, port 3100) — admin + API only
-apps/astro/     — Astro frontend (SSR, port 3000)
-packages/ui/    — Shared design system (React components, CSS vars, shadcn tokens)
-packages/payload-types/  — Generated Payload TypeScript types (shared)
-```
-
-## Project map (real paths)
-
-| Concept | Path |
-|---|---|
-| Payload block definitions | `apps/payload/src/payload/blocks/{page-content,example-block,forms}.ts` |
-| Collections / globals | `apps/payload/src/payload/collections/` · `apps/payload/src/payload/globals/` |
-| Global block registry | `apps/payload/src/payload.config.ts` (`blocks: [...]`) |
-| Pages collection (`layout` blocks) | `apps/payload/src/payload/collections/Pages.ts` |
-| Payload config | `apps/payload/src/payload.config.ts` |
-| DB / migrations | `apps/payload/src/migrations/`; `pnpm --filter @repo/payload migrate:create \| migrate \| migrate:status` |
-| i18n (Payload) | `apps/payload/src/i18n/const.ts` · `apps/payload/src/i18n/payload-locales.ts` |
-| Generated types | `packages/payload-types/src/index.ts` (via `pnpm --filter @repo/payload generate:types`) |
-| Design system | `packages/ui/src/` — imports as `@repo/ui`; CSS vars follow shadcn conventions (`--primary`, `--background`, etc.) |
-| Storybook (design-system preview) | `pnpm --filter @repo/ui storybook` (port 6006). Config `packages/ui/.storybook/`; stories co-located as `*.stories.tsx`; token reference at `packages/ui/src/foundations/`; new-component template `packages/ui/src/components/_TEMPLATE.stories.tsx.txt` |
-| Section UI components | `packages/ui/src/components/sections/<feature>/` — **pure, Payload-agnostic** React; all new section UI lives here (ref: `hero/hero.tsx`). Export via `<feature>/index.ts` → `sections/index.ts` → `src/index.ts` |
-| Astro section adapters | `apps/astro/src/components/sections/<feature>/index.tsx` — thin; maps block fields → `@repo/ui` component props (ref: `hero/variants/default-hero.tsx`) |
-| Astro layouts | `apps/astro/src/layouts/Layout.astro` |
-| Astro pages | `apps/astro/src/pages/` |
-| Payload API base URL | `PAYLOAD_API_URL` env in `apps/astro/.env` (default `http://localhost:3100`) |
-| Media (images) | `apps/payload/src/payload/collections/Media.ts` (`imageSizes`; use `media.url` / `media.sizes.*.url`) |
-
 ## Skills index
 
 - **payload-migrations** — fires on any schema change (collection/global/block/field, `payload.config.ts`). The migrate cycle + data-safety ladder.
@@ -105,14 +45,3 @@ packages/payload-types/  — Generated Payload TypeScript types (shared)
 - **seo-audit** (generic) — broad SEO framework (crawlability, Core Web Vitals, on-page, international) for "audit my SEO" requests.
 - **debug-mode** (global) — fires on "debug this / why is X broken / enter debug mode". In this repo capture is **always-on** in dev: `@repo/debug-server` (`packages/debug-server`) runs with `turbo dev`, the app forwards browser + Astro/Payload console, errors, network, and `window.debug(msg, data)` to it. Dashboard: **http://localhost:7913**; NDJSON at `.debug-logs/debug-dev.log`. Don't spawn the skill's `.cursor` server here — reproduce, then read the log tail.
 - **security-audit** — fires on any "is my site secure / safe to launch / security audit / harden / OWASP" request. Audits 7 areas (admin auth, access control, API exposure, secrets, input/XSS, logging, infra) against this repo's real files (`Admins.ts`, `access-guards/`, `cors.ts`, `payload.config.ts` secret, `Media.ts` uploads, `.env`), maps each finding to OWASP Top 10, reports by severity, fixes app-level issues (→ migration if schema/config changes) and advises on infra.
-
-## Hard rules — never
-
-- Never make a schema change without running a migration.
-- Never leave `packages/payload-types/src/index.ts` stale — regenerate after every schema change.
-- Never register a block in only one of `Pages.ts` / `payload.config.ts`.
-- Never put a section's markup in the Astro adapter — section UI belongs in a `@repo/ui` component (`packages/ui/src/components/sections/`); the adapter only maps block fields onto its props.
-- Never import `@repo/payload-types` into a `@repo/ui` component — components stay Payload-agnostic; only the Astro adapter knows the block types.
-- Never import from `src/theme/` — use `@repo/ui` instead.
-- Never invent file paths — use the *Project map*.
-- Never assume the spec — ask (Golden rule #1).

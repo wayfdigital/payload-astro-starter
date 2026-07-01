@@ -1,0 +1,6 @@
+---
+description: Use when deciding how a page or section loads CMS data — SSR vs ISR vs cached, server components, revalidation strategy.
+alwaysApply: false
+---
+
+Read `.claude/skills/data-fetching/SKILL.md` for the full data-fetching guide.

@@ -1,0 +1,6 @@
+---
+description: Use for Payload CMS config, field definitions, hooks, access control, validation, and queries.
+alwaysApply: false
+---
+
+Read `.claude/skills/payload/SKILL.md` for the full Payload reference.
