@@ -7,6 +7,9 @@
 // 1. Replace `MyComponent` / `MyComponentProps` with your component + props type.
 // 2. Always import from '@repo/ui' (the public export surface), never deep paths.
 // 3. Set `title` to `Elements/…`, `Layout/…`, or `Sections/…` to match the folder.
+//    (`Pages/…` is reserved for composed page previews — several sections stacked on
+//    static props, the artifact the Design Mode gate is asked about. Those set
+//    `parameters: { layout: 'fullscreen' }`; see .claude/skills/design-mode/SKILL.md.)
 // 4. Add an `argTypes` control for every union prop so it's tweakable in the panel.
 // ─────────────────────────────────────────────────────────────────────────────
 import type { Meta, StoryObj } from '@storybook/react-vite'

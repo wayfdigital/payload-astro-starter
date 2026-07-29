@@ -12,6 +12,7 @@
   "types": "./src/index.ts",
   "scripts": {
     "depcruise": "depcruise src",
+    "typecheck": "tsc --noEmit",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build -o storybook-static"
   },

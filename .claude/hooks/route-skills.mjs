@@ -20,10 +20,14 @@ const TRIGGER =
 
 const REMINDER = [
   '[wayf router] This repo serves a NO-CODE user who describes outcomes, not code — you are the developer.',
-  'Before building: (1) classify this request;',
-  '(2) load the matching skill(s) — website-layout-sections (new section/block/page/design),',
+  'Before building: (1) classify this request — and first check whether the section ALREADY has a block',
+  'in apps/payload/src/payload/blocks/: if yes it is integrated, so edit the @repo/ui component in place',
+  '(no Design Mode, no gate); if no, it is new;',
+  '(2) load the matching skill(s) — design-mode (a NEW section/page/design: iterate in packages/ui + Storybook',
+  'on static props, then hold the approval gate), website-layout-sections (Phase B, after the gate),',
   'payload-migrations (any schema/field/collection change), data-fetching (loading CMS data), figma (a Figma design);',
-  '(3) follow the Build pipeline in CLAUDE.md end-to-end',
+  '(3) for a new section run Phase A → GATE (one AskUserQuestion; only an explicit Yes continues — a compliment is not approval)',
+  '→ Phase B of the Build pipeline in CLAUDE.md',
   '(block → register in Pages.ts + payload.config.ts → renderer + layout-sections map → pnpm generate:types → migration → verify);',
   '(4) confirm the spec with AskUserQuestion first — never assume.',
 ].join(' ')

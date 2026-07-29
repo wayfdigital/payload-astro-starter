@@ -41,7 +41,11 @@ export function Hero({
           <Heading
             level={1}
             className={variant === 'gradient' ? 'tracking-tight' : ''}
-            style={variant === 'gradient' ? { color: '#ffffff', letterSpacing: '-0.03em' } : undefined}
+            style={
+              variant === 'gradient'
+                ? { color: 'var(--primary-foreground)', letterSpacing: '-0.03em' }
+                : undefined
+            }
           >
             {title}
           </Heading>
@@ -49,7 +53,14 @@ export function Hero({
             <Text
               variant="lead"
               className="max-w-2xl"
-              style={variant === 'gradient' ? { color: 'rgba(255,255,255,0.85)' } : undefined}
+              // The gradient sits on `--primary`-family colors in both themes, so the
+              // on-primary token is the right pair; opacity handles the de-emphasis
+              // without needing a second token.
+              style={
+                variant === 'gradient'
+                  ? { color: 'var(--primary-foreground)', opacity: 0.85 }
+                  : undefined
+              }
             >
               {subtitle}
             </Text>

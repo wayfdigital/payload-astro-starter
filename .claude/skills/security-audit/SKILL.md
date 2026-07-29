@@ -43,10 +43,11 @@ Walk these in order. Each row: what to check, where it lives here, the OWASP ris
 - **Admin auth model** — `apps/payload/src/payload/collections/Admins.ts` (`auth: { useAPIKey: true }`).
   Confirm admins are separate from public `Users.ts`, and that `useAPIKey` is intended (it exposes a
   per-admin API key used for draft reads).
-- **Seeded super-admin** — `apps/payload/src/scripts/seed/users.ts` + `SUPER_ADMIN_*` /
-  `PAYLOAD_API_SECRET` in `.env`. **Finding if:** a weak/default password ships, or the API secret is
-  committed, reused across envs, or shorter than `openssl rand -hex 32`. The seed pins the first
-  admin's API key to `PAYLOAD_API_SECRET` — treat it as a credential.
+- **First admin** — no admin is seeded; `/admin` shows the create-first-user screen on a fresh DB.
+  The `afterChange` hook in `Admins.ts` pins that first admin's API key to `PAYLOAD_API_SECRET`.
+  **Finding if:** the API secret is committed, reused across envs, or shorter than
+  `openssl rand -hex 32` — treat it as a credential. Also flag a public/reachable admin URL on a
+  fresh deploy where the registration screen is still open (anyone can claim the first admin).
 - **MFA** — Payload has **none by default**. For PII/payments/logins, flag *MFA missing* (High) and
   recommend a TOTP/passkey plugin or external IdP (Auth.js, Keycloak, Zitadel).
 - **Login hardening** — check `auth` options for `maxLoginAttempts` / `lockTime` and token lifetime

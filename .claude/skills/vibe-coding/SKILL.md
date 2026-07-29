@@ -26,7 +26,8 @@ everything downstream:
 
 | Signal in the request (EN / PL) | Request type |
 |---|---|
-| "a pricing / features / testimonials section", "add a block", "nową sekcję" | **new section** |
+| "a pricing / features / testimonials section", "add a block", "nową sekcję" (**no block for it yet**) | **new section** |
+| "change how the hero / that section looks", "popraw tę sekcję" (**a block already exists**) | **existing section** |
 | a figma.com URL or a design screenshot, "here's my design", "projekt strony" | **from design** |
 | "add / change / remove a field / collection / content type", "nowe pole", "zmień schemat" | **schema change** |
 | "show / list products / posts", "load from the CMS", "make it dynamic" | **dynamic data** |
@@ -41,8 +42,9 @@ split it into one line per deliverable and route each independently.
 
 | Request type | Load skills, in order |
 |---|---|
-| **new section** | `website-layout-sections` → `data-fetching` (if it shows CMS data) → `payload-migrations` |
-| **from design** | `figma` (read the design) → then treat each section as **new section** |
+| **new section** | `design-mode` → **_(gate — wait for an explicit Yes)_** → `website-layout-sections` → `data-fetching` (if it shows CMS data) → `payload-migrations` |
+| **existing section** | none — edit the `@repo/ui` component in place. **No `design-mode`, no gate.** A migration only if you also change fields |
+| **from design** | `figma` (read the design) → `design-system` (if brand/colors are in scope) → then treat each section as **new section** |
 | **schema change** | `payload-migrations` (+ `payload` for field/hook/access design) |
 | **dynamic data** | `data-fetching` → `payload-migrations` (if it needs new schema) |
 | **content/theme only** | none — edit `@repo/ui` tokens / copy, **no migration** |
@@ -72,8 +74,9 @@ Write a short, concrete spec the build steps can follow verbatim:
 
 ```
 GOAL:        <one sentence, the user's outcome>
-REQUEST TYPE: <new section | from design | schema change | dynamic data | content/theme | payload config>
+REQUEST TYPE: <new section | existing section | from design | schema change | dynamic data | content/theme | payload config>
 SKILLS:      <ordered list loaded in step 2>
+DESIGN:      <Design Mode round N | approved at round N | n/a — existing section / no new UI>
 BLOCK/FIELD: <name, slug, dbName, interfaceName, fields + types + which are localized>
 PAGE/SLUG:   <where it renders, position in layout>
 DATA:        <static | CMS field | relationship to X> · freshness: <SSR | cached>
@@ -82,9 +85,20 @@ REUSE:       <closest existing block/section to extend>
 ```
 
 ### 5. Hand off to the build
-Run the relevant skill's checklist. For a new section / design that is the **Build pipeline** in
-`CLAUDE.md`: reuse check → define block → register in **both** `Pages.ts` and `payload.config.ts`
-→ Astro renderer → wire `layout-sections.astro` → `generate:types` → migration → verify.
+Run the relevant skill's checklist. For a **new** section / design that is the **Build pipeline** in
+`CLAUDE.md`, and it has two phases:
+
+- **Phase A — Design Mode.** Build the `@repo/ui` component + story on static props, iterate in
+  Storybook. Then hold the **gate**: one `AskUserQuestion`, and only an explicit *Yes* continues.
+  Only a literal Yes — a compliment is not approval.
+- **Phase B — after the gate.** Define block → register in **both** `Pages.ts` and
+  `payload.config.ts` → Astro adapter → wire `layout-sections.astro` → `generate:types` →
+  migration → verify.
+
+For an **existing** section there is no Phase A: edit the component in place and verify.
+
+The design gate is **not** the wrap-up in step 6. The gate asks *"is the look right?"* mid-pipeline;
+the wrap-up asks *"is the whole job done?"* at the end.
 
 ### 6. Wrap up — confirm done + offer a memory
 After the build is implemented and verified, **always** close the loop with the user. Emit a

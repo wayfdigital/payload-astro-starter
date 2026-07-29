@@ -16,6 +16,7 @@ export {
   type ButtonVariant,
   type ButtonSize,
   CmsLink,
+  CMS_LINK_VARIANTS,
   type CmsLinkProps,
   type CmsLinkData,
   type CmsLinkVariant,

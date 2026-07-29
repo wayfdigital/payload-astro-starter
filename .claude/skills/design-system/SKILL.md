@@ -93,8 +93,11 @@ Do not assume it is already available.
 
 - **Static:** the set of `--var` names in `[data-theme="ui"]` is unchanged (same keys, new values) —
   no component loses a variable. Light and dark blocks define the same palette keys.
-- **Visual:** run the Astro app (port 3000), open a page, confirm the new palette and typography
-  render correctly in **both** light and dark.
+- **Visual:** run `pnpm --filter @repo/ui storybook` (port 6006) and check `Foundations`,
+  `Elements/Button`, `Elements/Badge` and any `Pages/*` story in **both** light and dark. Storybook
+  is far faster than booting Astro + Payload and renders the same components — for a token-only
+  change the Astro app is not required. Boot it (port 3000) only if you also want to confirm
+  real page content.
 
 ### 5. Report back
 
@@ -104,6 +107,9 @@ font that still needs loading.
 
 ## Related skills
 
+- **design-mode** — after the tokens land, sections get composed with them. Tokens first, layout
+  second. That skill must never hardcode a color; if it needs a value that isn't a token, it comes
+  back here.
 - **figma / figma-use** — Figma MCP read tools and `use_figma` requirements.
 - **vibe-coding** — routes a no-code user's "here's my Figma / make it look like this" request here.
 - **astro** — where to load custom font files if the design needs one.

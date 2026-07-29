@@ -5,8 +5,25 @@ import { buttonStyles, type ButtonSize } from '../button'
  * Visual variants a CMS editor can pick for a link. The button variants reuse the
  * exact same styling as `<Button>` (via `buttonStyles`); `link` / `link-underline`
  * are plain text links with no button chrome.
+ *
+ * **Single source of truth.** The array is the value, the type derives from it — so
+ * `resolve-link.ts` and the stories import this instead of re-typing the list. Adding
+ * a variant here is a SCHEMA change: it must also land in `variantField.options`
+ * (`apps/payload/src/payload/fields/link.ts`) plus `generate:types` and a migration.
+ * See *Variant sync* in `.claude/skills/design-mode/SKILL.md`.
+ *
+ * Note `destructive` is deliberately absent: `<Button>` has it, editors don't get it.
  */
-export type CmsLinkVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'link' | 'link-underline'
+export const CMS_LINK_VARIANTS = [
+  'primary',
+  'secondary',
+  'outline',
+  'ghost',
+  'link',
+  'link-underline',
+] as const
+
+export type CmsLinkVariant = (typeof CMS_LINK_VARIANTS)[number]
 
 /**
  * A fully resolved link, ready to render. Payload-agnostic on purpose: the Astro

@@ -24,6 +24,18 @@
   --success: #22c55e;
   --warning: #f59e0b;
 
+  /* ── Status tints ──
+     Soft background + readable text for status pills (Badge). The solid `--success`
+     / `--warning` / `--destructive` above are for fills and icons; these are the
+     low-emphasis pair. Both halves are needed — a solid token has no legible
+     foreground on its own. */
+  --success-subtle: #dcfce7;
+  --success-foreground: #15803d;
+  --warning-subtle: #fef3c7;
+  --warning-foreground: #b45309;
+  --destructive-subtle: #fee2e2;
+  --destructive-subtle-foreground: #b91c1c;
+
   /* ── Gradients ── */
   --gradient-hero: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a78bfa 100%);
   --gradient-surface: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
@@ -92,6 +104,17 @@
   --destructive: #f87171;
   --destructive-hover: #ef4444;
   --destructive-foreground: #ffffff;
+  --success: #4ade80;
+  --warning: #fbbf24;
+
+  /* Status tints — dark needs its own pair: the light tints are near-white and
+     would blow out on a #09090b surface. Deep tinted background, bright text. */
+  --success-subtle: #14532d;
+  --success-foreground: #86efac;
+  --warning-subtle: #451a03;
+  --warning-foreground: #fcd34d;
+  --destructive-subtle: #450a0a;
+  --destructive-subtle-foreground: #fca5a5;
 
   --gradient-hero: linear-gradient(135deg, #312e81 0%, #4c1d95 50%, #6d28d9 100%);
   --gradient-surface: linear-gradient(180deg, #18181b 0%, #09090b 100%);

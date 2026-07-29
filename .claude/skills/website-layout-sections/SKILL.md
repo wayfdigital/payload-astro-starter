@@ -51,11 +51,9 @@ Then re-export from the package root `packages/ui/src/index.ts` (`// Sections` b
 as `import { <Feature> } from '@repo/ui'`. **Three wiring points** (`<feature>/index.ts` →
 `sections/index.ts` → `src/index.ts`) — miss one and `@repo/ui` won't resolve the export.
 
-**Always ship a story.** Add a co-located `<feature>.stories.tsx` next to the component (copy
-`packages/ui/src/components/_TEMPLATE.stories.tsx.txt`). Import from `@repo/ui`, set `title` to
-`Sections/<Feature>`, and add an `argTypes` control for each union prop. Preview it in isolation with
-`pnpm --filter @repo/ui storybook` (port 6006) before wiring the Payload block + Astro adapter — it's
-the fastest way to iterate on the presentational layer without booting the full app.
+**The component and its story already exist — Design Mode built them** (Phase A,
+`.claude/skills/design-mode/SKILL.md`). Your job here is to keep them green: if you rename a prop
+or change its type while wiring the block, update the story in the same commit.
 
 ### Payload block definition (`apps/payload/src/payload/blocks/`)
 ```
@@ -74,39 +72,24 @@ sections/<feature>/
 Adapters are **`.tsx` React components rendered server-side** by Astro (no JS shipped) — use a
 `client:*` directive only for interactive sections (see FormBlock).
 
-## Checklist (do in order)
+## Checklist — Phase B, runs after the design gate (do in order)
+
+**Precondition.** The `@repo/ui` section exists, is exported from `@repo/ui`, has a story, and the
+user has **explicitly approved the design**. If any of that is false you skipped Phase A — stop and
+run **design-mode** first. (For a section that already has a block, the precondition is satisfied by
+definition: it's integrated, so you're just editing it.)
 
 1. **Reuse check** — is an existing block/component close enough? See block inventory in the repo
-   conventions memory. Prefer extending an existing `@repo/ui` section over a new one.
+   conventions memory. Atom-level reuse was settled in Phase A; here you're looking for the closest
+   existing **block** in `apps/payload/src/payload/blocks/` and **adapter** in
+   `apps/astro/src/components/sections/` to extend.
 
-2. **Build the presentational component** in `packages/ui/src/components/sections/<feature>/<feature>.tsx`.
-   **Pure UI, Payload-agnostic** — plain props, no `@repo/payload-types`. Compose from elements
-   (`Container`, `Heading`, `Text`, `Button`) and style with CSS tokens. Mirror `hero.tsx`:
-   ```tsx
-   import type { ReactNode } from 'react'
-   import { Container } from '../../elements/container'
-   import { Heading } from '../../elements/heading'
-   import { Text } from '../../elements/text'
-
-   export interface ExampleProps {
-     title: string
-     description?: string
-     actions?: ReactNode          // slots for CTAs — the adapter fills these, not the component
-   }
-
-   export function Example({ title, description, actions }: ExampleProps) {
-     return (
-       <section className="py-16" style={{ backgroundColor: 'var(--background)' }}>
-         <Container size="md">
-           <Heading level={2}>{title}</Heading>
-           {description && <Text>{description}</Text>}
-           {actions && <div className="flex flex-wrap gap-3 pt-2">{actions}</div>}
-         </Container>
-       </section>
-     )
-   }
-   ```
-   Then wire all **three** export points: `<feature>/index.ts`, `sections/index.ts`, `src/index.ts`.
+2. **Confirm the presentational component** — **already built in Phase A** at
+   `packages/ui/src/components/sections/<feature>/<feature>.tsx`. Verify it's pure and
+   Payload-agnostic and that all three export points resolve (`<feature>/index.ts` →
+   `sections/index.ts` → `src/index.ts`).
+   **Its props are the contract**: derive the block's fields from the props, not the other way
+   round. If the component doesn't exist, you skipped Design Mode — stop.
 
 3. **Define the block** in `apps/payload/src/payload/blocks/<feature>.ts`:
    ```ts
@@ -191,6 +174,12 @@ Adapters are **`.tsx` React components rendered server-side** by Astro (no JS sh
    ```
    Commit migrations with the block definition change.
 
+   If Phase A added a variant to `Button` / `CmsLink`, the migration is `ALTER TYPE … ADD VALUE`
+   across **every** variant enum — 8 today (4 `linkField()` sites × the `_v` version twins), and
+   the count grows with each new block that carries a link, so **count them, don't memorize**.
+   A missed `_v` twin only surfaces when someone saves a draft. See *Variant sync* in
+   `.claude/skills/design-mode/SKILL.md`.
+
 9. **Verify** — `/admin` (Pages → `layout`) and the rendered Astro page (`astro check` + a real request).
 
 ## Data fetching in Astro
@@ -254,5 +243,7 @@ Query at `depth >= 1` to get a populated `Media` object instead of just an ID.
 
 ## Related skills
 
+- **design-mode** — Phase A. Builds the `@repo/ui` component + story and holds the approval gate.
+  This checklist starts exactly where that one stops.
 - **payload-migrations** — the full migration cycle for step 8.
 - **payload** — Payload config, fields, hooks, access control.
