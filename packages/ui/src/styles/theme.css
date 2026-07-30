@@ -41,6 +41,19 @@
   --gradient-surface: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
   --gradient-subtle: linear-gradient(135deg, #ede9fe 0%, #e0e7ff 100%);
 
+  /* ── Lightfall hero effect ── */
+  --lightfall-color-1: #6366f1;
+  --lightfall-color-2: #8b5cf6;
+  --lightfall-color-3: #a78bfa;
+  --lightfall-background: #4f46e5;
+
+  /* ── Hero CTA on dark art (gradient/lightfall) ──
+     `--primary` doubles as `--foreground` on this same purple family, so a CTA
+     using it directly disappears into the art. These give it a white pill /
+     white outline instead — bright enough to read over the streaks. */
+  --hero-cta-bg: #ffffff;
+  --hero-cta-foreground: #18181b;
+
   /* ── Typography ── */
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
   --font-heading: "Inter", system-ui, -apple-system, sans-serif;
@@ -119,6 +132,14 @@
   --gradient-hero: linear-gradient(135deg, #312e81 0%, #4c1d95 50%, #6d28d9 100%);
   --gradient-surface: linear-gradient(180deg, #18181b 0%, #09090b 100%);
   --gradient-subtle: linear-gradient(135deg, #1e1b4b 0%, #172554 100%);
+
+  --lightfall-color-1: #312e81;
+  --lightfall-color-2: #4c1d95;
+  --lightfall-color-3: #6d28d9;
+  --lightfall-background: #1e1b4b;
+
+  --hero-cta-bg: #ffffff;
+  --hero-cta-foreground: #18181b;
 
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
   --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px -1px rgba(0, 0, 0, 0.4);

@@ -17,7 +17,9 @@ export const DefaultHero = ({ locale, ...hero }: PageHero & { locale: Locale }) 
       title={hero.title ?? ''}
       subtitle={hero.description ?? undefined}
       alignment={alignment}
-      variant={hero.background === 'gradient' ? 'gradient' : 'default'}
+      variant={
+        hero.background === 'lightfall' ? 'lightfall' : hero.background === 'gradient' ? 'gradient' : 'default'
+      }
       actions={cta ? <CmsLink link={cta} /> : undefined}
     />
   )
