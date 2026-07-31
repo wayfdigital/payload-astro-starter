@@ -10,6 +10,7 @@ and lets you implement them. They describe **what they want** — you do all the
 
 | The user says | What to do |
 |---|---|
+| "set it up / first run / get this running locally" (**new machine, nothing runs yet**) | Follow **First run** below, in order |
 | "add a section / block / pricing / features / testimonials" (**new** — no block exists yet) | Follow the **Build pipeline** below end-to-end (steps 0–10), starting in **Design Mode** |
 | "change how <existing section> looks" (a block for it **already exists**) | **Skip Design Mode.** Edit the `@repo/ui` component in place, verify, done — no gate, no Storybook loop |
 | "here's my Figma / design" (URL or screenshot) | Read the design, then follow the **Build pipeline** per section |
@@ -17,6 +18,37 @@ and lets you implement them. They describe **what they want** — you do all the
 | "show data from the CMS / make it dynamic" | Use `apps/astro/src/lib/payload/` for data-fetching; run migration if new schema needed |
 | "change text / color / spacing only" | Edit theme variables in `packages/ui/src/` — **no migration needed** |
 | "SEO / structured data / OG image" | Emit JSON-LD in `apps/astro/src/lib/seo`; check `SiteSettings` global |
+
+---
+
+## First run (new machine)
+
+No admin is seeded — a fresh database shows Payload's **create first user** screen. The one thing
+that must happen *before* that first admin exists is `PAYLOAD_API_SECRET`: it's the Admins API key
+Astro uses to read drafts, and the `pinApiKeyToFirstAdmin` hook in
+`apps/payload/src/payload/collections/Admins.ts` pins it onto the first admin only if the value is
+already set. Set it afterwards and preview stays broken.
+
+1. **Env** — `cp apps/payload/.env.example apps/payload/.env` and the same for `apps/astro`, **only
+   if the file doesn't exist**. In the same message, ask the user for the **admin email and
+   password** so step 2 can write them in. Both come **only** from the user's answer in chat —
+   never from the session's `userEmail`, `git config user.email`, or an address found in the repo.
+2. **Secrets** — fill **empty** values with `openssl rand -hex 32`: `PAYLOAD_SECRET`,
+   `PREVIEW_SECRET`, `PAYLOAD_API_SECRET` in `apps/payload/.env`; `PREVIEW_SECRET` and
+   `PAYLOAD_API_SECRET` in `apps/astro/.env` must be the **same values**. Put the user's
+   `ADMIN_EMAIL` / `ADMIN_PASSWORD` in `apps/payload/.env` too. Never overwrite a variable that
+   already has one.
+3. **Services** — `docker compose up -d` (Postgres 5432, Mailpit 1025/8025).
+4. **Install + migrate** — `pnpm install` then `pnpm db:migrate`.
+5. **First admin** — `pnpm --filter @repo/payload payload run src/scripts/create-admin.ts` (it reads
+   `ADMIN_EMAIL` / `ADMIN_PASSWORD` from `apps/payload/.env`). If the user gave no credentials, they
+   register at `http://localhost:3100/admin` — the hook pins the key either way.
+6. **Start** — `pnpm dev`: panel `:3100/admin`, site `:3000`, debug dashboard `:7913`.
+7. **Verify** — open a page in the panel, hit Preview, confirm the draft renders on `:3000`.
+
+If an admin already exists and `PAYLOAD_API_SECRET` was only just generated, the hook won't
+backfill: `/admin` → Admins → your user → **Enable API Key** → Generate, then copy the generated
+value into `apps/astro/.env`.
 
 ---
 
@@ -98,6 +130,7 @@ packages/payload-types/  — Generated Payload TypeScript types (shared)
 | Pages collection (`layout` blocks) | `apps/payload/src/payload/collections/Pages.ts` |
 | Payload config | `apps/payload/src/payload.config.ts` |
 | DB / migrations | `apps/payload/src/migrations/`; `pnpm --filter @repo/payload migrate:create \| migrate \| migrate:status` |
+| First admin (setup) | `apps/payload/src/scripts/create-admin.ts` (run via `payload run`); API key pinned by the hook in `apps/payload/src/payload/collections/Admins.ts` |
 | i18n (Payload) | `apps/payload/src/i18n/const.ts` · `apps/payload/src/i18n/payload-locales.ts` |
 | Generated types | `packages/payload-types/src/index.ts` (via `pnpm --filter @repo/payload generate:types`) |
 | Design system | `packages/ui/src/` — imports as `@repo/ui`; CSS vars follow shadcn conventions (`--primary`, `--background`, etc.) |
@@ -118,6 +151,7 @@ When a task requires deep technical guidance, read the relevant file before proc
 
 | Task | File |
 |---|---|
+| First run / local setup / missing `PAYLOAD_API_SECRET` | `.claude/skills/setup/SKILL.md` |
 | Designing a **new** section (Phase A, the gate) | `.claude/skills/design-mode/SKILL.md` |
 | New page section or UI block (Phase B, after the gate) | `.claude/skills/website-layout-sections/SKILL.md` |
 | DB schema change / migration | `.claude/skills/payload-migrations/SKILL.md` |

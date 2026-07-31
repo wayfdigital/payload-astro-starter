@@ -37,10 +37,19 @@ Node.js 20+, [pnpm](https://pnpm.io), Docker.
 
 ### 2. Environment
 
+**With an AI assistant:** run `/setup` (Claude Code) or ask your agent to *"set up the project"* —
+it walks steps 2, 4 and 5 for you: env files, generated secrets, Docker, install, migrations, the
+admin account, dev servers.
+
+Manually:
+
 ```bash
 cp apps/payload/.env.example apps/payload/.env   # fill in the variables (incl. PAYLOAD_SECRET)
 cp apps/astro/.env.example apps/astro/.env        # frontend env (PAYLOAD_API_URL, etc.)
 ```
+
+Generate each empty secret with `openssl rand -hex 32`. `PREVIEW_SECRET` and `PAYLOAD_API_SECRET`
+must hold the **same value in both files** — that's what live preview runs on.
 
 ### 3. Choose your AI agent
 
@@ -68,7 +77,13 @@ pnpm dev               # panel: http://localhost:3100/admin · site: http://loca
 
 ### 5. First run
 
-Create the admin account at `http://localhost:3100/admin`, then start adding content or pages.
+No account is seeded — create the admin at `http://localhost:3100/admin`, then start adding content
+or pages.
+
+> Set `PAYLOAD_API_SECRET` in **both** `.env` files *before* you create that account. It becomes the
+> first admin's API key automatically, and that key is how the Astro frontend reads drafts for live
+> preview. If you create the admin first, generate a key later in `/admin` → Admins → your user →
+> **Enable API Key**, and copy it into `apps/astro/.env`.
 
 ---
 

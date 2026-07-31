@@ -33,6 +33,7 @@ project map, and hard rules. This file adds Claude Code-specific skill routing.
 | The user says (EN / PL) | Load skills (in order) | Then |
 |---|---|---|
 | any vibecoder request, first touch | **vibe-coding** | intent → spec → skills |
+| "set it up / first run / get this running", "uruchom projekt lokalnie", "pierwsze uruchomienie", or preview fails on a missing `PAYLOAD_API_SECRET` | **setup** | env + secrets → docker → install → migrate → first admin → dev |
 | **NEW** section: "add a section / block", "nową sekcję", "a pricing / features / testimonials section", "zrób stronę" | **design-mode** → *(gate)* → **website-layout-sections** → **data-fetching** (if it shows CMS data) → **payload-migrations** | Phase A loop, then *Build pipeline* |
 | **EXISTING** section: "change how the hero looks", "popraw tę sekcję" (a block for it already exists) | *(no design-mode, no gate)* — edit the `@repo/ui` component in place | verify + done |
 | "here's my Figma / design / projekt strony" (a figma.com URL or screenshot) | **figma** (read the design) → **design-system** (if brand/colors are in scope) → **design-mode** → *(gate)* → **website-layout-sections** → **data-fetching** → **payload-migrations** | per section |
@@ -48,6 +49,7 @@ project map, and hard rules. This file adds Claude Code-specific skill routing.
 
 - **design-mode** — Phase A. Fires **only** at the start of a section that doesn't exist yet. Owns `packages/ui` + Storybook (port 6006), static props only, atom reuse/extension, the composed `Pages/<Name>` story, the *Variant sync* checklist, and **the approval gate**. Does **not** fire for an existing, already-wired section — those get fixed in place. Stops at the gate.
 - **design-system** — Figma/brand → `[data-theme="ui"]` CSS tokens in `packages/ui/src/styles/theme.css`. **Tokens only, never component code.** No migration.
+- **setup** — first run on a new machine: `.env` files, generated secrets, Docker, install, migrations, the first admin, `pnpm dev`. Exists because `PAYLOAD_API_SECRET` must be in **both** `.env` files *before* the first admin is created — that's the API key Astro uses for draft reads, pinned by the hook in `Admins.ts`. No admin is seeded; a fresh DB shows Payload's create-first-user screen.
 - **vibe-coding** — the front door: plain-language ask → request type → dev spec → loads the skills → runs the pipeline.
 - **payload-migrations** — fires on any schema change (collection/global/block/field, `payload.config.ts`). The migrate cycle + data-safety ladder.
 - **website-layout-sections** — Phase B, starts at the design gate. Block def → dual registration → renderer → map → types → migration.
