@@ -47,6 +47,13 @@
   --lightfall-color-3: #a78bfa;
   --lightfall-background: #4f46e5;
 
+  /* ── Flickering grid hero effect ──
+     Pulled from the WAYF logo: its magenta on the near-black it sits against.
+     Deliberately not `--primary` — the mark's pink is the brand here, and the
+     grid needs a colour that survives being drawn at 20% opacity. */
+  --flicker-color: #d6388a;
+  --flicker-background: #14110f;
+
   /* ── Hero CTA on dark art (gradient/lightfall) ──
      `--primary` doubles as `--foreground` on this same purple family, so a CTA
      using it directly disappears into the art. These give it a white pill /
@@ -137,6 +144,10 @@
   --lightfall-color-2: #4c1d95;
   --lightfall-color-3: #6d28d9;
   --lightfall-background: #1e1b4b;
+
+  /* The hero art is dark in both themes, so the grid keeps the same pair. */
+  --flicker-color: #d6388a;
+  --flicker-background: #14110f;
 
   --hero-cta-bg: #ffffff;
   --hero-cta-foreground: #18181b;

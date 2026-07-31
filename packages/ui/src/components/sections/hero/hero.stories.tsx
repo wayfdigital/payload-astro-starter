@@ -20,7 +20,10 @@ const meta = {
   },
   argTypes: {
     alignment: { control: 'inline-radio', options: ['left', 'center'] },
-    variant: { control: 'inline-radio', options: ['default', 'gradient', 'lightfall'] },
+    variant: {
+      control: 'inline-radio',
+      options: ['default', 'gradient', 'lightfall', 'flickerGrid'],
+    },
   },
 } satisfies Meta<typeof Hero>
 
@@ -35,6 +38,13 @@ export const Gradient: Story = {
 
 export const Lightfall: Story = {
   args: { variant: 'lightfall' },
+}
+
+export const FlickerGrid: Story = {
+  args: {
+    variant: 'flickerGrid',
+    eyebrow: 'Payload CMS + Astro starter',
+  },
 }
 
 export const LeftAligned: Story = {

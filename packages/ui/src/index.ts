@@ -24,6 +24,8 @@ export {
   type CardProps,
   Container,
   type ContainerProps,
+  FlickeringGrid,
+  type FlickeringGridProps,
   Heading,
   type HeadingProps,
   Lightfall,
