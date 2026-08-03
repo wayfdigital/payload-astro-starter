@@ -9,6 +9,10 @@ It works the same whether you write the code or an AI writes it for you. Develop
 monorepo with real migrations; non-technical users get an admin panel and a plain-language way to
 add new things.
 
+**Starting from zero?** Open the project in your AI assistant and run **`/setup`** (or just say
+*"set it up"*). It handles env files, secrets, Docker, migrations and your admin account, then
+tells you what to build first. That's the whole onboarding.
+
 **Payload CMS** (admin + API) · **Astro** (fast SSR site) · **PostgreSQL** · pnpm + Turborepo.
 
 ---

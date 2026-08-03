@@ -131,6 +131,24 @@ http://localhost:7913.
 Log into the panel, open a page, hit **Preview** and confirm the draft renders on `:3000`. That
 exercises `PREVIEW_SECRET` and the pinned API key in one go.
 
+### 8. Hand off — never end on "done"
+
+Setup succeeded means the user is now sitting in front of a running site with no idea what to do
+with it. Close with the three links and **one `AskUserQuestion`** offering the first build:
+
+> Everything's up: site http://localhost:3000 · panel http://localhost:3100/admin (log in with the
+> credentials you gave me) · debug http://localhost:7913.
+
+Question: *"What do you want to build first?"* — options, worded for a non-technical user:
+
+- **Add a section to the home page** — pricing, features, testimonials… *(runs the Design Mode pipeline)*
+- **Apply my brand** — colors, fonts, logo, or a Figma link *(design-system skill)*
+- **Edit the content that's already there** — I'll walk you through the panel *(no code)*
+- **Nothing yet — I'll look around** — leave them a one-liner: come back and describe anything you want changed
+
+Whatever they pick, route it through the skill router in `CLAUDE.md` and keep going in the same
+session. Do not make them re-explain the project.
+
 ---
 
 ## Edge cases

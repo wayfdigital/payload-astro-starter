@@ -91,6 +91,23 @@ export function StarterGuide({ pages = [] }: StarterGuideProps) {
           className="mt-10 flex w-full flex-col gap-10 pt-10"
           style={{ borderTop: `1px solid ${hairline}` }}
         >
+          <section
+            className="flex flex-col gap-3 rounded-lg p-5 text-left sm:flex-row sm:items-center sm:gap-5"
+            style={{
+              border: `1px solid ${hairline}`,
+              backgroundColor: `color-mix(in srgb, ${onDark} 4%, transparent)`,
+            }}
+          >
+            <span className="font-mono text-sm font-medium" style={{ color: 'var(--flicker-color)' }}>
+              /setup
+            </span>
+            <Text variant="small" style={{ color: onDark, opacity: 0.7 }}>
+              Start here: run <span className="font-mono">/setup</span> in your AI assistant — or just say
+              “set it up”. It handles the secrets, database, admin account and dev servers, then asks what
+              you want to build first. After that you are only describing outcomes.
+            </Text>
+          </section>
+
           <section>
             <Heading level={6} className={groupLabel} style={groupLabelStyle}>
               How you work with this
