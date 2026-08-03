@@ -13,3 +13,4 @@ export {
 } from './page-content'
 export { Contact, type ContactProps } from './contact'
 export { Example, type ExampleProps } from './example'
+export { Pricing, type PricingProps, type PricingPlan } from './pricing'

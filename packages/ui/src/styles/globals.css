@@ -1,6 +1,14 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
+/* Tailwind v4 auto-detects sources relative to this file, but never descends into
+   node_modules — and every app imports @repo/ui through a workspace symlink that
+   lives exactly there. Without this line the utilities used inside the design
+   system's own components (`absolute inset-0`, `h-full`, grid classes…) are never
+   generated for the apps, only for Storybook, where the package isn't symlinked.
+   Point it at the component source explicitly. */
+@source '../components';
+
 body {
   font-family: Arial, Helvetica, sans-serif;
 }

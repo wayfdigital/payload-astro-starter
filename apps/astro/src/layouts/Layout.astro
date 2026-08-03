@@ -1,13 +1,14 @@
 ---
 import '@repo/ui/styles/theme.css';
 import '@repo/ui/styles/globals.css';
-import type { SiteSetting } from '@repo/payload-types';
+import type { Page, SiteSetting } from '@repo/payload-types';
 import LivePreviewListener from '../components/preview/live-preview-listener';
+import PreviewBanner from '../components/preview/preview-banner.astro';
 import Seo from '../components/seo/Seo.astro';
 import JsonLd from '../components/seo/JsonLd.astro';
 import CustomCode from '../components/seo/CustomCode.astro';
 import { ADMIN_ORIGIN } from '../lib/preview-env';
-import WayfLogo from '../components/elements/WayfLogo.astro';
+import WayfBadge from '../components/elements/wayf-badge';
 import type { ResolvedSeo } from '../lib/seo/meta';
 // Dev-only: raw source of the browser debug-capture, inlined below. The
 // `import.meta.env.DEV` guard + `?raw` import tree-shake this out of prod builds.
@@ -20,11 +21,25 @@ interface Props {
   jsonLd?: unknown[];
   /** Admin-authored custom code injected at the four page edges. */
   customCode?: SiteSetting['customCode'];
-  /** When true, mount the live-preview listener (set on preview/draft renders). */
+  /** When true, mount the live-preview listener + banner (set on preview/draft renders). */
   preview?: boolean;
+  /** Status of the document on screen — drives the banner's wording. Preview only. */
+  previewStatus?: Page['_status'];
+  /**
+   * Floating "Built by WAYF" credit. Turn it off on a page that already shows the
+   * badge in its own content, so the two don't sit on screen at once.
+   */
+  credit?: boolean;
 }
 
-const { seo, jsonLd = [], customCode, preview = false } = Astro.props;
+const {
+  seo,
+  jsonLd = [],
+  customCode,
+  preview = false,
+  previewStatus,
+  credit = true,
+} = Astro.props;
 ---
 
 <!doctype html>
@@ -49,20 +64,9 @@ const { seo, jsonLd = [], customCode, preview = false } = Astro.props;
   </head>
   <body data-theme='ui'>
     <CustomCode html={customCode?.bodyStart} />
+    {preview && <PreviewBanner status={previewStatus} />}
     <slot />
-    <footer class='wayf-credit'>
-      <a
-        class='wayf-credit__link'
-        href='https://wayf.ai'
-        target='_blank'
-        rel='noopener noreferrer'
-        aria-label='Built by WAYF — wayf.ai'
-      >
-        <span>Built by</span>
-        <WayfLogo class='wayf-credit__mark' />
-        <strong class='wayf-credit__name'>WAYF</strong>
-      </a>
-    </footer>
+    {credit && <WayfBadge placement='floating' />}
     {
       preview && (
         <LivePreviewListener client:only='react' adminOrigin={ADMIN_ORIGIN} />
@@ -72,39 +76,3 @@ const { seo, jsonLd = [], customCode, preview = false } = Astro.props;
   </body>
 </html>
 
-<style>
-  /* Subtle, site-wide "Built by WAYF" credit. Layout/text use the host theme's
-     muted tokens; the mark keeps WAYF's own brand colors. */
-  .wayf-credit {
-    border-top: 1px solid var(--border);
-    padding: var(--spacing-lg) var(--spacing-md);
-    text-align: center;
-  }
-
-  .wayf-credit__link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-family: var(--font-sans);
-    font-size: 0.8125rem;
-    line-height: 1;
-    color: var(--muted-foreground);
-    text-decoration: none;
-    transition: color 0.15s ease;
-  }
-
-  .wayf-credit__link:hover {
-    color: var(--foreground);
-  }
-
-  .wayf-credit__mark {
-    display: block;
-    border-radius: 4px;
-    flex: none;
-  }
-
-  .wayf-credit__name {
-    font-weight: var(--font-weight-semibold);
-    letter-spacing: 0.02em;
-  }
-</style>

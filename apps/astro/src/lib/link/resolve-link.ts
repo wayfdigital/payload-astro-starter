@@ -1,4 +1,5 @@
-import type { CmsLinkData, CmsLinkVariant } from '@repo/ui'
+import { CMS_LINK_VARIANTS, type CmsLinkData, type CmsLinkVariant } from '@repo/ui'
+import type { Page } from '@repo/payload-types'
 import type { Locale } from '../../i18n/locales'
 import { localizedPath } from '../seo/meta'
 
@@ -31,17 +32,33 @@ export interface LinkInput {
   newTab?: boolean | null
 }
 
-const VARIANTS: readonly CmsLinkVariant[] = [
-  'primary',
-  'secondary',
-  'outline',
-  'ghost',
-  'link',
-  'link-underline',
-]
+/**
+ * Drift guard. `linkField()`'s `variant` select (`apps/payload/src/payload/fields/link.ts`)
+ * and the `@repo/ui` `CmsLinkVariant` union must stay identical — a variant added on one
+ * side only degrades silently to `primary` at runtime instead of failing loudly.
+ *
+ * The `[…]` brackets are load-bearing: without them the conditional distributes over the
+ * union and yields `boolean`, which fails `extends true` even when both sides agree.
+ *
+ * Limits: this compares `@repo/ui` against the GENERATED types, not against `link.ts`
+ * directly — so editing `link.ts` without running `generate:types` still passes. The
+ * anchor is `Page.hero.cta`; if that link ever gets `appearances: false` this errors with
+ * "property 'variant' does not exist" — re-anchor it to another `linkField()` site.
+ */
+type PayloadLinkVariant = NonNullable<NonNullable<Page['hero']['cta']>['variant']>
+type AssertTrue<T extends true> = T
+export type _CmsLinkVariantsInSync = AssertTrue<
+  [PayloadLinkVariant] extends [CmsLinkVariant]
+    ? [CmsLinkVariant] extends [PayloadLinkVariant]
+      ? true
+      : false
+    : false
+>
 
 const toVariant = (value: string | null | undefined): CmsLinkVariant | undefined =>
-  value && (VARIANTS as readonly string[]).includes(value) ? (value as CmsLinkVariant) : undefined
+  value && (CMS_LINK_VARIANTS as readonly string[]).includes(value)
+    ? (value as CmsLinkVariant)
+    : undefined
 
 const resolveReferenceHref = (reference: LinkReference, locale: Locale): string | null => {
   // At depth 0 `value` is the bare id (a string) and we can't build a path.

@@ -72,7 +72,13 @@ const jsonLd = page
 const customCode = settings?.customCode
 ---
 
-<Layout seo={seo} jsonLd={jsonLd} customCode={customCode} preview={preview}>
+<Layout
+  seo={seo}
+  jsonLd={jsonLd}
+  customCode={customCode}
+  preview={preview}
+  previewStatus={page?._status}
+>
   {
     page ? (
       <PageBuilder page={page} apiUrl={apiUrl} recaptchaSiteKey={recaptchaSiteKey} locale={locale} />

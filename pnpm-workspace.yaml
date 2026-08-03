@@ -38,3 +38,4 @@ catalog:
   '@payloadcms/richtext-lexical': 3.81.0
   '@payloadcms/storage-s3': 3.81.0
   '@payloadcms/translations': 3.81.0
+  '@payloadcms/ui': 3.81.0

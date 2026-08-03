@@ -63,6 +63,7 @@ export const heroField: Field = {
         { label: 'Light Gray', value: 'light-gray' },
         { label: 'Dark', value: 'dark' },
         { label: 'Gradient', value: 'gradient' },
+        { label: 'Lightfall', value: 'lightfall' },
       ],
       defaultValue: 'none',
       admin: {

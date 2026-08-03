@@ -1,0 +1,89 @@
+---
+/**
+ * "You are looking at a preview" strip, rendered only when `Astro.locals.preview`
+ * is true (both the Live Preview iframe and the new-tab Preview button).
+ *
+ * App chrome, not section UI — it is never part of a page's `layout`, an editor can
+ * never add it, and it must never reach a public visitor. That's why it lives here
+ * next to the live-preview listener rather than in `@repo/ui`.
+ *
+ * It branches on `_status` on purpose: `fetchFirstPage` silently falls back to the
+ * published version when the draft fetch is empty or fails (e.g. a bad
+ * PAYLOAD_API_SECRET). Claiming "this is your draft" in that case would be a lie —
+ * and lying about which version is on screen is the exact confusion this exists to
+ * remove.
+ */
+import type { Page } from '@repo/payload-types'
+
+interface Props {
+  status?: Page['_status']
+}
+
+const { status } = Astro.props
+
+// The iframe flow always carries `?preview=1`; the new-tab flow relies on the
+// cookie. Exiting from inside the iframe would clear a cookie that isn't driving
+// this render and drop published content into the admin pane — so no exit link there.
+const framed = Astro.url.searchParams.get('preview') === '1'
+
+// Pathname only: keeping the query would carry `preview=1&secret=` through the
+// redirect and the middleware would switch preview straight back on.
+const exitHref = `/preview-exit?path=${encodeURIComponent(Astro.url.pathname)}`
+
+const message =
+  status === 'draft'
+    ? 'Draft preview — these changes are not visible to the public yet.'
+    : status === 'published'
+      ? "Preview mode — you're seeing the published version. No unpublished changes."
+      : 'Preview mode.'
+---
+
+<div class='preview-banner' data-status={status ?? 'none'}>
+  <span class='preview-banner__dot'></span>
+  <span>{message}</span>
+  {
+    !framed && (
+      <a class='preview-banner__exit' href={exitHref}>
+        Exit preview
+      </a>
+    )
+  }
+</div>
+
+<style>
+  .preview-banner {
+    position: sticky;
+    top: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.55rem 1rem;
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    line-height: 1.3;
+    color: var(--warning-foreground);
+    background: var(--warning-subtle);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .preview-banner[data-status='published'] {
+    color: var(--success-foreground);
+    background: var(--success-subtle);
+  }
+
+  .preview-banner__dot {
+    flex: none;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  .preview-banner__exit {
+    margin-left: auto;
+    color: inherit;
+    font-weight: var(--font-weight-semibold);
+    text-decoration: underline;
+  }
+</style>

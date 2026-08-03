@@ -31,6 +31,7 @@
     "@payloadcms/richtext-lexical": "catalog:",
     "@payloadcms/storage-s3": "catalog:",
     "@payloadcms/translations": "catalog:",
+    "@payloadcms/ui": "catalog:",
     "@react-email/components": "^1.0.12",
     "@react-email/render": "^2.0.8",
     "@repo/payload-types": "workspace:*",

@@ -11,16 +11,16 @@ const variantCSS: Record<NonNullable<BadgeProps['variant']>, CSSProperties> = {
     color: 'var(--accent-foreground)',
   },
   success: {
-    background: '#dcfce7',
-    color: '#15803d',
+    background: 'var(--success-subtle)',
+    color: 'var(--success-foreground)',
   },
   warning: {
-    background: '#fef3c7',
-    color: '#b45309',
+    background: 'var(--warning-subtle)',
+    color: 'var(--warning-foreground)',
   },
   destructive: {
-    background: '#fee2e2',
-    color: '#b91c1c',
+    background: 'var(--destructive-subtle)',
+    color: 'var(--destructive-subtle-foreground)',
   },
 }
 

@@ -16,6 +16,7 @@ export {
   type ButtonVariant,
   type ButtonSize,
   CmsLink,
+  CMS_LINK_VARIANTS,
   type CmsLinkProps,
   type CmsLinkData,
   type CmsLinkVariant,
@@ -23,10 +24,16 @@ export {
   type CardProps,
   Container,
   type ContainerProps,
+  FlickeringGrid,
+  type FlickeringGridProps,
   Heading,
   type HeadingProps,
+  Lightfall,
+  type LightfallProps,
   Text,
   type TextProps,
+  Switch,
+  type SwitchProps,
 } from './components/elements'
 
 // Layout
@@ -50,4 +57,7 @@ export {
   type ContactProps,
   Example,
   type ExampleProps,
+  Pricing,
+  type PricingProps,
+  type PricingPlan,
 } from './components/sections'

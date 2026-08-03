@@ -30,6 +30,14 @@ export const colorTokens: TokenEntry[] = [
   { name: 'destructive', cssVar: '--destructive' },
   { name: 'success', cssVar: '--success' },
   { name: 'warning', cssVar: '--warning' },
+  // Status tints — the low-emphasis pairs behind <Badge>. Each solid color above
+  // needs both halves here to be usable as a pill.
+  { name: 'success-subtle', cssVar: '--success-subtle' },
+  { name: 'success-foreground', cssVar: '--success-foreground' },
+  { name: 'warning-subtle', cssVar: '--warning-subtle' },
+  { name: 'warning-foreground', cssVar: '--warning-foreground' },
+  { name: 'destructive-subtle', cssVar: '--destructive-subtle' },
+  { name: 'destructive-subtle-foreground', cssVar: '--destructive-subtle-foreground' },
 ]
 
 export const gradientTokens: TokenEntry[] = [

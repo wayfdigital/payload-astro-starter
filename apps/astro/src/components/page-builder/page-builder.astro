@@ -18,9 +18,20 @@ interface Props {
 }
 
 const { page, apiUrl, recaptchaSiteKey, locale } = Astro.props
+
+// The `lightfall` hero background renders a WebGL canvas that only runs client-side,
+// so that hero (and only that one) needs to hydrate as an island — every other
+// hero stays server-rendered with no JS shipped.
+const heroNeedsHydration = page.hero?.background === 'lightfall'
 ---
 
-<HeroSection {...page.hero} locale={locale} />
+{
+  heroNeedsHydration ? (
+    <HeroSection {...page.hero} locale={locale} client:visible />
+  ) : (
+    <HeroSection {...page.hero} locale={locale} />
+  )
+}
 <LayoutSections
   sections={page.layout}
   apiUrl={apiUrl}

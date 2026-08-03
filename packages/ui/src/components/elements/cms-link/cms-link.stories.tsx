@@ -1,14 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { CmsLink, type CmsLinkVariant } from '@repo/ui'
+import { CmsLink, CMS_LINK_VARIANTS } from '@repo/ui'
 
-const variants: CmsLinkVariant[] = [
-  'primary',
-  'secondary',
-  'outline',
-  'ghost',
-  'link',
-  'link-underline',
-]
+// Spread: `argTypes.options` and `.map()` want a mutable array, the const is readonly.
+const variants = [...CMS_LINK_VARIANTS]
 
 const meta = {
   title: 'Elements/CmsLink',

@@ -18,7 +18,6 @@ import { corsOptions } from './payload/config/cors'
 import { jobsConfig } from './payload/config/jobs'
 import { mailOptions } from './payload/config/mail'
 import { plugins } from './payload/config/plugins'
-import { seedUsers } from './scripts/seed/users'
 import {
   pageContentBlock1,
   pageContentBlock2,
@@ -45,7 +44,6 @@ export default buildConfig({
     avatar: 'gravatar',
   },
   onInit: async (payload) => {
-    await seedUsers(payload)
     await seedEmail(payload)
   },
   i18n: {

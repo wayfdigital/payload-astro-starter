@@ -381,7 +381,7 @@ export interface Page {
     description?: string | null;
     eyebrow?: string | null;
     alignment?: ('left' | 'center' | 'right') | null;
-    background?: ('none' | 'light-gray' | 'dark' | 'gradient') | null;
+    background?: ('none' | 'light-gray' | 'dark' | 'gradient' | 'lightfall') | null;
     cta?: {
       type?: ('custom' | 'reference') | null;
       label?: string | null;

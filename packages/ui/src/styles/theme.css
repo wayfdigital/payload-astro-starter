@@ -24,10 +24,42 @@
   --success: #22c55e;
   --warning: #f59e0b;
 
+  /* ── Status tints ──
+     Soft background + readable text for status pills (Badge). The solid `--success`
+     / `--warning` / `--destructive` above are for fills and icons; these are the
+     low-emphasis pair. Both halves are needed — a solid token has no legible
+     foreground on its own. */
+  --success-subtle: #dcfce7;
+  --success-foreground: #15803d;
+  --warning-subtle: #fef3c7;
+  --warning-foreground: #b45309;
+  --destructive-subtle: #fee2e2;
+  --destructive-subtle-foreground: #b91c1c;
+
   /* ── Gradients ── */
   --gradient-hero: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a78bfa 100%);
   --gradient-surface: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
   --gradient-subtle: linear-gradient(135deg, #ede9fe 0%, #e0e7ff 100%);
+
+  /* ── Lightfall hero effect ── */
+  --lightfall-color-1: #6366f1;
+  --lightfall-color-2: #8b5cf6;
+  --lightfall-color-3: #a78bfa;
+  --lightfall-background: #4f46e5;
+
+  /* ── Flickering grid hero effect ──
+     Pulled from the WAYF logo: its magenta on the near-black it sits against.
+     Deliberately not `--primary` — the mark's pink is the brand here, and the
+     grid needs a colour that survives being drawn at 20% opacity. */
+  --flicker-color: #d6388a;
+  --flicker-background: #14110f;
+
+  /* ── Hero CTA on dark art (gradient/lightfall) ──
+     `--primary` doubles as `--foreground` on this same purple family, so a CTA
+     using it directly disappears into the art. These give it a white pill /
+     white outline instead — bright enough to read over the streaks. */
+  --hero-cta-bg: #ffffff;
+  --hero-cta-foreground: #18181b;
 
   /* ── Typography ── */
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
@@ -92,10 +124,33 @@
   --destructive: #f87171;
   --destructive-hover: #ef4444;
   --destructive-foreground: #ffffff;
+  --success: #4ade80;
+  --warning: #fbbf24;
+
+  /* Status tints — dark needs its own pair: the light tints are near-white and
+     would blow out on a #09090b surface. Deep tinted background, bright text. */
+  --success-subtle: #14532d;
+  --success-foreground: #86efac;
+  --warning-subtle: #451a03;
+  --warning-foreground: #fcd34d;
+  --destructive-subtle: #450a0a;
+  --destructive-subtle-foreground: #fca5a5;
 
   --gradient-hero: linear-gradient(135deg, #312e81 0%, #4c1d95 50%, #6d28d9 100%);
   --gradient-surface: linear-gradient(180deg, #18181b 0%, #09090b 100%);
   --gradient-subtle: linear-gradient(135deg, #1e1b4b 0%, #172554 100%);
+
+  --lightfall-color-1: #312e81;
+  --lightfall-color-2: #4c1d95;
+  --lightfall-color-3: #6d28d9;
+  --lightfall-background: #1e1b4b;
+
+  /* The hero art is dark in both themes, so the grid keeps the same pair. */
+  --flicker-color: #d6388a;
+  --flicker-background: #14110f;
+
+  --hero-cta-bg: #ffffff;
+  --hero-cta-foreground: #18181b;
 
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
   --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px -1px rgba(0, 0, 0, 0.4);

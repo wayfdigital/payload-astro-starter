@@ -1,0 +1,150 @@
+/* "Built by WAYF" credit. Two placements share one set of styles:
+   - inline (default) — sits in normal flow, e.g. in a hero's actions row
+   - floating — pinned to the bottom centre of the viewport
+
+   The only difference is position, so the horizontal offset lives in `--x` and
+   every transform composes with it instead of being written twice. */
+
+.wayf-badge {
+  /* The geometry lives here so the travel distance stays in one place: the mark
+     crosses the pill minus its own width, plus the overhang at both ends. */
+  --badge-width: 15rem;
+  --badge-height: 3.75rem;
+  --mark-size: 3.25rem;
+  /* Distance from the pill's end to the mark: negative insets it, positive lets it
+     hang over. Zero sits it flush in each corner — at this mark size the rounded
+     end already crops it top and bottom, so an inset just reads as a gap. */
+  --mark-bleed: -1rem;
+  --pad: 1.125rem;
+  /* Symmetric ease-in-out. An ease-out curve (0.22, 1, 0.36, 1) covers three
+     quarters of this 200px travel inside the first 60ms and then crawls — over a
+     distance this long that reads as a snap, not as motion, whatever the duration
+     says. The mark has to accelerate and settle at both ends to look like it moved. */
+  --ease: cubic-bezier(0.65, 0, 0.35, 1);
+  --duration: 520ms;
+  --x: 0;
+
+  position: relative;
+  display: block;
+  width: var(--badge-width);
+  height: var(--badge-height);
+  overflow: hidden;
+
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full, 9999px);
+  box-shadow: var(--shadow-lg);
+
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: var(--font-weight-semibold);
+  line-height: 1;
+  color: var(--foreground);
+  text-decoration: none;
+
+  transform: translateX(var(--x));
+  transition:
+    transform var(--duration) var(--ease),
+    border-color var(--duration) var(--ease);
+}
+
+.wayf-badge--floating {
+  --x: -50%;
+
+  position: fixed;
+  bottom: var(--spacing-md);
+  left: 50%;
+  z-index: 40;
+}
+
+/* Astro's dev toolbar lives at the bottom centre too, and its hit area swallows
+   the badge's hover. Lift the badge clear of it in development only — production
+   has no toolbar, so it sits where it is meant to. */
+.wayf-badge--above-toolbar {
+  bottom: 4.5rem;
+}
+
+.wayf-badge:hover,
+.wayf-badge:focus-visible {
+  transform: translateX(var(--x)) translateY(-3px);
+  /* The mark's own magenta, so the hover ties back to the logo. */
+  border-color: var(--flicker-color);
+}
+
+.wayf-badge__mark {
+  position: absolute;
+  top: 50%;
+  /* Rest: flush against the right edge and a touch past it, so the mark reads as
+     a badge that outgrew its pill rather than an icon that was placed in one. */
+  left: calc(var(--badge-width) - var(--mark-size) + var(--mark-bleed));
+  display: block;
+  width: var(--mark-size);
+  height: var(--mark-size);
+  border-radius: 8px;
+  transform: translateY(-50%);
+  transition: transform var(--duration) var(--ease);
+}
+
+.wayf-badge:hover .wayf-badge__mark,
+.wayf-badge:focus-visible .wayf-badge__mark {
+  transform: translateY(-50%)
+    translateX(calc(-1 * (var(--badge-width) - var(--mark-size) + 2 * var(--mark-bleed))));
+}
+
+/* Both labels travel the mark's width to the right while the mark crosses to the
+   left — the same swap the two paddings would produce, but on `transform`, so it
+   composites instead of reflowing. The rest label is left-anchored and ends up
+   offset by that width; the hover label is right-anchored and ends at its anchor.
+   Same distance, same direction, different edge to sit against.
+   The slide runs the full duration on one curve, so the motion never stutters.
+   The fades are deliberately staggered instead: the outgoing label is gone before
+   the incoming one arrives. Overlapping them puts two different sentences on top
+   of each other mid-travel, which reads as smudge, not as a crossfade. */
+.wayf-badge__label {
+  position: absolute;
+  top: 50%;
+  left: var(--pad);
+  white-space: nowrap;
+  transform: translateY(-50%) translateX(0);
+  transition: transform var(--duration) var(--ease);
+}
+
+.wayf-badge__label--rest {
+  opacity: 1;
+  transition:
+    transform var(--duration) var(--ease),
+    opacity calc(var(--duration) * 0.3) var(--ease);
+}
+
+/* Anchored to the right edge rather than the left, so the invitation sits close to
+   the pill's end instead of trailing whatever slack the label's own width leaves.
+   It still slides in from the left over the same distance: the rest offset is the
+   mark's width, and hover releases it to 0. */
+.wayf-badge__label--hover {
+  left: auto;
+  right: var(--pad);
+  transform: translateY(-50%) translateX(calc(-1 * var(--mark-size)));
+  opacity: 0;
+  color: var(--flicker-color);
+  transition:
+    transform var(--duration) var(--ease),
+    opacity calc(var(--duration) * 0.3) var(--ease) calc(var(--duration) * 0.45);
+}
+
+.wayf-badge:hover .wayf-badge__label--rest,
+.wayf-badge:focus-visible .wayf-badge__label--rest {
+  opacity: 0;
+  transform: translateY(-50%) translateX(var(--mark-size));
+}
+
+.wayf-badge:hover .wayf-badge__label--hover,
+.wayf-badge:focus-visible .wayf-badge__label--hover {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+/* No `prefers-reduced-motion` opt-out here, by request: the hover plays the same
+   for everyone. It is a deliberate call — a 184px slide is real motion, and the OS
+   setting is how a visitor asks not to see it. Restore it by holding every hover
+   transform at its rest value inside a `@media (prefers-reduced-motion: reduce)`
+   block; killing the transition alone is not enough, that only makes it teleport. */
