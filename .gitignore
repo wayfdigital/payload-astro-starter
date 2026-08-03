@@ -17,6 +17,8 @@ apps/payload/out/
 # astro (apps/astro)
 apps/astro/dist/
 apps/astro/.astro/
+# local wrangler state (KV/asset simulation, build cache)
+apps/astro/.wrangler/
 
 # build outputs
 /build

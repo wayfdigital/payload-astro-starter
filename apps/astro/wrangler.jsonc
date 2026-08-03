@@ -1,0 +1,16 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "payload-astro-starter",
+  "compatibility_date": "2026-04-15",
+  // React SSR reaches for a few Node built-ins (AsyncLocalStorage, stream).
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": { "enabled": true }
+  // `main`, the ASSETS binding and the SESSION KV namespace are injected by
+  // @astrojs/cloudflare at build time — do not set them here. The resolved deploy
+  // config lands in dist/server/wrangler.json, which is what `deploy:cf` passes
+  // to wrangler.
+  //
+  // Env vars are read at BUILD time (import.meta.env), so PAYLOAD_API_URL &co.
+  // belong in the build environment, not in `wrangler secret`. The prerendered
+  // home page needs none of them; only the CMS-backed SSR routes do.
+}

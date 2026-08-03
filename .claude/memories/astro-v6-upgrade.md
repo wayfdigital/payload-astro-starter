@@ -3,7 +3,10 @@
 `apps/astro` was upgraded **Astro 5.18 → 6.4.4** (+ `@astrojs/react` 4 → **5.0.7**), and the **`@astrojs/node` v10.1.3** adapter was added. `astro check` passes (0 errors), dev + production build + all routes verified (`/`, `/about` with all sections, `/pl/about` locale routing, 404) — **no source changes were required** for the upgrade.
 
 ## Adapter (production build)
-`astro.config.mjs` now sets `adapter: node({ mode: 'standalone' })` alongside `output: 'server'`. `pnpm --filter @repo/astro build` succeeds and emits `dist/server/entry.mjs`; run it with `node ./dist/server/entry.mjs` (env: `HOST`, `PORT`, and `PAYLOAD_API_URL`). Verified the built standalone server serves `/about` (200) and `/nonexistent` (404). `@astrojs/node` v10 is the Astro-6 line (peer `astro: ^6.3.0`). `dist/` is gitignored.
+> **Superseded.** The Node adapter has since been replaced by `@astrojs/cloudflare` (see
+> `apps/astro/astro.config.mjs`). The paragraph below describes the state at upgrade time only.
+
+`astro.config.mjs` then set `adapter: node({ mode: 'standalone' })` alongside `output: 'server'`. `pnpm --filter @repo/astro build` succeeds and emits `dist/server/entry.mjs`; run it with `node ./dist/server/entry.mjs` (env: `HOST`, `PORT`, and `PAYLOAD_API_URL`). Verified the built standalone server serves `/about` (200) and `/nonexistent` (404). `@astrojs/node` v10 is the Astro-6 line (peer `astro: ^6.3.0`). `dist/` is gitignored.
 
 ## Why the v6 upgrade was painless here
 Our frontend already avoided everything Astro 6 removed/changed:

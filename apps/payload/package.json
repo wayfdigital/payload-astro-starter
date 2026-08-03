@@ -32,10 +32,10 @@
     "@payloadcms/storage-s3": "catalog:",
     "@payloadcms/translations": "catalog:",
     "@payloadcms/ui": "catalog:",
-    "@react-email/components": "^1.0.12",
-    "@react-email/render": "^2.0.8",
+    "@react-email/components": "1.0.12",
+    "@react-email/render": "2.0.8",
     "@repo/payload-types": "workspace:*",
-    "@sentry/nextjs": "^10.57.0",
+    "@sentry/nextjs": "10.57.0",
     "cross-env": "10.1.0",
     "next": "catalog:",
     "payload": "catalog:",
@@ -46,20 +46,20 @@
     "zod": "4.3.5"
   },
   "devDependencies": {
-    "@eslint-community/eslint-plugin-eslint-comments": "^4.4.1",
-    "@eslint/js": "^9.18.0",
+    "@eslint-community/eslint-plugin-eslint-comments": "4.7.2",
+    "@eslint/js": "9.39.4",
     "@next/eslint-plugin-next": "15.4.11",
     "@tailwindcss/postcss": "4.1.18",
-    "@types/node": "^22.10.0",
+    "@types/node": "22.19.19",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "dependency-cruiser": "catalog:",
-    "eslint": "^9.18.0",
-    "eslint-plugin-react-hooks": "^5.1.0",
-    "globals": "^15.14.0",
+    "eslint": "9.39.4",
+    "eslint-plugin-react-hooks": "5.2.0",
+    "globals": "15.15.0",
     "postcss": "8.5.6",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",
-    "typescript-eslint": "^8.20.0"
+    "typescript-eslint": "8.60.1"
   }
 }

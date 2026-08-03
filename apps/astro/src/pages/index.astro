@@ -1,74 +1,31 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import PageBuilder from '../components/page-builder/page-builder.astro';
-// Placeholder landing page — delete with the starter-guide folder when the real
-// site starts. See the header comment in that file.
 import StarterGuide from '../components/starter-guide/starter-guide';
-import { getHomePage, getAllPages } from '../lib/payload/pages';
-import { getSiteSettings } from '../lib/payload/site-settings';
 import { buildSeo } from '../lib/seo/meta';
-import { websiteSchema, organizationSchema } from '../lib/seo/jsonld';
-import { DEFAULT_LOCALE, isLocale, type Locale } from '../i18n/locales';
+import { websiteSchema } from '../lib/seo/jsonld';
+import { DEFAULT_LOCALE } from '../i18n/locales';
 
-const apiUrl = import.meta.env.PAYLOAD_API_URL ?? 'http://localhost:3100';
-const recaptchaSiteKey = import.meta.env.RECAPTCHA_SITE_KEY;
-
-// `/` is the default locale; in preview a `?locale=` query can select another.
-const preview = Astro.locals.preview === true;
-let locale: Locale = DEFAULT_LOCALE;
-const localeParam = Astro.url.searchParams.get('locale');
-if (preview && localeParam !== null && isLocale(localeParam)) {
-  locale = localeParam;
-}
-
-const [home, settings] = await Promise.all([
-  getHomePage(locale, { draft: preview }),
-  getSiteSettings(locale),
-]);
-
-// Fallback (no CMS home page set yet): the dev landing listing available pages.
-const pages = home ? [] : await getAllPages(locale);
+// Static landing page for the starter itself — no CMS behind it, so it is
+// prerendered at build time and served as plain HTML (no SSR, no Payload fetch).
+// Wiring the home page to the CMS again means: drop `prerender`, load the page
+// with `getHomePage(locale, { draft: preview })` and render it through
+// <PageBuilder /> — see src/pages/[...slug].astro, which still does exactly that.
+export const prerender = true;
 
 const seo = buildSeo(
   {
-    title: home?.meta?.title || home?.slug || 'Home',
-    description: home?.meta?.description,
-    image: home?.meta?.image,
+    title: 'Payload CMS + Astro starter',
+    description:
+      'Describe what you want in plain language; your agent turns it into real CMS blocks, components and database migrations.',
     slug: '',
-    locale,
+    locale: DEFAULT_LOCALE,
     type: 'website',
-    noindex: preview,
   },
-  settings,
+  null,
 );
-
-const jsonLd = [websiteSchema(settings), organizationSchema(settings)];
-const customCode = settings?.customCode;
 ---
 
-{
-  home ? (
-    <Layout
-      seo={seo}
-      jsonLd={jsonLd}
-      customCode={customCode}
-      preview={preview}
-      previewStatus={home?._status}
-    >
-      <PageBuilder page={home} apiUrl={apiUrl} recaptchaSiteKey={recaptchaSiteKey} locale={locale} />
-    </Layout>
-  ) : (
-    <Layout
-      seo={seo}
-      jsonLd={jsonLd}
-      customCode={customCode}
-      preview={preview}
-      credit={false}
-    >
-      {/* Placeholder until a page is marked as the home page. Delete this branch
-          together with src/components/starter-guide/. It carries the WAYF badge in
-          its hero, which is why the layout's floating one is switched off here. */}
-      <StarterGuide client:load pages={pages} />
-    </Layout>
-  )
-}
+<Layout seo={seo} jsonLd={[websiteSchema(null)]} credit={false}>
+  {/* Carries the WAYF badge in its own hero, hence credit={false} above. */}
+  <StarterGuide client:load />
+</Layout>

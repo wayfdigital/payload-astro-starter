@@ -14,7 +14,7 @@
     "db:migrate": "pnpm --filter @repo/payload migrate"
   },
   "devDependencies": {
-    "turbo": "^2.5.4",
+    "turbo": "2.9.16",
     "typescript": "catalog:"
   },
   "engines": {

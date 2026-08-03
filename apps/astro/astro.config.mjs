@@ -1,6 +1,6 @@
 import { defineConfig } from 'astro/config'
 import react from '@astrojs/react'
-import node from '@astrojs/node'
+import cloudflare from '@astrojs/cloudflare'
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
@@ -15,8 +15,10 @@ export default defineConfig({
     plugins: [tailwindcss()],
   },
   output: 'server',
-  // Standalone Node server for the SSR build (`astro build` → `node ./dist/server/entry.mjs`).
-  adapter: node({ mode: 'standalone' }),
+  // Cloudflare Workers. The home page is prerendered (see src/pages/index.astro), so
+  // it ships as a static asset; the CMS-backed routes stay SSR and run in the Worker.
+  // Deploy with `pnpm --filter @repo/astro deploy:cf` (base config: wrangler.jsonc).
+  adapter: cloudflare(),
   // Active locales mirror apps/payload/src/i18n/const.ts (LOCALE_CODES).
   // prefixDefaultLocale: false → `/about` = en, `/pl/about` = pl.
   i18n: {

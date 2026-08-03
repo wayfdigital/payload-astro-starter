@@ -43,7 +43,7 @@ Three kinds of entries, mirroring the KB model:
 - `repo-structure-conventions.md` — what lives where, import aliases, tokens, "new code goes where".
 - `monorepo-migration-gaps-repaired.md` — the broken-then-fixed state of both apps after the Turborepo migration.
 - `payload-postgres-array-crash.md` — the `texts` array field that crashed every `pages` query (Drizzle `referencedTable`).
-- `astro-v6-upgrade.md` — Astro 5→6.4.4 + `@astrojs/node` adapter, verified.
+- `astro-v6-upgrade.md` — Astro 5→6.4.4, verified. **Adapter is now Cloudflare, not Node.**
 
 ## Re-connecting to the hosted KB later
 

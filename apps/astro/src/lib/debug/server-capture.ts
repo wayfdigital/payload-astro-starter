@@ -11,7 +11,6 @@ import { DEBUG_INGEST_URL } from './config'
 installServerCapture('astro')
 
 declare global {
-  // eslint-disable-next-line no-var
   var __DEBUG_SERVER_PATCHED: boolean | undefined
 }
 
@@ -28,7 +27,9 @@ export function installServerCapture(source: 'astro' | 'payload'): void {
       try {
         return JSON.parse(JSON.stringify(value))
       } catch {
-        return String(value)
+        // Circular or otherwise unserializable — `String(value)` would only ever
+        // say "[object Object]", so say something that is actually true.
+        return '[unserializable]'
       }
     }
     return value

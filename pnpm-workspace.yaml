@@ -10,13 +10,13 @@ catalog:
   # React
   react: 19.2.3
   react-dom: 19.2.3
-  '@types/react': ^19.0.0
-  '@types/react-dom': ^19.0.0
+  '@types/react': 19.2.16
+  '@types/react-dom': 19.2.3
 
   # Tooling
   typescript: 5.9.3
   tailwindcss: 4.1.18
-  dependency-cruiser: ^16.0.0
+  dependency-cruiser: 16.10.4
 
   # Next / Payload core
   next: 15.4.11
