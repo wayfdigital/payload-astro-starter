@@ -1,7 +1,9 @@
 import type {
   Access,
   CollectionConfig,
+  Field,
   GlobalConfig,
+  LivePreviewConfig,
   Plugin,
 } from 'payload'
 
@@ -9,11 +11,13 @@ import type {
  * Reusable "preview" plugin.
  *
  * For each opted-in collection/global it:
- *  1. Enables draft versions with autosave (so the SSR frontend can re-fetch the
- *     in-flight draft on every change — see apps/astro live-preview listener).
- *  2. Wires `admin.preview` (open-in-new-tab) and `admin.livePreview` (iframe) to
- *     the Astro frontend, threading a shared secret + locale through the URL.
- *  3. Tightens `read` access: admins (incl. API-key requests) see everything;
+ *  1. Enables draft versions (optionally autosaving, so the SSR frontend can re-fetch
+ *     the in-flight draft on every change — see apps/astro live-preview listener).
+ *  2. Wires `admin.preview` (open-in-new-tab) and `admin.livePreview` (iframe, with
+ *     device breakpoints) to the Astro frontend, threading a shared secret + locale
+ *     through the URL.
+ *  3. Adds a plain-language sidebar note saying where the current version is visible.
+ *  4. Tightens `read` access: admins (incl. API-key requests) see everything;
  *     everyone else sees only `_status: published`. This is the security gate that
  *     keeps drafts private even when `?draft=true` is requested.
  *
@@ -70,6 +74,38 @@ const buildPreviewEntryUrl = (
   url.searchParams.set('path', path || '/')
   if (localeCode) url.searchParams.set('locale', localeCode)
   return url.toString()
+}
+
+/**
+ * Device sizes offered in the Live Preview toolbar. Payload prepends its own
+ * "Responsive" option, so these three are additive.
+ * `label` is typed as a plain string (no `{ en, pl }` form), so the numbers do the
+ * talking — they read the same in both admin languages.
+ */
+const DEVICE_BREAKPOINTS: NonNullable<LivePreviewConfig['breakpoints']> = [
+  { name: 'mobile', label: 'Mobile · 390', width: 390, height: 844 },
+  { name: 'tablet', label: 'Tablet · 768', width: 768, height: 1024 },
+  { name: 'desktop', label: 'Desktop · 1440', width: 1440, height: 900 },
+]
+
+/**
+ * Sidebar note that spells out, in plain language, where the version currently on
+ * screen is visible ("Draft — visible only in Preview", "Published — this is what
+ * visitors see"). Payload's own status pill states the *label*; this states the
+ * *consequence*, which is what a non-technical editor actually needs.
+ *
+ * `type: 'ui'` is presentational only — no DB column, so no migration.
+ */
+const previewStatusField: Field = {
+  name: 'previewStatusNote',
+  type: 'ui',
+  admin: {
+    position: 'sidebar',
+    components: {
+      // Resolved against `admin.importMap.baseDir` (= apps/payload/src).
+      Field: '/payload/components/preview-status-note#PreviewStatusNote',
+    },
+  },
 }
 
 /**
@@ -137,11 +173,15 @@ export const previewPlugin =
       ({
         ...entity,
         versions: draftsConfig(entity.versions, autosave, autosaveInterval),
+        // First, so the note sits at the top of the sidebar right under the status pill.
+        fields: [previewStatusField, ...entity.fields],
         admin: {
           ...entity.admin,
           livePreview: {
+            breakpoints: DEVICE_BREAKPOINTS,
             url: ({ data, locale }) =>
               buildLivePreviewUrl(frontendUrl, pathOf(data), previewSecret, locale?.code),
+            // Kept last: a collection/global can still override both of the above.
             ...entity.admin?.livePreview,
           },
           preview:

@@ -51,6 +51,9 @@ catalogs:
     '@payloadcms/translations':
       specifier: 3.81.0
       version: 3.81.0
+    '@payloadcms/ui':
+      specifier: 3.81.0
+      version: 3.81.0
     '@types/react':
       specifier: ^19.0.0
       version: 19.2.16
@@ -183,6 +186,9 @@ importers:
       '@payloadcms/translations':
         specifier: 'catalog:'
         version: 3.81.0
+      '@payloadcms/ui':
+        specifier: 'catalog:'
+        version: 3.81.0(@types/react@19.2.16)(monaco-editor@0.55.1)(next@15.4.11(@babel/core@7.29.7)(@opentelemetry/api@1.9.1)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(sass@1.77.4))(payload@3.81.0(graphql@16.14.1)(typescript@5.9.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3)
       '@react-email/components':
         specifier: ^1.0.12
         version: 1.0.12(react-dom@19.2.3(react@19.2.3))(react@19.2.3)

@@ -52,7 +52,10 @@ export const plugins: Plugin[] = [
       Boolean(process.env.PREVIEW_SECRET),
     ),
     previewSecret: process.env.PREVIEW_SECRET ?? '',
-    // Temporarily disabled to test manual "Save draft" / "Publish" refresh.
+    // Off on purpose. Autosave removes the "I saved a draft" moment the sidebar note
+    // explains, hides the "Save draft" button (Payload's `showSaveDraftButton`
+    // defaults to false under autosave), and writes a version row every interval,
+    // which buries the Versions tab diff in noise.
     autosave: false,
     // Home page is served at `/`; every other page at `/<slug>`.
     resolvePath: (doc) => {

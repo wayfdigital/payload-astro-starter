@@ -1,8 +1,9 @@
 ---
 import '@repo/ui/styles/theme.css';
 import '@repo/ui/styles/globals.css';
-import type { SiteSetting } from '@repo/payload-types';
+import type { Page, SiteSetting } from '@repo/payload-types';
 import LivePreviewListener from '../components/preview/live-preview-listener';
+import PreviewBanner from '../components/preview/preview-banner.astro';
 import Seo from '../components/seo/Seo.astro';
 import JsonLd from '../components/seo/JsonLd.astro';
 import CustomCode from '../components/seo/CustomCode.astro';
@@ -20,8 +21,10 @@ interface Props {
   jsonLd?: unknown[];
   /** Admin-authored custom code injected at the four page edges. */
   customCode?: SiteSetting['customCode'];
-  /** When true, mount the live-preview listener (set on preview/draft renders). */
+  /** When true, mount the live-preview listener + banner (set on preview/draft renders). */
   preview?: boolean;
+  /** Status of the document on screen — drives the banner's wording. Preview only. */
+  previewStatus?: Page['_status'];
   /**
    * Floating "Built by WAYF" credit. Turn it off on a page that already shows the
    * badge in its own content, so the two don't sit on screen at once.
@@ -29,7 +32,14 @@ interface Props {
   credit?: boolean;
 }
 
-const { seo, jsonLd = [], customCode, preview = false, credit = true } = Astro.props;
+const {
+  seo,
+  jsonLd = [],
+  customCode,
+  preview = false,
+  previewStatus,
+  credit = true,
+} = Astro.props;
 ---
 
 <!doctype html>
@@ -54,6 +64,7 @@ const { seo, jsonLd = [], customCode, preview = false, credit = true } = Astro.p
   </head>
   <body data-theme='ui'>
     <CustomCode html={customCode?.bodyStart} />
+    {preview && <PreviewBanner status={previewStatus} />}
     <slot />
     {credit && <WayfBadge placement='floating' />}
     {
