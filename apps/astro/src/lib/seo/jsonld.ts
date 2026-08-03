@@ -9,42 +9,55 @@
  */
 import type { Media, SiteSetting } from '@repo/payload-types'
 import type { Locale } from '../../i18n/locales'
-import { SITE_URL, absoluteUrl, localizedPath } from './meta'
+import { SITE_URL, absoluteMediaUrl, absoluteUrl, localizedPath } from './meta'
 
 type Json = Record<string, unknown>
 type MediaRef = (string | null | undefined) | Media
 
 const mediaUrl = (m: MediaRef): string | undefined =>
-  typeof m === 'object' && m !== null ? (m.url ?? undefined) : undefined
+  typeof m === 'object' && m !== null && m.url ? absoluteMediaUrl(m.url) : undefined
 
 // ---------------------------------------------------------------------------
 // ACTIVE — emitted today
 // ---------------------------------------------------------------------------
 
 /** Site-level WebSite node (home page). Enables the sitelinks search box if wired. */
-export const websiteSchema = (settings: SiteSetting | null): Json => ({
+export const websiteSchema = (
+  settings: SiteSetting | null,
+  fallbackName?: string,
+): Json => ({
   '@context': 'https://schema.org',
   '@type': 'WebSite',
-  name: settings?.siteName ?? undefined,
+  name: settings?.siteName ?? fallbackName,
   url: SITE_URL,
 })
 
+interface OrganizationFallback {
+  name: string
+  url: string
+  logo?: string
+  sameAs?: string[]
+}
+
 /** Organization node from SiteSettings → Organization (home page). */
-export const organizationSchema = (settings: SiteSetting | null): Json | null => {
+export const organizationSchema = (
+  settings: SiteSetting | null,
+  fallback?: OrganizationFallback,
+): Json | null => {
   const org = settings?.organization
-  const name = org?.legalName ?? settings?.siteName
+  const name = org?.legalName ?? settings?.siteName ?? fallback?.name
   if (!name) return null
 
-  const sameAs = (org?.sameAs ?? [])
-    .map((entry) => entry.url)
-    .filter((url): url is string => Boolean(url))
+  const sameAs = org?.sameAs
+    ? org.sameAs.map((entry) => entry.url).filter((url): url is string => Boolean(url))
+    : (fallback?.sameAs ?? [])
 
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name,
-    url: SITE_URL,
-    logo: mediaUrl(org?.logo),
+    url: fallback?.url ?? SITE_URL,
+    logo: mediaUrl(org?.logo) ?? fallback?.logo,
     sameAs: sameAs.length > 0 ? sameAs : undefined,
   }
 }

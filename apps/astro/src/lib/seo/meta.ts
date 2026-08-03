@@ -21,7 +21,7 @@ export const absoluteUrl = (path: string): string =>
  * uploads are relative to the Payload origin (which serves the file), so we prefix
  * those with {@link ADMIN_ORIGIN}.
  */
-const absoluteMediaUrl = (url: string): string => {
+export const absoluteMediaUrl = (url: string): string => {
   if (/^https?:\/\//.test(url)) return url
   const path = url.startsWith('/') ? url : `/${url}`
   return `${ADMIN_ORIGIN}${path}`
@@ -41,11 +41,32 @@ const isMedia = (value: MediaRef): value is Media =>
 export const ogImageUrl = (
   pageImage: MediaRef,
   settings: SiteSetting | null,
-): string | null => {
-  const pick = (m: MediaRef): string | null => {
+): string | null => resolveOgImage(pageImage, settings)?.url ?? null
+
+interface ResolvedOgImage {
+  url: string
+  alt: string | null
+  width: number | null
+  height: number | null
+  type: string | null
+}
+
+const resolveOgImage = (
+  pageImage: MediaRef,
+  settings: SiteSetting | null,
+): ResolvedOgImage | null => {
+  const pick = (m: MediaRef): ResolvedOgImage | null => {
     if (!isMedia(m)) return null
-    const url = m.sizes?.og?.url ?? m.url
-    return url ? absoluteMediaUrl(url) : null
+    const image = m.sizes?.og
+    const url = image?.url ?? m.url
+    if (!url) return null
+    return {
+      url: absoluteMediaUrl(url),
+      alt: m.alt?.trim() || null,
+      width: image?.width ?? m.width ?? null,
+      height: image?.height ?? m.height ?? null,
+      type: image?.mimeType ?? m.mimeType ?? null,
+    }
   }
   return pick(pageImage) ?? pick(settings?.defaultOgImage) ?? null
 }
@@ -94,6 +115,10 @@ export interface ResolvedSeo {
   description: string
   canonical: string
   ogImage: string | null
+  ogImageAlt: string | null
+  ogImageWidth: number | null
+  ogImageHeight: number | null
+  ogImageType: string | null
   ogType: 'website' | 'article'
   locale: Locale
   siteName: string | null
@@ -115,30 +140,63 @@ export const buildSeo = (
     slug: string
     locale: Locale
     type?: 'website' | 'article'
+    /** Static/social image override, useful for pages that do not load CMS settings. */
+    socialImage?: {
+      src: string
+      alt: string
+      width?: number
+      height?: number
+      type?: string
+    }
+    /** Site name override for static pages that do not load CMS settings. */
+    siteName?: string
+    /** Limit hreflang to locales that have a real, indexable page. */
+    alternateLocales?: readonly Locale[]
     /** Force noindex (drafts, 404s) on top of the site-wide robots switch. */
     noindex?: boolean
   },
   settings: SiteSetting | null,
-): ResolvedSeo => ({
-  title: resolveTitle(input.title, settings),
-  description: resolveDescription(input.description, settings),
-  canonical: absoluteUrl(localizedPath(input.slug, input.locale)),
-  ogImage: ogImageUrl(input.image, settings),
-  ogType: input.type ?? 'website',
-  locale: input.locale,
-  siteName: settings?.siteName ?? null,
-  twitterHandle: settings?.twitterHandle ?? null,
-  alternates: hreflangAlternates(input.slug),
-  noindex: Boolean(input.noindex) || Boolean(settings?.robots?.noindexSite),
-})
+): ResolvedSeo => {
+  const image = input.socialImage
+    ? {
+        url: /^https?:\/\//.test(input.socialImage.src)
+          ? input.socialImage.src
+          : absoluteUrl(input.socialImage.src),
+        alt: input.socialImage.alt,
+        width: input.socialImage.width ?? null,
+        height: input.socialImage.height ?? null,
+        type: input.socialImage.type ?? null,
+      }
+    : resolveOgImage(input.image, settings)
+
+  return {
+    title: resolveTitle(input.title, settings),
+    description: resolveDescription(input.description, settings),
+    canonical: absoluteUrl(localizedPath(input.slug, input.locale)),
+    ogImage: image?.url ?? null,
+    ogImageAlt: image?.alt ?? null,
+    ogImageWidth: image?.width ?? null,
+    ogImageHeight: image?.height ?? null,
+    ogImageType: image?.type ?? null,
+    ogType: input.type ?? 'website',
+    locale: input.locale,
+    siteName: input.siteName?.trim() || settings?.siteName || null,
+    twitterHandle: settings?.twitterHandle ?? null,
+    alternates: hreflangAlternates(input.slug, input.alternateLocales),
+    noindex: Boolean(input.noindex) || Boolean(settings?.robots?.noindexSite),
+  }
+}
 
 /**
  * Builds the hreflang alternate set for a slug across every locale, plus an
  * `x-default` pointing at the default locale. Each URL is absolute and self-
  * referential (the current page appears in its own set), as Google requires.
  */
-export const hreflangAlternates = (slug: string): HreflangAlternate[] => {
-  const alternates = LOCALES.map((locale) => ({
+export const hreflangAlternates = (
+  slug: string,
+  locales: readonly Locale[] = LOCALES,
+): HreflangAlternate[] => {
+  const alternates = locales.map((locale) => ({
     hreflang: locale,
     href: absoluteUrl(localizedPath(slug, locale)),
   }))

@@ -109,7 +109,7 @@ export function StarterGuide({ pages = [] }: StarterGuideProps) {
           </section>
 
           <section>
-            <Heading level={6} className={groupLabel} style={groupLabelStyle}>
+            <Heading level={2} className={groupLabel} style={{ ...groupLabelStyle, fontSize: '1rem' }}>
               How you work with this
             </Heading>
             <ol className="grid gap-6 md:grid-cols-3">
@@ -118,7 +118,7 @@ export function StarterGuide({ pages = [] }: StarterGuideProps) {
                   <span className="font-mono text-xs font-medium" style={{ color: 'var(--flicker-color)' }}>
                     {String(index + 1).padStart(2, '0')}
                   </span>
-                  <Heading level={5} style={{ color: onDark }}>
+                  <Heading level={3} style={{ color: onDark, fontSize: '1.125rem' }}>
                     {step.title}
                   </Heading>
                   <Text variant="small" style={{ color: onDark, opacity: 0.7 }}>
@@ -130,7 +130,7 @@ export function StarterGuide({ pages = [] }: StarterGuideProps) {
           </section>
 
           <section>
-            <Heading level={6} className={groupLabel} style={groupLabelStyle}>
+            <Heading level={2} className={groupLabel} style={{ ...groupLabelStyle, fontSize: '1rem' }}>
               Skills worth knowing about
             </Heading>
             <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -157,7 +157,7 @@ export function StarterGuide({ pages = [] }: StarterGuideProps) {
           </section>
 
           <section>
-            <Heading level={6} className={groupLabel} style={groupLabelStyle}>
+            <Heading level={2} className={groupLabel} style={{ ...groupLabelStyle, fontSize: '1rem' }}>
               Built on
             </Heading>
             <ul className="flex flex-wrap gap-2">
@@ -171,6 +171,43 @@ export function StarterGuide({ pages = [] }: StarterGuideProps) {
                 </li>
               ))}
             </ul>
+            <a
+              href="https://github.com/wayfdigital/payload-astro-starter"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-5 inline-flex items-center gap-1 font-medium underline underline-offset-4 hover:opacity-70"
+              style={{ color: 'var(--flicker-color)' }}
+            >
+              View the GitHub repository ↗
+            </a>
+          </section>
+
+          <section
+            className="flex flex-col gap-5 rounded-lg p-6 text-left sm:flex-row sm:items-center sm:justify-between"
+            style={{
+              border: `1px solid ${hairline}`,
+              backgroundColor: `color-mix(in srgb, ${onDark} 6%, transparent)`,
+            }}
+          >
+            <div className="flex flex-col gap-2">
+              <Heading level={2} style={{ color: onDark, fontSize: '1.5rem' }}>
+                Looking to build on Payload?
+              </Heading>
+              <Text variant="small" style={{ color: onDark, opacity: 0.7 }}>
+                Work with WAYF to turn the starter into a production-ready website.
+              </Text>
+            </div>
+            <a
+              href="https://wayf.ai/contact"
+              className="inline-flex h-10 shrink-0 items-center justify-center rounded-lg px-5 text-sm font-medium transition-opacity hover:opacity-90"
+              style={{
+                backgroundColor: 'var(--hero-cta-bg)',
+                color: 'var(--hero-cta-foreground)',
+                borderRadius: 'var(--radius)',
+              }}
+            >
+              Contact us
+            </a>
           </section>
         </div>
       </Hero>

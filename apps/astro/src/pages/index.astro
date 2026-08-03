@@ -1,8 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import StarterGuide from '../components/starter-guide/starter-guide';
-import { buildSeo } from '../lib/seo/meta';
-import { websiteSchema } from '../lib/seo/jsonld';
+import { absoluteUrl, buildSeo } from '../lib/seo/meta';
+import { organizationSchema, websiteSchema } from '../lib/seo/jsonld';
 import { DEFAULT_LOCALE } from '../i18n/locales';
 
 // Static landing page for the starter itself — no CMS behind it, so it is
@@ -14,18 +14,37 @@ export const prerender = true;
 
 const seo = buildSeo(
   {
-    title: 'Payload CMS + Astro starter',
+    title: 'Payload CMS + Astro Starter for Agent-Led Builds | WAYF',
     description:
-      'Describe what you want in plain language; your agent turns it into real CMS blocks, components and database migrations.',
+      'Build production-ready websites with Payload CMS and Astro. Get reusable blocks, safe migrations, localization, SEO, live preview and Cloudflare deployment.',
     slug: '',
     locale: DEFAULT_LOCALE,
     type: 'website',
+    siteName: 'WAYF',
+    alternateLocales: [DEFAULT_LOCALE],
+    socialImage: {
+      src: '/og-image.png',
+      alt: 'WAYF logo on a pink background',
+      width: 1200,
+      height: 630,
+      type: 'image/png',
+    },
   },
   null,
 );
+
+const jsonLd = [
+  websiteSchema(null, 'Payload CMS + Astro Starter'),
+  organizationSchema(null, {
+    name: 'WAYF',
+    url: 'https://wayf.ai',
+    logo: absoluteUrl('/icon-512.png'),
+    sameAs: ['https://github.com/wayfdigital'],
+  }),
+];
 ---
 
-<Layout seo={seo} jsonLd={[websiteSchema(null)]} credit={false}>
+<Layout seo={seo} jsonLd={jsonLd} credit={false}>
   {/* Carries the WAYF badge in its own hero, hence credit={false} above. */}
   <StarterGuide client:load />
 </Layout>
