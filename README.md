@@ -1,17 +1,21 @@
 # Payload Astro Starter
 
-A website foundation you build by **describing what you want**. Set it up once, then say
-*"add a pricing section with three tiers"* — to your AI assistant or to yourself — and the whole
-pipeline (design → block → adapter → types → migration) is already written down for the agent to
-follow.
+A production-ready website monorepo: Payload CMS for content, Astro for the site, wired together
+with live preview, i18n, a design system and real migrations. Opinionated on purpose — the parts
+you'd otherwise spend a week assembling are already assembled.
 
-It works the same whether you write the code or an AI writes it for you. Developers get a typed
-monorepo with real migrations; non-technical users get an admin panel and a plain-language way to
-add new things.
+**New to Payload or Astro?** You don't have to invent conventions. Every layer has one reference
+implementation to copy — a section component, a block definition, an adapter, a data query — and
+`AGENTS.md` documents where each thing lives and why.
 
-**Starting from zero?** Open the project in your AI assistant and run **`/setup`** (or just say
-*"set it up"*). It handles env files, secrets, Docker, migrations and your admin account, then
-tells you what to build first. That's the whole onboarding.
+**Working with an AI agent?** The repo ships its own operating manual. `AGENTS.md` (read by any
+agent) plus `CLAUDE.md` and 15 skills in `.claude/skills/` spell out the build pipeline, the project
+map and the hard rules, so the agent follows how this codebase actually works instead of guessing:
+design → block → adapter → types → migration.
+
+**Starting from zero?** Open the project in your AI assistant and run **`/setup`** (or say *"set it
+up"*). It handles env files, secrets, Docker, migrations and the admin account, then tells you what
+to build first. That's the whole onboarding.
 
 **Payload CMS** (admin + API) · **Astro** (fast SSR site) · **PostgreSQL** · pnpm + Turborepo.
 
@@ -31,7 +35,7 @@ tells you what to build first. That's the whole onboarding.
 | **Media pipeline** | Upload once, sizes are generated for you. |
 | **Jobs queue** | Async/scheduled work (emails, imports, revalidation) already wired. |
 | **Debug dashboard** | Browser + server logs streamed to one place in dev. |
-| **AI operating manual** | `AGENTS.md` / `CLAUDE.md` + 15 skills teach the agent this repo's rules. |
+| **AI operating manual** | `AGENTS.md` / `CLAUDE.md` + 15 skills: build pipeline, project map, hard rules. |
 
 ---
 
@@ -75,7 +79,7 @@ script.
 
 ---
 
-## Editing content (no code)
+## Editing content
 
 Log in at `/admin` — locally `http://localhost:3100/admin`, in production wherever it's deployed.
 Pages are a stack of blocks: click a page, reorder or edit blocks, hit **Preview** to see the draft
@@ -83,9 +87,10 @@ on the real site, then publish. Media, site settings, forms and locales live in 
 
 ---
 
-## Building new things (the AI path)
+## Adding a section — with an agent
 
-Describe the outcome, not the implementation:
+Both paths below run the **same** pipeline; the only difference is who types it. With an agent you
+describe the outcome, not the implementation:
 
 - *"Add a pricing section with three tiers"*
 - *"Change the hero headline to 'Welcome to Acme'"*
@@ -107,9 +112,9 @@ additionally reads `CLAUDE.md` and the skills in `.claude/skills/`.
 
 ---
 
-## Building new things (by hand)
+## Adding a section — by hand
 
-Same pipeline, you're just the one typing. Full step-by-step in
+Full step-by-step in
 [`AGENTS.md`](AGENTS.md) — the short version:
 
 | Layer | Where |
