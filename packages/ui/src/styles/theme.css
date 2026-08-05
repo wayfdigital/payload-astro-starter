@@ -51,7 +51,7 @@
      Pulled from the WAYF logo: its magenta on the near-black it sits against.
      Deliberately not `--primary` — the mark's pink is the brand here, and the
      grid needs a colour that survives being drawn at 20% opacity. */
-  --flicker-color: #d6388a;
+  --flicker-color: #fc0396;
   --flicker-background: #14110f;
 
   /* ── Hero CTA on dark art (gradient/lightfall) ──
@@ -146,7 +146,7 @@
   --lightfall-background: #1e1b4b;
 
   /* The hero art is dark in both themes, so the grid keeps the same pair. */
-  --flicker-color: #d6388a;
+  --flicker-color: #fc0396;
   --flicker-background: #14110f;
 
   --hero-cta-bg: #ffffff;
