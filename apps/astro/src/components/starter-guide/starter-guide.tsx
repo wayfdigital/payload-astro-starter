@@ -92,7 +92,7 @@ export function StarterGuide({ pages = [] }: StarterGuideProps) {
           style={{ borderTop: `1px solid ${hairline}` }}
         >
           <section
-            className="flex flex-col gap-3 rounded-lg p-5 text-left sm:flex-row sm:items-center sm:gap-5"
+            className="flex flex-col gap-3 rounded p-5 text-left sm:flex-row sm:items-center sm:gap-5"
             style={{
               border: `1px solid ${hairline}`,
               backgroundColor: `color-mix(in srgb, ${onDark} 4%, transparent)`,
@@ -137,7 +137,7 @@ export function StarterGuide({ pages = [] }: StarterGuideProps) {
               {SKILLS.map((skill) => (
                 <li
                   key={skill.name}
-                  className="rounded-lg p-4"
+                  className="rounded p-4"
                   style={{
                     border: `1px solid ${hairline}`,
                     // Barely-there lift off the grid, so the cards read as a group
@@ -164,7 +164,7 @@ export function StarterGuide({ pages = [] }: StarterGuideProps) {
               {STACK.map((item) => (
                 <li
                   key={item}
-                  className="rounded-full px-3 py-1 text-xs"
+                  className="rounded px-3 py-1 text-xs"
                   style={{ border: `1px solid ${hairline}`, color: onDark, opacity: 0.75 }}
                 >
                   {item}
@@ -182,14 +182,37 @@ export function StarterGuide({ pages = [] }: StarterGuideProps) {
             </a>
           </section>
 
+          {/* Closing CTA follows the wayf.ai journal dark-CTA block: an elevated
+              slab on a fine grid-line ground, whose top border IS the brand-pink
+              line — flush with the edge, no detached accent bar. */}
           <section
-            className="flex flex-col gap-5 rounded-lg p-6 text-left sm:flex-row sm:items-center sm:justify-between"
+            className="relative flex flex-col gap-5 overflow-hidden rounded p-6 text-left sm:flex-row sm:items-center sm:justify-between"
             style={{
+              backgroundColor: '#111111',
+              backgroundImage:
+                'linear-gradient(rgb(240 238 235 / 0.08) 1px, transparent 1px), linear-gradient(90deg, rgb(240 238 235 / 0.08) 1px, transparent 1px)',
+              backgroundSize: '28px 28px',
               border: `1px solid ${hairline}`,
-              backgroundColor: `color-mix(in srgb, ${onDark} 6%, transparent)`,
+              borderTop: '1px solid var(--flicker-color)',
             }}
           >
-            <div className="flex flex-col gap-2">
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute -right-6 -bottom-8 h-40 w-40 opacity-30"
+              style={{
+                backgroundImage: 'radial-gradient(circle, var(--flicker-color) 1px, transparent 2px)',
+                backgroundSize: '8px 8px',
+                WebkitMaskImage: 'radial-gradient(circle, black 0%, transparent 68%)',
+                maskImage: 'radial-gradient(circle, black 0%, transparent 68%)',
+              }}
+            />
+            <div className="relative flex flex-col gap-2">
+              <span
+                className="font-mono text-xs font-medium uppercase tracking-[0.18em]"
+                style={{ color: 'var(--flicker-color)' }}
+              >
+                Work with WAYF
+              </span>
               <Heading level={2} style={{ color: onDark, fontSize: '1.5rem' }}>
                 Looking to build on Payload?
               </Heading>
@@ -199,12 +222,8 @@ export function StarterGuide({ pages = [] }: StarterGuideProps) {
             </div>
             <a
               href="https://wayf.ai/contact"
-              className="inline-flex h-10 shrink-0 items-center justify-center rounded-lg px-5 text-sm font-medium transition-opacity hover:opacity-90"
-              style={{
-                backgroundColor: 'var(--hero-cta-bg)',
-                color: 'var(--hero-cta-foreground)',
-                borderRadius: 'var(--radius)',
-              }}
+              className="relative inline-flex h-10 shrink-0 items-center justify-center rounded px-5 text-sm font-medium transition-opacity hover:opacity-90"
+              style={{ backgroundColor: 'var(--flicker-color)', color: '#ffffff' }}
             >
               Contact us
             </a>
@@ -226,7 +245,7 @@ export function StarterGuide({ pages = [] }: StarterGuideProps) {
                 <li key={page.slug}>
                   <a
                     href={`/${page.slug}`}
-                    className="inline-block rounded-lg border px-4 py-2 font-mono text-sm"
+                    className="inline-block rounded border px-4 py-2 font-mono text-sm"
                     style={{ borderColor: 'var(--border)', color: 'var(--primary)' }}
                   >
                     /{page.slug}

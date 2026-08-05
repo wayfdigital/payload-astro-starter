@@ -4,8 +4,8 @@
   "description": "A production-ready Payload CMS and Astro starter by WAYF.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#fc0396",
-  "theme_color": "#fc0396",
+  "background_color": "#D6388A",
+  "theme_color": "#D6388A",
   "icons": [
     {
       "src": "/icon-192.png",
