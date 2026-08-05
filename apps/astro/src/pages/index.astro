@@ -48,3 +48,16 @@ const jsonLd = [
   {/* Carries the WAYF badge in its own hero, hence credit={false} above. */}
   <StarterGuide client:load />
 </Layout>
+
+{/* Landing-only brand typography: wayf.ai sets display and body in Schibsted
+   Grotesk, with a system mono for technical labels. Scoped here (this style
+   ships only with the landing) so the design system and CMS pages keep their
+   own defaults. */}
+<style is:global>
+  @import url('https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400..900;1,400..900&display=swap');
+  [data-theme='ui'] {
+    --font-sans: 'Schibsted Grotesk', system-ui, -apple-system, sans-serif;
+    --font-heading: 'Schibsted Grotesk', system-ui, -apple-system, sans-serif;
+    --font-mono: ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, monospace;
+  }
+</style>
