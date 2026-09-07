@@ -14,9 +14,9 @@ export const prerender = true;
 
 const seo = buildSeo(
   {
-    title: 'Payload CMS + Astro Starter for Agent-Led Builds | WAYF',
+    title: 'Payload + Astro starter for agent-led builds | WAYF',
     description:
-      'Build production-ready websites with Payload CMS and Astro. Get reusable blocks, safe migrations, localization, SEO, live preview and Cloudflare deployment.',
+      'A production-ready Payload CMS and Astro starter for building with an AI agent. Components, content, migrations, previews and deployment stay in one guarded workflow.',
     slug: '',
     locale: DEFAULT_LOCALE,
     type: 'website',
@@ -44,7 +44,6 @@ const jsonLd = [
 ];
 ---
 
-<Layout seo={seo} jsonLd={jsonLd} credit={false}>
-  {/* Carries the WAYF badge in its own hero, hence credit={false} above. */}
-  <StarterGuide client:load />
+<Layout seo={seo} jsonLd={jsonLd} credit={false} dark>
+  <StarterGuide />
 </Layout>

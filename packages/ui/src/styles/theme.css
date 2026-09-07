@@ -1,3 +1,5 @@
+@import "@fontsource-variable/schibsted-grotesk/index.css";
+
 /* ──────────────────────────────────────────────
    ui — Base Theme Stylesheet
    ────────────────────────────────────────────── */
@@ -37,7 +39,12 @@
   --destructive-subtle-foreground: #b91c1c;
 
   /* ── Gradients ── */
-  --gradient-hero: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a78bfa 100%);
+  --gradient-hero: linear-gradient(
+    135deg,
+    #6366f1 0%,
+    #8b5cf6 50%,
+    #a78bfa 100%
+  );
   --gradient-surface: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
   --gradient-subtle: linear-gradient(135deg, #ede9fe 0%, #e0e7ff 100%);
 
@@ -62,8 +69,10 @@
   --hero-cta-foreground: #18181b;
 
   /* ── Typography ── */
-  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
-  --font-heading: "Inter", system-ui, -apple-system, sans-serif;
+  --font-sans:
+    "Schibsted Grotesk Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-heading:
+    "Schibsted Grotesk Variable", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Code", monospace;
   --font-weight-normal: 400;
   --font-weight-medium: 500;
@@ -89,8 +98,10 @@
   /* ── Shadows ── */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --shadow-md:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --shadow-lg:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
   --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.15);
 
   /* ── Layout ── */
@@ -107,20 +118,20 @@
 /* ── Dark mode ── */
 [data-theme="ui"].dark,
 .dark [data-theme="ui"] {
-  --primary: #818cf8;
-  --primary-hover: #6366f1;
-  --primary-foreground: #ffffff;
-  --secondary: #a78bfa;
-  --secondary-hover: #8b5cf6;
-  --secondary-foreground: #ffffff;
-  --background: #09090b;
-  --card: #18181b;
-  --foreground: #fafafa;
-  --muted: #27272a;
-  --muted-foreground: #a1a1aa;
-  --border: #3f3f46;
-  --accent: #1e1b4b;
-  --accent-foreground: #c4b5fd;
+  --primary: #fc0396;
+  --primary-hover: #d60380;
+  --primary-foreground: #14110f;
+  --secondary: #2a2426;
+  --secondary-hover: #352d31;
+  --secondary-foreground: #faf9f6;
+  --background: #14110f;
+  --card: rgba(250, 249, 246, 0.065);
+  --foreground: #faf9f6;
+  --muted: rgba(250, 249, 246, 0.07);
+  --muted-foreground: #aaa5a1;
+  --border: rgba(250, 249, 246, 0.16);
+  --accent: rgba(252, 3, 150, 0.12);
+  --accent-foreground: #ff70c4;
   --destructive: #f87171;
   --destructive-hover: #ef4444;
   --destructive-foreground: #ffffff;
@@ -136,27 +147,39 @@
   --destructive-subtle: #450a0a;
   --destructive-subtle-foreground: #fca5a5;
 
-  --gradient-hero: linear-gradient(135deg, #312e81 0%, #4c1d95 50%, #6d28d9 100%);
-  --gradient-surface: linear-gradient(180deg, #18181b 0%, #09090b 100%);
-  --gradient-subtle: linear-gradient(135deg, #1e1b4b 0%, #172554 100%);
+  --gradient-hero: radial-gradient(
+    circle at 75% 12%,
+    rgba(252, 3, 150, 0.16),
+    transparent 44%
+  );
+  --gradient-surface: linear-gradient(
+    180deg,
+    rgba(250, 249, 246, 0.07),
+    rgba(250, 249, 246, 0.025)
+  );
+  --gradient-subtle: linear-gradient(
+    135deg,
+    rgba(250, 249, 246, 0.08),
+    rgba(250, 249, 246, 0.03)
+  );
 
-  --lightfall-color-1: #312e81;
-  --lightfall-color-2: #4c1d95;
-  --lightfall-color-3: #6d28d9;
-  --lightfall-background: #1e1b4b;
+  --lightfall-color-1: #fc0396;
+  --lightfall-color-2: #7b1c55;
+  --lightfall-color-3: #35252e;
+  --lightfall-background: #14110f;
 
   /* The hero art is dark in both themes, so the grid keeps the same pair. */
-  --flicker-color: #d6388a;
+  --flicker-color: #fc0396;
   --flicker-background: #14110f;
 
-  --hero-cta-bg: #ffffff;
-  --hero-cta-foreground: #18181b;
+  --hero-cta-bg: #fc0396;
+  --hero-cta-foreground: #14110f;
 
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px -1px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
-  --shadow-glow: 0 0 20px rgba(129, 140, 248, 0.2);
+  --shadow-sm: 0 1px 0 rgba(250, 249, 246, 0.08);
+  --shadow: 0 18px 60px rgba(0, 0, 0, 0.22);
+  --shadow-md: 0 24px 80px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 32px 120px rgba(0, 0, 0, 0.36);
+  --shadow-glow: 0 0 80px rgba(252, 3, 150, 0.12);
 }
 
 /* ──────────────────────────────────────────────
