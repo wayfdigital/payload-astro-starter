@@ -44,7 +44,6 @@ const jsonLd = [
 ];
 ---
 
-<Layout seo={seo} jsonLd={jsonLd} credit={false}>
-  {/* Carries the WAYF badge in its own hero, hence credit={false} above. */}
-  <StarterGuide client:load />
+<Layout seo={seo} jsonLd={jsonLd} credit={false} dark>
+  <StarterGuide />
 </Layout>
