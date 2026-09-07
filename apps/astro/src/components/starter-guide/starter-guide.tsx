@@ -80,6 +80,32 @@ function WayfMark() {
   );
 }
 
+function PayloadMark() {
+  return (
+    <svg viewBox="0 0 42 48" aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M2.872 10.296a.57.57 0 0 1 .572 0l19.752 11.398c.217.126.343.355.343.595v6.146c0 .263-.286.435-.515.297L6.603 19.257a.285.285 0 0 0-.423.252v12.61c0 .206.114.389.286.492l14.144 8.16h.011a.57.57 0 0 0 .572 0l10.997-6.352a.687.687 0 0 1 .687 0l5.31 3.067c.229.138.229.458 0 .595l-17.04 9.842a.57.57 0 0 1-.572 0L.286 36.205A.572.572 0 0 1 0 35.713V12.287c0-.206.115-.388.286-.491l2.586-1.5ZM20.577.077a.57.57 0 0 1 .572 0l20.29 11.707.011.012a.572.572 0 0 1 .286.491v19.5c0 .263-.286.435-.515.298l-5.264-3.032a.687.687 0 0 1-.344-.596V15.79a.572.572 0 0 0-.285-.492L21.184 7.138a.57.57 0 0 0-.573 0l-4.806 2.77a.687.687 0 0 1-.687 0L9.854 6.863c-.228-.137-.228-.457 0-.595L20.577.077Z"
+      />
+    </svg>
+  );
+}
+
+function AstroMark() {
+  return (
+    <svg viewBox="0 10 24 31" aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M.02 30.31s4.02-1.95 8.05-1.95l3.04-9.4c.11-.45.44-.76.82-.76.37 0 .7.31.82.76l3.04 9.4c4.77 0 8.05 1.95 8.05 1.95L17 11.71c-.2-.56-.53-.91-.98-.91H7.83c-.44 0-.76.35-.97.9L.02 30.31Z"
+      />
+      <path
+        fill="var(--primary)"
+        d="M7.77 36.35C6.4 35.11 6 32.51 6.57 30.62c.99 1.2 2.35 1.57 3.75 1.78 2.18.33 4.31.2 6.33-.78.23-.12.44-.27.7-.42.18.55.23 1.1.17 1.67a4.56 4.56 0 0 1-1.94 3.23c-.43.32-.9.61-1.34.91-1.38.94-1.76 2.03-1.24 3.62l.05.17a3.63 3.63 0 0 1-1.6-1.38 3.87 3.87 0 0 1-.63-2.1c0-.37 0-.74-.05-1.1-.13-.9-.55-1.3-1.33-1.32a1.56 1.56 0 0 0-1.63 1.26c0 .06-.03.12-.05.2Z"
+      />
+    </svg>
+  );
+}
+
 function PixelChevron() {
   return (
     <span className="starter-v2__chevron" aria-hidden="true">
@@ -87,6 +113,28 @@ function PixelChevron() {
       <span />
       <span />
     </span>
+  );
+}
+
+function GitHubMark() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M12 .7a11.5 11.5 0 0 0-3.64 22.41c.58.11.79-.25.79-.56v-2.23c-3.22.7-3.9-1.37-3.9-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.78 1.2 1.78 1.2 1.04 1.77 2.72 1.26 3.38.96.1-.75.4-1.26.74-1.55-2.57-.29-5.27-1.28-5.27-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.47.11-3.05 0 0 .97-.31 3.16 1.18a10.96 10.96 0 0 1 5.75 0c2.19-1.49 3.15-1.18 3.15-1.18.63 1.58.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.71 5.38-5.28 5.67.42.36.78 1.06.78 2.14v3.18c0 .31.21.68.79.56A11.5 11.5 0 0 0 12 .7Z"
+      />
+    </svg>
+  );
+}
+
+function StarIcon() {
+  return (
+    <svg viewBox="0 0 16 16" aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.194a.75.75 0 0 1-1.088.79L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.328.668A.75.75 0 0 1 8 .25Zm0 2.445L6.615 5.5a.75.75 0 0 1-.565.41l-3.097.45 2.241 2.184a.75.75 0 0 1 .216.664l-.529 3.085 2.77-1.456a.75.75 0 0 1 .698 0l2.77 1.456-.529-3.085a.75.75 0 0 1 .216-.664l2.241-2.184-3.097-.45a.75.75 0 0 1-.565-.41L8 2.695Z"
+      />
+    </svg>
   );
 }
 
@@ -116,17 +164,36 @@ export function StarterGuide({ pages = [] }: StarterGuideProps) {
               Payload + Astro
             </a>
           </div>
-          <span className="starter-v2__version">Starter / v2</span>
           <nav className="starter-v2__nav-links" aria-label="Primary">
-            <a href="https://github.com/wayfdigital/payload-astro-starter">
-              GitHub ↗
+            <a
+              className="starter-v2__repo-button"
+              href="https://github.com/wayfdigital/payload-astro-starter"
+            >
+              <GitHubMark />
+              <span>GitHub</span>
+            </a>
+            <a
+              className="starter-v2__repo-button starter-v2__repo-button--star"
+              href="https://github.com/wayfdigital/payload-astro-starter/stargazers"
+              aria-label="Star payload-astro-starter on GitHub"
+            >
+              <StarIcon />
+              <span>Star</span>
+              <span className="starter-v2__star-count">3</span>
             </a>
           </nav>
         </header>
 
         <section className="starter-v2__hero" aria-labelledby="starter-title">
           <div className="starter-v2__intro">
-            <p className="starter-v2__eyebrow">Payload CMS + Astro starter</p>
+            <div className="starter-v2__eyebrow-row">
+              <span className="starter-v2__platform-marks" aria-hidden="true">
+                <PayloadMark />
+                <span>+</span>
+                <AstroMark />
+              </span>
+              <p className="starter-v2__eyebrow">Payload CMS + Astro starter</p>
+            </div>
             <h1 id="starter-title">
               Describe what you want. Your agent builds it.
             </h1>
@@ -145,10 +212,7 @@ export function StarterGuide({ pages = [] }: StarterGuideProps) {
             </a>
           </div>
 
-          <aside
-            className="starter-v2__setup starter-v2__glass"
-            aria-label="Setup command"
-          >
+          <aside className="starter-v2__setup" aria-label="Setup command">
             <div className="starter-v2__setup-head">
               <span>Start here</span>
               <span>01 / 01</span>

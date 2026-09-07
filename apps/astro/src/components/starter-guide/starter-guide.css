@@ -1,6 +1,8 @@
 .starter-v2 {
   --starter-type-size: clamp(0.875rem, 0.846rem + 0.12vw, 0.9375rem);
-  --starter-section-space: clamp(3rem, 6vw, 5rem);
+  --starter-inset: clamp(1.5rem, 5vw, 4rem);
+  --starter-hero-block-space: clamp(4rem, 8vw, 7rem);
+  --starter-logo-ink: #14110f;
   position: relative;
   min-height: 100vh;
   overflow: hidden;
@@ -58,10 +60,10 @@
   top: 0;
   z-index: 10;
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: 1fr 1fr;
   align-items: center;
   min-height: 3.75rem;
-  padding: 0.75rem clamp(1rem, 3vw, 2rem);
+  padding: 0.75rem var(--starter-inset);
   border-bottom: 1px solid var(--border);
   background: color-mix(in srgb, var(--background) 78%, transparent);
   -webkit-backdrop-filter: blur(24px) saturate(120%);
@@ -78,7 +80,8 @@
   gap: 0.75rem;
 }
 
-.starter-v2__mark {
+.starter-v2__nav .starter-v2__mark,
+.starter-v2__nav .starter-v2__mark:hover {
   display: inline-flex;
   width: 1.875rem;
   height: 1.875rem;
@@ -86,7 +89,7 @@
   align-items: center;
   justify-content: center;
   background: var(--primary);
-  color: var(--background);
+  color: var(--starter-logo-ink);
 }
 
 .starter-v2__mark svg {
@@ -100,7 +103,6 @@
   font-weight: var(--font-weight-semibold);
 }
 
-.starter-v2__version,
 .starter-v2__eyebrow,
 .starter-v2__setup-head,
 .starter-v2__section-index,
@@ -114,6 +116,7 @@
 
 .starter-v2__nav-links {
   justify-content: flex-end;
+  gap: 0.5rem;
 }
 
 .starter-v2__nav a,
@@ -122,14 +125,45 @@
   transition: color 140ms ease;
 }
 
-.starter-v2__nav a:hover,
 .starter-v2__footer a:hover,
 .starter-v2__pages a:hover {
   color: var(--primary);
 }
 
-.starter-v2__mark:hover {
+.starter-v2__repo-button {
+  display: inline-flex;
+  min-height: 2.25rem;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.875rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--card) 56%, transparent);
   color: var(--foreground);
+  font-weight: var(--font-weight-medium);
+  line-height: 1;
+  transition:
+    border-color 140ms ease,
+    color 140ms ease,
+    background-color 140ms ease;
+}
+
+.starter-v2__repo-button:hover {
+  border-color: var(--foreground);
+  color: var(--primary);
+}
+
+.starter-v2__repo-button svg {
+  width: 1rem;
+  height: 1rem;
+  flex: 0 0 auto;
+}
+
+.starter-v2__star-count {
+  padding-left: 0.5rem;
+  border-left: 1px solid var(--border);
+  color: var(--muted-foreground);
+  font-variant-numeric: tabular-nums;
 }
 
 .starter-v2__hero {
@@ -138,7 +172,7 @@
   gap: clamp(3rem, 7vw, 6rem);
   align-items: center;
   min-height: calc(100svh - 3.75rem);
-  padding: var(--starter-section-space) clamp(1.5rem, 5vw, 4rem);
+  padding: var(--starter-hero-block-space) var(--starter-inset);
   border-bottom: 1px solid var(--border);
 }
 
@@ -169,6 +203,35 @@
   text-wrap: balance;
 }
 
+.starter-v2__eyebrow-row,
+.starter-v2__platform-marks {
+  display: flex;
+  align-items: center;
+}
+
+.starter-v2__eyebrow-row {
+  gap: 1rem;
+}
+
+.starter-v2__platform-marks {
+  gap: 0.625rem;
+  color: var(--foreground);
+}
+
+.starter-v2__platform-marks > span {
+  color: var(--muted-foreground);
+}
+
+.starter-v2__platform-marks svg:first-child {
+  width: 1.094rem;
+  height: 1.25rem;
+}
+
+.starter-v2__platform-marks svg:last-child {
+  width: 0.968rem;
+  height: 1.25rem;
+}
+
 .starter-v2__lede,
 .starter-v2__workflow li p,
 .starter-v2__skills li p,
@@ -182,19 +245,18 @@
   max-width: 63ch;
 }
 
-.starter-v2__glass {
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: color-mix(in srgb, var(--card) 84%, transparent);
-  -webkit-backdrop-filter: blur(24px) saturate(120%);
-  backdrop-filter: blur(24px) saturate(120%);
-}
-
 .starter-v2__setup {
   display: flex;
+  width: min(100%, 24rem);
+  aspect-ratio: 1;
+  justify-self: end;
+  justify-content: space-between;
   flex-direction: column;
   gap: 2rem;
-  padding: 2rem;
+  padding: var(--starter-inset);
+  border-radius: var(--radius-sm);
+  background: var(--primary);
+  color: var(--starter-logo-ink);
 }
 
 .starter-v2__setup-head {
@@ -203,11 +265,21 @@
   gap: 1rem;
 }
 
-.starter-v2__setup code,
 .starter-v2__skills code {
   color: var(--primary);
   font-family: var(--font-mono);
   font-weight: var(--font-weight-medium);
+}
+
+.starter-v2__setup code {
+  color: var(--starter-logo-ink);
+  font-family: var(--font-mono);
+  font-weight: var(--font-weight-medium);
+}
+
+.starter-v2__setup .starter-v2__setup-head,
+.starter-v2__setup p {
+  color: color-mix(in srgb, var(--starter-logo-ink) 76%, transparent);
 }
 
 .starter-v2__action {
@@ -278,7 +350,7 @@
   display: grid;
   grid-template-columns: 0.72fr 1.28fr;
   gap: 4rem;
-  padding: var(--starter-section-space) clamp(1.5rem, 5vw, 4rem);
+  padding: var(--starter-inset);
   border-bottom: 1px solid var(--border);
 }
 
@@ -295,10 +367,6 @@
   font-weight: var(--font-weight-semibold);
 }
 
-.starter-v2__workflow ol {
-  border-top: 1px solid var(--border);
-}
-
 .starter-v2__workflow li {
   display: grid;
   grid-template-columns: 3rem minmax(9rem, 0.45fr) 1fr;
@@ -312,7 +380,7 @@
 }
 
 .starter-v2__skills {
-  padding: var(--starter-section-space) clamp(1.5rem, 5vw, 4rem);
+  padding: var(--starter-inset);
   border-bottom: 1px solid var(--border);
 }
 
@@ -349,7 +417,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 3rem;
-  padding: var(--starter-section-space) clamp(1.5rem, 5vw, 4rem);
+  padding: var(--starter-inset);
   border-bottom: 1px solid var(--border);
   background: color-mix(in srgb, var(--card) 55%, transparent);
 }
@@ -378,7 +446,7 @@
   display: flex;
   justify-content: space-between;
   gap: 2rem;
-  padding: 2rem clamp(1.5rem, 5vw, 4rem);
+  padding: var(--starter-inset);
   color: var(--muted-foreground);
 }
 
@@ -395,10 +463,6 @@
     grid-template-columns: 1fr auto;
   }
 
-  .starter-v2__version {
-    display: none;
-  }
-
   .starter-v2__hero,
   .starter-v2__workflow,
   .starter-v2__stack,
@@ -409,6 +473,10 @@
 
   .starter-v2__hero {
     min-height: auto;
+  }
+
+  .starter-v2__setup {
+    justify-self: start;
   }
 
   .starter-v2 h1 {
@@ -443,6 +511,17 @@
 
   .starter-v2__footer {
     flex-direction: column;
+  }
+}
+
+@media (max-width: 520px) {
+  .starter-v2__wordmark,
+  .starter-v2__star-count {
+    display: none;
+  }
+
+  .starter-v2__repo-button {
+    padding-inline: 0.75rem;
   }
 }
 
