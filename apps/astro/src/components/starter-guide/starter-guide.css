@@ -1,5 +1,5 @@
 .starter-v2 {
-  --starter-type-size: 1rem;
+  --starter-type-size: clamp(0.875rem, 0.846rem + 0.12vw, 0.9375rem);
   position: relative;
   min-height: 100vh;
   overflow: hidden;
