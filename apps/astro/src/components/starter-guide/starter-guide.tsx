@@ -7,6 +7,16 @@
 
 import "./starter-guide.css";
 
+const SETUP_PROMPT = `Set up a new project using https://github.com/wayfdigital/payload-astro-starter.
+
+Ask me for the project name and destination folder if I haven't provided them. Create a fresh project from the starter's latest main branch in that folder without overwriting existing work. Give it its own Git repository, with no push remote pointing to the starter.
+
+Read README.md, AGENTS.md and .claude/skills/setup/SKILL.md in the new project, then follow the first-run setup. Check the required Node.js, pnpm and Docker versions. Create missing env files without overwriting existing values. Generate the required secrets, keeping PREVIEW_SECRET and PAYLOAD_API_SECRET consistent between apps, and set PAYLOAD_API_SECRET before creating the first admin. Keep secrets out of Git and your response.
+
+Start the local services, install dependencies, run migrations and start the dev servers. Let me create the first admin in the local admin panel. Verify the site, admin panel and draft preview, then give me the local URLs and report any blockers.
+
+Once setup works, ask what I want to build. Follow the starter's design approval and CMS integration workflow for new sections.`;
+
 const STEPS = [
   {
     title: "Describe an outcome",
@@ -212,18 +222,31 @@ export function StarterGuide({ pages = [] }: StarterGuideProps) {
             </a>
           </div>
 
-          <aside className="starter-v2__setup" aria-label="Setup command">
+          <aside className="starter-v2__setup" aria-label="Set up with your agent">
             <div className="starter-v2__setup-head">
               <span>Start here</span>
               <span>01 / 01</span>
             </div>
             <code>/setup</code>
             <p>
-              Start here: run <code>/setup</code> in your AI assistant — or just
-              say “set it up”. It handles the secrets, database, admin account
-              and dev servers, then asks what you want to build first. After
-              that you are only describing outcomes.
+              Copy the prompt and paste it into your coding agent to create a
+              new project with this starter. It handles the secrets, database
+              and dev servers, then asks what you want to build.
             </p>
+            <button
+              type="button"
+              className="starter-v2__action starter-v2__copy-prompt"
+              id="copy-setup-prompt"
+              hidden
+            >
+              Copy setup prompt
+            </button>
+            <p id="setup-prompt-status" role="status" aria-live="polite" />
+            <details id="setup-prompt-details" className="starter-v2__prompt-details">
+              <summary>View setup prompt</summary>
+              <label htmlFor="setup-prompt" className="sr-only">Setup prompt</label>
+              <textarea id="setup-prompt" readOnly rows={8} defaultValue={SETUP_PROMPT} />
+            </details>
           </aside>
         </section>
 

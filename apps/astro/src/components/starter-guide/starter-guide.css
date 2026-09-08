@@ -265,6 +265,42 @@
   gap: 1rem;
 }
 
+.starter-v2__copy-prompt {
+  background: var(--starter-logo-ink);
+  color: var(--primary);
+  font: inherit;
+  cursor: pointer;
+}
+
+.starter-v2__copy-prompt[hidden],
+#setup-prompt-status:empty {
+  display: none;
+}
+
+.starter-v2__setup :is(button, summary, textarea):focus-visible {
+  outline: 2px solid var(--starter-logo-ink);
+  outline-offset: 3px;
+}
+
+.starter-v2__prompt-details summary {
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.starter-v2__prompt-details textarea {
+  display: block;
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.75rem;
+  border: 1px solid currentColor;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  resize: vertical;
+}
+
 .starter-v2__skills code {
   color: var(--primary);
   font-family: var(--font-mono);

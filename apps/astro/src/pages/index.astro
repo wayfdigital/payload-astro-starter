@@ -47,3 +47,28 @@ const jsonLd = [
 <Layout seo={seo} jsonLd={jsonLd} credit={false} dark>
   <StarterGuide />
 </Layout>
+
+<script>
+  const button = document.querySelector<HTMLButtonElement>('#copy-setup-prompt');
+  const prompt = document.querySelector<HTMLTextAreaElement>('#setup-prompt');
+  const status = document.querySelector<HTMLParagraphElement>('#setup-prompt-status');
+  const details = document.querySelector<HTMLDetailsElement>('#setup-prompt-details');
+
+  if (button && prompt && status && details) {
+    button.hidden = false;
+    button.addEventListener('click', async () => {
+      button.disabled = true;
+      try {
+        await navigator.clipboard.writeText(prompt.value);
+        status.textContent = 'Copied. Paste it into your coding agent.';
+      } catch {
+        details.open = true;
+        prompt.focus();
+        prompt.select();
+        status.textContent = 'Copy the selected prompt, then paste it into your coding agent.';
+      } finally {
+        button.disabled = false;
+      }
+    });
+  }
+</script>
