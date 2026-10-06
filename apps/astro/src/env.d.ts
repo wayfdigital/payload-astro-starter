@@ -3,7 +3,10 @@
 
 interface ImportMetaEnv {
   readonly PAYLOAD_API_URL: string
-  /** Public origin of this site; drives canonical + OG URLs. Read at BUILD time. */
+  /**
+   * Public origin of this site; drives canonical, OG, hreflang, JSON-LD, robots.txt and
+   * sitemap URLs. Read at BUILD time. Required for `astro build` (see lib/seo/site-url.mjs).
+   */
   readonly ASTRO_PUBLIC_SITE_URL?: string
   readonly PAYLOAD_API_SECRET?: string
   readonly PREVIEW_SECRET?: string

@@ -15,6 +15,9 @@
       "dependsOn": ["^build"]
     },
     "lint": {},
+    "test": {
+      "cache": false
+    },
     "depcruise": {},
     "generate:types": {
       "cache": false

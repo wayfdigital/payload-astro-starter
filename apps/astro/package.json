@@ -9,6 +9,7 @@
     "preview": "astro preview",
     "deploy:cf": "astro build && wrangler deploy -c dist/server/wrangler.json",
     "typecheck": "astro check",
+    "test": "node --test tests/site-url.test.mjs tests/seo-build.test.mjs",
     "lint": "eslint . --max-warnings=0",
     "depcruise": "depcruise src"
   },

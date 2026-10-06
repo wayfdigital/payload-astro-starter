@@ -11,6 +11,9 @@
   // to wrangler.
   //
   // Env vars are read at BUILD time (import.meta.env), so PAYLOAD_API_URL &co.
-  // belong in the build environment, not in `wrangler secret`. The prerendered
-  // home page needs none of them; only the CMS-backed SSR routes do.
+  // belong in the build environment, not in `wrangler secret`. Every build needs
+  // ASTRO_PUBLIC_SITE_URL, the public https origin used for canonical and
+  // social URLs (the build fails without it):
+  //   ASTRO_PUBLIC_SITE_URL=https://www.example.com pnpm --filter @repo/astro deploy:cf
+  // The CMS-backed SSR routes also need PAYLOAD_API_URL and the preview settings.
 }
