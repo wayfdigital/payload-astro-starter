@@ -3,6 +3,10 @@
  * Renders the full <head> SEO block from already-resolved values (see
  * `buildSeo` in `lib/seo/meta.ts`). Lives inside <head>; emits title,
  * description, canonical, robots, Open Graph, Twitter cards, and hreflang.
+ *
+ * A noindex page (404, draft preview, site-wide noindex) carries no canonical,
+ * og:url or hreflang: a 404 would otherwise name the home page as its canonical,
+ * and Google treats noindex plus canonical as conflicting signals.
  */
 import type { ResolvedSeo } from '../../lib/seo/meta'
 
@@ -29,7 +33,7 @@ const {
 <title>{title}</title>
 {description && <meta name="description" content={description} />}
 {siteName && <meta name="application-name" content={siteName} />}
-<link rel="canonical" href={canonical} />
+{!noindex && <link rel="canonical" href={canonical} />}
 <meta
   name="robots"
   content={
@@ -43,7 +47,7 @@ const {
 <meta property="og:type" content={ogType} />
 <meta property="og:title" content={title} />
 {description && <meta property="og:description" content={description} />}
-<meta property="og:url" content={canonical} />
+{!noindex && <meta property="og:url" content={canonical} />}
 <meta property="og:locale" content={locale} />
 {siteName && <meta property="og:site_name" content={siteName} />}
 {ogImage && <meta property="og:image" content={ogImage} />}
@@ -63,7 +67,8 @@ const {
 
 {/* hreflang alternates */}
 {
-  alternates.map((alt) => (
-    <link rel="alternate" hreflang={alt.hreflang} href={alt.href} />
-  ))
+  !noindex &&
+    alternates.map((alt) => (
+      <link rel="alternate" hreflang={alt.hreflang} href={alt.href} />
+    ))
 }

@@ -6,6 +6,7 @@
     "dev": "turbo dev",
     "build": "turbo build",
     "typecheck": "turbo typecheck",
+    "test": "turbo test",
     "lint": "turbo lint",
     "depcruise": "turbo depcruise",
     "db:clean": "pnpm run db:down && pnpm run db:up",

@@ -33,6 +33,9 @@ export const onRequest = defineMiddleware(async (context, next) => {
   response.headers.delete('X-Frame-Options')
   // Drafts must never be cached by a CDN/proxy (the URL carries the shared secret).
   response.headers.set('Cache-Control', 'no-store')
+  // …or indexed. The page already renders a noindex meta tag; the header covers
+  // anything without one and keeps HTML and headers saying the same thing.
+  response.headers.set('X-Robots-Tag', 'noindex, nofollow')
 
   return response
 })

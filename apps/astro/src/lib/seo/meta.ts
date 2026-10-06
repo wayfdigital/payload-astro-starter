@@ -6,11 +6,18 @@
 import type { Media, SiteSetting } from '@repo/payload-types'
 import { DEFAULT_LOCALE, LOCALES, type Locale } from '../../i18n/locales'
 import { ADMIN_ORIGIN } from '../preview-env'
+import { isNonPublicUrl, resolveSiteUrl } from './site-url.mjs'
 
-/** Public origin of this site, used to build absolute canonical / OG URLs. */
-export const SITE_URL = (
-  import.meta.env.ASTRO_PUBLIC_SITE_URL ?? 'http://localhost:3000'
-).replace(/\/$/, '')
+/**
+ * Public origin of this site, used to build absolute canonical / OG URLs. `astro dev`
+ * falls back to http://localhost:3000. astro.config.mjs has already stopped any
+ * production build whose environment lacks a public https origin; resolving it again
+ * here normalises the value and keeps the rule in the runtime bundle. See
+ * `./site-url.mjs`.
+ */
+export const SITE_URL = resolveSiteUrl(import.meta.env.ASTRO_PUBLIC_SITE_URL, {
+  production: import.meta.env.PROD,
+})
 
 /** Joins a path onto the public site origin, yielding an absolute URL. */
 export const absoluteUrl = (path: string): string =>
@@ -19,12 +26,15 @@ export const absoluteUrl = (path: string): string =>
 /**
  * Absolutizes a Payload media URL. S3-backed uploads are already absolute; local
  * uploads are relative to the Payload origin (which serves the file), so we prefix
- * those with {@link ADMIN_ORIGIN}.
+ * those with {@link ADMIN_ORIGIN}. In production a URL on a local or private host
+ * (the dev fallback for ADMIN_ORIGIN, or a Payload `serverURL` left on localhost)
+ * returns `null`, so the page omits the image instead of advertising that host.
  */
-export const absoluteMediaUrl = (url: string): string => {
-  if (/^https?:\/\//.test(url)) return url
+export const absoluteMediaUrl = (url: string): string | null => {
   const path = url.startsWith('/') ? url : `/${url}`
-  return `${ADMIN_ORIGIN}${path}`
+  const absolute = /^https?:\/\//.test(url) ? url : `${ADMIN_ORIGIN}${path}`
+  if (import.meta.env.PROD && isNonPublicUrl(absolute)) return null
+  return absolute
 }
 
 /** A populated Media object, or `null`/an unpopulated id, as relationships arrive. */
@@ -58,10 +68,11 @@ const resolveOgImage = (
   const pick = (m: MediaRef): ResolvedOgImage | null => {
     if (!isMedia(m)) return null
     const image = m.sizes?.og
-    const url = image?.url ?? m.url
+    const source = image?.url ?? m.url
+    const url = source ? absoluteMediaUrl(source) : null
     if (!url) return null
     return {
-      url: absoluteMediaUrl(url),
+      url,
       alt: m.alt?.trim() || null,
       width: image?.width ?? m.width ?? null,
       height: image?.height ?? m.height ?? null,

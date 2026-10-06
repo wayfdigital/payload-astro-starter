@@ -15,7 +15,7 @@ type Json = Record<string, unknown>
 type MediaRef = (string | null | undefined) | Media
 
 const mediaUrl = (m: MediaRef): string | undefined =>
-  typeof m === 'object' && m !== null && m.url ? absoluteMediaUrl(m.url) : undefined
+  typeof m === 'object' && m !== null && m.url ? (absoluteMediaUrl(m.url) ?? undefined) : undefined
 
 // ---------------------------------------------------------------------------
 // ACTIVE — emitted today
