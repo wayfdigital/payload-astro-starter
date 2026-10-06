@@ -36,9 +36,19 @@ test('a production build rejects local, private and reserved hosts', () => {
     'https://10.1.2.3',
     'https://172.20.0.1',
     'https://192.168.1.10',
+    'https://192.0.0.1',
+    'https://192.0.2.1',
+    'https://192.88.99.1',
+    'https://198.18.0.1',
+    'https://198.19.255.254',
+    'https://198.51.100.7',
+    'https://203.0.113.9',
     'https://169.254.10.1',
     'https://100.64.0.1',
     'https://0.0.0.0',
+    'https://224.0.0.1',
+    'https://240.0.0.1',
+    'https://255.255.255.255',
     'https://[::1]',
     'https://[fd12::1]',
     'https://[fe80::1]',
@@ -79,7 +89,14 @@ test('development falls back to the local dev server and accepts local values', 
 })
 
 test('public hosts are not flagged', () => {
-  for (const host of ['payload-astro-starter.wayf.ai', 'example.com', '8.8.8.8', '[2606:4700::1111]']) {
+  for (const host of [
+    'payload-astro-starter.wayf.ai',
+    'example.com',
+    '8.8.8.8',
+    '192.0.0.9', // IANA anycast exceptions inside 192.0.0.0/24
+    '192.0.0.10',
+    '[2606:4700::1111]',
+  ]) {
     assert.equal(isNonPublicHost(host), false, host)
   }
 })

@@ -20,12 +20,12 @@ const RESERVED_SUFFIXES = ['.localhost', '.local', '.internal', '.test', '.inval
  * @param {string} host A URL hostname, already normalised by the URL parser.
  * @returns {boolean}
  */
-const isPrivateIPv4 = (host) => {
+const isNonPublicIPv4 = (host) => {
   const parts = host.split('.').map(Number)
   if (parts.length !== 4 || parts.some((n) => !Number.isInteger(n) || n < 0 || n > 255)) {
     return false
   }
-  const [a = -1, b = -1] = parts
+  const [a = -1, b = -1, c = -1, d = -1] = parts
   return (
     a === 0 ||
     a === 10 ||
@@ -33,7 +33,14 @@ const isPrivateIPv4 = (host) => {
     (a === 100 && b >= 64 && b <= 127) || // carrier-grade NAT
     (a === 169 && b === 254) || // link-local
     (a === 172 && b >= 16 && b <= 31) ||
-    (a === 192 && b === 168)
+    (a === 192 && b === 168) || // private use
+    (a === 192 && b === 0 && c === 0 && d !== 9 && d !== 10) || // IETF assignments; except globally reachable anycast
+    (a === 192 && b === 0 && c === 2) || // TEST-NET-1
+    (a === 192 && b === 88 && c === 99) || // deprecated 6to4 relay block
+    (a === 198 && (b === 18 || b === 19)) || // benchmarking
+    (a === 198 && b === 51 && c === 100) || // TEST-NET-2
+    (a === 203 && b === 0 && c === 113) || // TEST-NET-3
+    a >= 224 // multicast and reserved for future use
   )
 }
 
@@ -64,7 +71,7 @@ export const isNonPublicHost = (hostname) => {
   return (
     host === 'localhost' ||
     RESERVED_SUFFIXES.some((suffix) => host.endsWith(suffix)) ||
-    isPrivateIPv4(host) ||
+    isNonPublicIPv4(host) ||
     isPrivateIPv6(host)
   )
 }
